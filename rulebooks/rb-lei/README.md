@@ -3,14 +3,9 @@
 
 # Attestation Rulebook for attestations of type Legal Entity Identifier (LEI)
 
-*Provide information about the author(s) of this Rulebook in the following form:*
-
-* Author(s):
-    <!-- Usage help: (Name LastName, Affiliation) -->
+* Authors:
   * Martin Westerkamp, [Spherity](https://www.spherity.com)
   * Monika Nowicki, [Bundesanzeiger Verlag](https://www.bundesanzeiger-verlag.de)
-
-*Provide versioning information about the Rulebook in the following form:*
 
 | Version          | Date               | Description                                      |
 |------------------|--------------------|--------------------------------------------------|
@@ -271,6 +266,7 @@ The `Address` structure applies to both `legal_address` and `headquarters_addres
 | expiry_date          | Date (and if possible time) when the attestation will expire. Does not need to be an attribute and can be covered by credential format metadata, such as for example the "exp" field on the sd-jwt format. |
 | issuing_authority    | Name of the administrative authority (LEI Issuer / LOU) that issued the LEI attestation, or the ISO 3166 alpha-2 country code of the respective Member State if there is no separate authority entitled to issue the LEI attestation. |
 | issuing_country      | Alpha-2 country code, as specified in ISO 3166-1, of the country or territory of the provider of the attestation data.                                                                                   |
+| attestation_legal_category | Indicates the legal category of this attestation ("EAA" or "pubEAA"/"QEAA")                                                                                       |
 
 ### 2.8 Conditional metadata
 
@@ -289,18 +285,20 @@ ISO/IEC 18013-5 (also called mdoc) is out of scope for this rulebook, as offline
 
 ### 3.2 SD-JWT VC-based encoding
 
-The LEI attestation uses the SD-JWT VC format to allow for selective disclosure of legal entity attributes.
+The LEI attestation is available in the SD-JWT VC format to be aligned with the WeBuild formats.
+Yet, selective disclosure is not required for any claim because the included data is public.
 
 The . notation is used to indicate the nesting of attributes.
 
 
-**Verifiable Credential Type (`vct`):** `uri:eu.eudi.lei.1`
+**Verifiable Credential Type (`vct`):** `eu.we-build.lei.1`
 
 
 | **Data Identifier**                                | **Attribute identifier**                          | **Encoding format** | **Reference/Notes**                                                        |
 |----------------------------------------------------|---------------------------------------------------|---------------------|----------------------------------------------------------------------------|
 | issuing_authority                                  | iss                                               | string              | RFC 7519 / Section 2.7                                                     |
 | expiry_date                                        | exp                                               | number              | RFC 7519 / Section 2.7 (Unix timestamp)                                    |
+| attestation_legal_category                                    | attestation_legal_category                                   | string              | Section 2.7                                                         |
 | issuing_country                                    | issuing_country                                   | string              | ISO 3166-1 alpha-2                                                         |
 | lei                                                | lei                                               | string              | ISO 17442 (20-character alphanumeric)                                      |
 | legal_entity                                       | legal_entity                                      | object              | See section 2.4                                                            |
