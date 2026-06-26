@@ -181,19 +181,19 @@ renamed.
 lists are in Section 2.8 and integrity rules in Section 2.9. The structured objects `conformanceTo`
 and `onboardedBy` are defined as sub-tables in Section 2.2.*
 
-### 2.2 Mandatory attributes
+### 2.2 Mandatory attributes of object [Membership](https://w3id.org/ebwv#Membership)
 
-| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Example value** |
-|------------------------|--------------------------|--------------|--------------|--------------|
-| `attestation_legal_category` | N/A | Indication that the attestation is a non-qualified EAA (per ARB_12). | string | `non-qualified-EAA` |
-| `id` (*) | N/A | DID of the credential subject. May change, in contrast to `holderIdentifier` which is a persistent, stable identifier. Name kept for cross-dataspace interoperability. | string (DID) | `did:web:example.com:participant:123` |
-| `conformanceTo` | N/A | Dataspace governance rulebook information. Object, see table below. | object | *see 2.2.1* |
-| `holderIdentifier` (*) | N/A | Stable identifier that uniquely identifies the holder. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. | string (EUID structure) | `BEEUID...` |
-| `memberOf` (*) | N/A | The DSI or dataspace the holder has a membership credential for. Within a DSI/DS all issued membership credentials use the same value. Name kept for cross-dataspace interoperability. See code list 2.8. | string | `Agri-X` |
-| `roles` | N/A | Array of roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. See code list 2.8. | array of strings | `["DataProvider","DataConsumer"]` |
-| `onboardedBy` | N/A | The partner or service provider that onboarded the holder into the DSI or dataspace, including identifiers used by that DSI/DS. Object, see table below. | object | *see 2.2.2* |
+| **Data Identifier** | **Semantic Reference**                                             | **Definition** | **Data type**                                        | **Example value**                     |
+|-----------------------|--------------------------------------------------------------------|--------------|------------------------------------------------------|---------------------------------------|
+| `attestation_legal_category` | [attestationLegalCategory](https://w3id.org/ebwv#attestationLegalCategory) | Indication that the attestation is a non-qualified EAA (per ARB_12). | string                                               | [EAA](https://w3id.org/ebwv#EAA)      |
+| `id` (*) | @id                                                                | DID of the credential subject. May change, in contrast to `holderIdentifier` which is a persistent, stable identifier. Name kept for cross-dataspace interoperability. | string (DID)                                         | `did:web:example.com:participant:123` |
+| `conformanceTo` | [termsOfUse](https://www.w3.org/2018/credentials/#termsOfUse)      | Dataspace governance rulebook information. Object, see table below. | [ConformanceTo](https://w3id.org/ebwv#ConformanceTo) | *see 2.2.1*                           |
+| `holderIdentifier` (*) | [holderIdentifier](https://w3id.org/ebwv#holderIdentifier)         | Stable identifier that uniquely identifies the holder. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. | [EUID](https://w3id.org/ebwv#Euid)                   | `BEEUID...`                           |
+| `memberOf` (*) | [memberOf](https://w3id.org/ebwv#memberOf)                         | The DSI or dataspace the holder has a membership credential for. Within a DSI/DS all issued membership credentials use the same value. Name kept for cross-dataspace interoperability. See code list 2.8. | string                                               | `Agri-X`                              |
+| `role` | [role](https://w3id.org/ebwv#role)                                 | Array of roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. See code list 2.8. | array of strings                                     | `["DataProvider","DataConsumer"]`     |
+| `onboardedBy` | N/A                                                                | The partner or service provider that onboarded the holder into the DSI or dataspace, including identifiers used by that DSI/DS. Object, see table below. | object                                               | *see 2.2.2*                           |
 
-#### 2.2.1 `conformanceTo` (object)
+#### 2.2.1 `ConformanceTo` (object)
 
 | **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Optionality** | **Example value** |
 |---------------------|------------------------|----------------|---------------|-----------------|-------------------|
