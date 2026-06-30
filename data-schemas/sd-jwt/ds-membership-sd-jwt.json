@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://webuildconsortium.eu/schemas/ds-membership-sd-jwt.json",
+  "title": "WE BUILD - Membership Credential - SD-JWT VC payload",
+  "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
+  "type": "object",
+  "version": "0.1.0",
+  "additionalProperties": true,
+  "properties": {
+    "iss": {
+      "type": "string",
+      "minLength": 1,
+      "format": "uri",
+      "description": "Issuer identifier. For the SD-JWT VC profile this is normally the onboarding service provider HTTPS URL.",
+      "examples": ["https://djustconnect.be"]
+    },
+    "iat": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Issued-at timestamp as a JWT NumericDate.",
+      "examples": [1782205200]
+    },
+    "nbf": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Not-before timestamp as a JWT NumericDate, where used.",
+      "examples": [1782205200]
+    },
+    "exp": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Expiration timestamp as a JWT NumericDate.",
+      "examples": [1813741200]
+    },
+    "jti": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique credential instance identifier.",
+      "examples": ["urn:uuid:8d6f0e3c-1c2a-4e2b-9f1a-1234567890ab"]
+    },
+    "vct": {
+      "type": "string",
+      "const": "eu.we-build.ds-membership.1",
+      "description": "Verifiable Credential Type for the Membership Credential."
+    },
+    "attestation_legal_category": {
+      "type": "string",
+      "const": "EAA",
+      "description": "Legal category of the attestation. In EBWV v0.1, EAA denotes the non-qualified Electronic Attestation of Attributes category."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "DID of the credential subject. DS-specific name retained for interoperability.",
+      "examples": ["did:web:example.com:participant:123"]
+    },
+    "holderIdentifier": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable holder identifier. For the MVP this re-uses the EUID from the EUBWOID.",
+      "examples": ["BEEUID0123456789"]
+    },
+    "holderIdentifierType": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Conditional future enhancement for distinguishing Legal Person from Natural Person holder identifiers.",
+      "examples": ["LegalPerson"]
+    },
+    "legalName": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional official name of the holder.",
+      "examples": ["Farm Example BV"]
+    },
+    "memberOf": {
+      "type": "string",
+      "minLength": 1,
+      "description": "DSI or dataspace membership value. Values are governed by the relevant DSI or dataspace.",
+      "examples": ["Agri-X", "DADS", "DjustConnect", "Tritom"]
+    },
+    "roles": {
+      "type": "array",
+      "description": "Non-empty array of roles the holder has within the DSI or dataspace.",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "examples": [
+          "DataRightsHolder",
+          "DataProvider",
+          "DataConsumer",
+          "Operator",
+          "OnboardingServiceProvider"
+        ]
+      }
+    },
+    "conformanceTo": {
+      "type": "object",
+      "description": "Dataspace governance rulebook information.",
+      "additionalProperties": false,
+      "properties": {
+        "governanceRulebook": {
+          "type": "string",
+          "format": "uri",
+          "description": "Reference to the online dataspace governance rulebook.",
+          "examples": ["https://agri-x.eu/rulebook"]
+        },
+        "rulebookVersion": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Version of the online rulebook at the time of acceptance.",
+          "examples": ["1.2"]
+        },
+        "rulebookHash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$",
+          "description": "SHA-256 hash of the rulebook, represented as 64 hexadecimal characters.",
+          "examples": ["9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"]
+        },
+        "rulebookAcceptedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Datetime when the rulebook was accepted, where present.",
+          "examples": ["2026-06-20T14:30:00Z"]
+        }
+      },
+      "required": [
+        "governanceRulebook",
+        "rulebookVersion",
+        "rulebookHash"
+      ]
+    },
+    "onboardedBy": {
+      "type": "object",
+      "description": "Partner or service provider that onboarded the holder.",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "DID identifying the partner that onboarded the holder.",
+          "examples": ["did:web:djustconnect.be"]
+        },
+        "holderIdentifier": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable holder identifier used within the onboarding DSI or dataspace, where different from the top-level holderIdentifier.",
+          "examples": ["BE0123456789"]
+        },
+        "holderIdentifierType": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier type for onboardedBy.holderIdentifier.",
+          "examples": ["VAT-ID", "KMG-MID", "PlatformSpecific"]
+        },
+        "platform": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Commercial name of the DSI or partner that onboarded the holder.",
+          "examples": ["DjustConnect"]
+        },
+        "organisation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Legal name of the organisation that onboarded the holder and hosts the platform.",
+          "examples": ["ILVO"]
+        }
+      },
+      "required": [
+        "id",
+        "platform",
+        "organisation"
+      ]
+    },
+    "status": {
+      "type": "object",
+      "description": "Status-list revocation information.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "status-list",
+          "description": "Status mechanism type."
+        },
+        "status_list_credential": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI of the Status List Credential that contains the status bitstring.",
+          "examples": ["https://djustconnect.be/status/membership/1"]
+        },
+        "status_list_index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based index into the status list bitstring for this credential.",
+          "examples": [42]
+        },
+        "status_purpose": {
+          "type": "string",
+          "const": "revocation",
+          "description": "Purpose of the status entry."
+        }
+      },
+      "required": [
+        "type",
+        "status_list_credential",
+        "status_list_index",
+        "status_purpose"
+      ]
+    },
+    "cnf": {
+      "type": "object",
+      "description": "Confirmation claims per SD-JWT VC. Used when the credential is holder-bound.",
+      "additionalProperties": false,
+      "properties": {
+        "jwk": {
+          "type": "object",
+          "description": "Public key bound to the holder.",
+          "additionalProperties": true,
+          "properties": {
+            "kty": { "type": "string" },
+            "crv": { "type": "string" },
+            "x": { "type": "string" },
+            "y": { "type": "string" },
+            "n": { "type": "string" },
+            "e": { "type": "string" }
+          }
+        }
+      },
+      "required": [
+        "jwk"
+      ]
+    }
+  },
+  "required": [
+    "iss",
+    "iat",
+    "exp",
+    "jti",
+    "vct",
+    "attestation_legal_category",
+    "id",
+    "holderIdentifier",
+    "memberOf",
+    "roles",
+    "conformanceTo",
+    "onboardedBy",
+    "status"
+  ]
+}

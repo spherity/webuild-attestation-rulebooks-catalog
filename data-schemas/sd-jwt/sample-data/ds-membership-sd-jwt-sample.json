@@ -1,0 +1,44 @@
+{
+  "iss": "https://djustconnect.be",
+  "iat": 1782205200,
+  "nbf": 1782205200,
+  "exp": 1813741200,
+  "jti": "urn:uuid:8d6f0e3c-1c2a-4e2b-9f1a-1234567890ab",
+  "vct": "eu.we-build.ds-membership.1",
+  "attestation_legal_category": "EAA",
+  "id": "did:web:example.com:participant:123",
+  "holderIdentifier": "BEEUID0123456789",
+  "legalName": "Farm Example BV",
+  "memberOf": "Agri-X",
+  "roles": [
+    "DataRightsHolder",
+    "DataProvider"
+  ],
+  "conformanceTo": {
+    "governanceRulebook": "https://agri-x.eu/rulebook",
+    "rulebookVersion": "1.2",
+    "rulebookHash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "rulebookAcceptedAt": "2026-06-20T14:30:00Z"
+  },
+  "onboardedBy": {
+    "id": "did:web:djustconnect.be",
+    "holderIdentifierType": "VAT-ID",
+    "holderIdentifier": "BE0123456789",
+    "platform": "DjustConnect",
+    "organisation": "ILVO"
+  },
+  "status": {
+    "type": "status-list",
+    "status_list_credential": "https://djustconnect.be/status/membership/1",
+    "status_list_index": 42,
+    "status_purpose": "revocation"
+  },
+  "cnf": {
+    "jwk": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc",
+      "y": "ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ"
+    }
+  }
+}

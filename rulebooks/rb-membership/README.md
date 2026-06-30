@@ -150,7 +150,7 @@ respect to the Attestation Rulebooks:*
 ### 2.1 Introduction
 
 The Membership Credential is a **non-qualified EAA**. This document defines the attribute
-`attestation_legal_category` which SHALL have the value `non-qualified-EAA`.
+`attestation_legal_category` which SHALL have the value `EAA`.
 
 The credential describes the holder (the `CredentialSubject`) together with the dataspace
 governance rulebook the holder conforms to (`conformanceTo`), the roles the holder has within the
@@ -190,7 +190,7 @@ and `onboardedBy` are defined as sub-tables in Section 2.2.*
 | `conformanceTo` | [termsOfUse](https://www.w3.org/2018/credentials/#termsOfUse)      | Dataspace governance rulebook information. Object, see table below. | [ConformanceTo](https://w3id.org/ebwv#ConformanceTo) | *see 2.2.1*                           |
 | `holderIdentifier` (*) | [holderIdentifier](https://w3id.org/ebwv#holderIdentifier)         | Stable identifier that uniquely identifies the holder. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. | [EUID](https://w3id.org/ebwv#Euid)                   | `BEEUID...`                           |
 | `memberOf` (*) | [memberOf](https://w3id.org/ebwv#memberOf)                         | The DSI or dataspace the holder has a membership credential for. Within a DSI/DS all issued membership credentials use the same value. Name kept for cross-dataspace interoperability. See code list 2.8. | string                                               | `Agri-X`                              |
-| `role` | [role](https://w3id.org/ebwv#role)                                 | Array of roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. See code list 2.8. | array of strings                                     | `["DataProvider","DataConsumer"]`     |
+| `roles` | [role](https://w3id.org/ebwv#role)                                | Array of roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. See code list 2.8. | array of strings                                     | `["DataProvider","DataConsumer"]`     |
 | `onboardedBy` | N/A                                                                | The partner or service provider that onboarded the holder into the DSI or dataspace, including identifiers used by that DSI/DS. Object, see table below. | object                                               | *see 2.2.2*                           |
 
 #### 2.2.1 `ConformanceTo` (object)
@@ -311,96 +311,140 @@ format is W3C VCDM (JSON-LD), see Section 3.3, with SD-JWT VC considered as an a
 ## 3.2 SD-JWT VC-based encoding
 
 *Considered as an additional flow (not the primary format for the MVP).* The Membership Credential
-MAY additionally be piloted as an SD-JWT VC. If issued in this format, attestations SHALL comply
-with the 'SD-JWT VCs' profile specified in [HAIP] (ARB_01b).
+MAY additionally be piloted as an SD-JWT VC. If issued in this format, attestations
+SHALL comply with the 'SD-JWT VCs' profile specified in [HAIP] (ARB_01b). This Rulebook follows
+the catalog baseline of [HAIP] draft-03 and [SD-JWT VC] draft-ietf-oauth-sd-jwt-vc-09.
 
-A Verifiable Credential Type (`vct`) SHALL be defined and SHALL be unique within the EUDI Wallet
-ecosystem (ARB_05). Proposed value:
+**Verifiable Credential Type (`vct`):** `eu.we-build.ds-membership.1`
 
+The issued SD-JWT VC SHALL use the JOSE `typ` header value required by [SD-JWT VC]. For draft -09,
+this value is `dc+sd-jwt`.
+
+### 3.2.1 IANA-registered and standard JWT / SD-JWT VC claims
+
+The following claims are standard JWT or SD-JWT VC claims.
+
+| **Data Identifier** | **Attribute identifier** | **Encoding format** | **Reference / Notes** | **Disclosable** |
+|---------------------|--------------------------|---------------------|-----------------------|-----------------|
+| `iss` | `iss` | string (HTTPS URL) | Issuer identifier. | MUST NOT |
+| `iat` | `iat` | NumericDate | Issued-at timestamp. | MUST NOT |
+| `nbf` | `nbf` | NumericDate | Not-before timestamp, where used. | MUST NOT |
+| `exp` | `exp` | NumericDate | Expiration timestamp. | MUST NOT |
+| `jti` | `jti` | string | Unique credential instance identifier. | MUST NOT |
+| `vct` | `vct` | string | SHALL be `eu.we-build.ds-membership.1`. | MUST NOT |
+| `status` | `status` | JSON object | Status-list revocation information. See Section 3.2.3. | MUST NOT |
+| `cnf` | `cnf` | JSON object | Holder binding confirmation claim, where used. | MUST NOT |
+
+### 3.2.2 Private names specific to the Membership Credential
+
+The following private claims map to the attributes defined in Chapter 2.
+
+| **Data Identifier** | **Attribute identifier** | **Encoding format** | **Reference / Notes** | **Disclosable** |
+|---------------------|--------------------------|---------------------|-----------------------|-----------------|
+| `attestation_legal_category` | `attestation_legal_category` | string | SHALL be `EAA`. | MUST NOT |
+| `id` | `id` | string (DID) | DID of the credential subject. | MUST |
+| `holderIdentifier` | `holderIdentifier` | string | Stable holder identifier. For the MVP, this re-uses the EUID from the EUBWOID. | MUST |
+| `holderIdentifierType` | `holderIdentifierType` | string | Conditional future enhancement for holder identifier type. | MAY |
+| `legalName` | `legalName` | string | Optional official name of the holder. | MAY |
+| `memberOf` | `memberOf` | string | DSI or dataspace membership value. See code list 2.8. | MUST |
+| `roles` | `roles` | array of strings | Non-empty array of role values. See code list 2.8. | MUST |
+| `conformanceTo` | `conformanceTo` | JSON object | Dataspace governance rulebook information. See Section 2.2.1. | MAY |
+| `conformanceTo.governanceRulebook` | `conformanceTo.governanceRulebook` | string (URI) | Reference to the online dataspace governance rulebook. | MAY |
+| `conformanceTo.rulebookVersion` | `conformanceTo.rulebookVersion` | string | Version of the online rulebook at the time of acceptance. | MAY |
+| `conformanceTo.rulebookHash` | `conformanceTo.rulebookHash` | string (SHA-256 hash) | SHA-256 hash of the rulebook, represented as 64 hexadecimal characters. | MAY |
+| `conformanceTo.rulebookAcceptedAt` | `conformanceTo.rulebookAcceptedAt` | string (date-time) | Datetime when the rulebook was accepted, where present. | MAY |
+| `onboardedBy` | `onboardedBy` | JSON object | Partner or service provider that onboarded the holder. See Section 2.2.2. | MAY |
+| `onboardedBy.id` | `onboardedBy.id` | string (DID) | DID identifying the partner that onboarded the holder. | MAY |
+| `onboardedBy.holderIdentifier` | `onboardedBy.holderIdentifier` | string | Stable holder identifier used within the onboarding DSI or dataspace, where different from the top-level `holderIdentifier`. | MAY |
+| `onboardedBy.holderIdentifierType` | `onboardedBy.holderIdentifierType` | string | Identifier type for `onboardedBy.holderIdentifier`. | MAY |
+| `onboardedBy.platform` | `onboardedBy.platform` | string | Commercial name of the DSI or partner that onboarded the holder. | MAY |
+| `onboardedBy.organisation` | `onboardedBy.organisation` | string | Legal name of the organisation that onboarded the holder and hosts the platform. | MAY |
+
+In the Disclosable column, `MUST` means the issuer SHALL make the claim selectively disclosable;
+`MAY` means the issuer MAY make it selectively disclosable; and `MUST NOT` means the claim SHALL
+remain in the signed payload.
+
+### 3.2.3 Status Claim
+
+The Membership Credential is revocable (Chapter 6). Therefore, an SD-JWT VC-compliant
+Membership Credential SHALL include a `status` claim unless a future profile explicitly
+defines a short-lived, non-revocable variant.
+
+The `status` claim SHALL use the status-list mechanism used by the other SD-JWT VC rulebooks in
+this catalog. It SHALL be a JSON object with the following members:
+
+* `type` (string): SHALL be `"status-list"`.
+* `status_list_credential` (string, URI): URI of the Status List Credential that contains the
+  status bitstring.
+* `status_list_index` (integer, >= 0): zero-based index into the status list bitstring for this
+  credential.
+* `status_purpose` (string): SHALL be `"revocation"` for this attestation.
+
+Example:
+
+```json
+{
+  "status": {
+    "type": "status-list",
+    "status_list_credential": "https://djustconnect.be/status/membership/1",
+    "status_list_index": 42,
+    "status_purpose": "revocation"
+  }
+}
 ```
-urn:webuild:membership:1
+
+### 3.2.4 Example Payload
+
+The following non-normative example shows the JWT claim set before SD-JWT processing.
+
+```json
+{
+  "iss": "https://djustconnect.be",
+  "iat": 1782205200,
+  "nbf": 1782205200,
+  "exp": 1813741200,
+  "jti": "urn:uuid:8d6f0e3c-1c2a-4e2b-9f1a-1234567890ab",
+  "vct": "eu.we-build.ds-membership.1",
+  "attestation_legal_category": "EAA",
+  "id": "did:web:example.com:participant:123",
+  "holderIdentifier": "BEEUID0123456789",
+  "legalName": "Farm Example BV",
+  "memberOf": "Agri-X",
+  "roles": ["DataRightsHolder", "DataProvider"],
+  "conformanceTo": {
+    "governanceRulebook": "https://agri-x.eu/rulebook",
+    "rulebookVersion": "1.2",
+    "rulebookHash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "rulebookAcceptedAt": "2026-06-20T14:30:00Z"
+  },
+  "onboardedBy": {
+    "id": "did:web:djustconnect.be",
+    "holderIdentifierType": "VAT-ID",
+    "holderIdentifier": "BE0123456789",
+    "platform": "DjustConnect",
+    "organisation": "ILVO"
+  },
+  "status": {
+    "type": "status-list",
+    "status_list_credential": "https://djustconnect.be/status/membership/1",
+    "status_list_index": 42,
+    "status_purpose": "revocation"
+  },
+  "cnf": {
+    "jwk": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "...",
+      "y": "..."
+    }
+  }
+}
 ```
 
-Claim mapping follows the attribute identifiers in Chapter 2 (`holderIdentifier`, `memberOf`,
-`roles`, `conformanceTo`, `onboardedBy`, `legalName`, `attestation_legal_category`). All these are
-Private Names specific to this attestation type. Selective disclosure: all credential-subject
-claims MAY be made selectively disclosable; `attestation_legal_category` MUST NOT be selectively
-disclosable.
+The SD-JWT VC JSON Schema and sample payload are published at:
 
-The detailed claim tables and examples below remain to be completed when the SD-JWT flow is piloted.
-
-<details>
-<summary>Template guidance for the SD-JWT VC encoding (to be completed)</summary>
-
-*If the attestation type supports the format specified in "SD-JWT-based Verifiable
-Credentials (SD-JWT VC)", then in this section the SD-JWT VC-compliant encoding
-of attributes and metadata SHALL be defined. It SHALL be ensured that the attestations
-comply with the 'SD-JWT VCs' profile specified in [HAIP] (see ARB_01b in [Topic 12]).*
-
-*It is noted that a Schema Provider MAY specify in the Attestation
-Rulebook that that type of attestation must be issued in the [SD-JWT VC]-compliant
-format, provided the [SD-JWT VC] specification has been approved by an EU standardisation
-body or by the European Digital Identity Cooperation Group established pursuant to
-Article 46e(1) of the [European Digital Identity Regulation] (see ARB_03 in [Topic 12]).*
-
-*In this section, a Verifiable Credential Type (`vct`) SHALL be defined,
-which SHALL be unique within the scope of the EUDI Wallet ecosystem (see ARB_05 in [Topic 12]).*
-
-[RULEBOOK AUTHOR TO DEFINE THE ATTESTATION TYPE]
-
-*Additionally, when specifying new attributes, existing conventions
-for attribute identifier values and attribute syntaxes SHOULD
-be considered (see ARB_07 in [Topic 12]).*
-
-*Rulebook authors SHALL ensure that each claim name is either
-
-* included in the IANA registry for JWT claims,
-* is a Public Name as defined in [RFC 7519], or
-* or is a Private Name specific to the attestation type. (see ARB_06b in [Topic 12]).*
-
-*For all claims (i.e., all top-level properties, all nested properties, and all array entries),
-the Rulebook SHALL specify whether an Attestation Provider MUST, MAY, or MUST NOT make that
-claim selectively disclosable (see ARB_30 in [Topic 12]).*
-
-*Rulebook authors SHOULD consider defining a Type Metadata Document for the attestation type
-specified in the Rulebook, as defined in Chapter 6 of [SD-JWT VC]. If such a document is defined,
-it SHOULD contain the Claim Selective Disclosure Metadata (defined in Section 9.3 of [SD-JWT VC])
-for each of the claims, in order to specify if that claim is selectively disclosable (see ARB_31
-in [Topic 12]).*
-
-*IANA-registered claims should be presented in table that
-includes their data identifier, attribute identifier,
-encoding format, and reference or note. For example,*
-
-| **Data Identifier** | **Attribute identifier** | **Encoding format** |**Reference/Notes** |**Disclosable**|
-|-------------------- |--------------------------|---------------------|--------------------|---------------|
-| family_name | family_name | string | Section 5.1 of [OIDC] | MUST |
-
-*A similar table should be used for Public Names and for Private Names specific
-to the attestation type defined in this document. For
-example:*
-
-| **Data Identifier** | **Attribute identifier** | **Encoding format** | **Notes** |**Disclosable**|
-|---------------------|--------------------------|---------------------|-----------|---------------|
-| trust_anchor | trust_anchor | string | The trust anchor defined in Section 5 | MUST NOT |
-
-*The corresponding entry for the "attestation_legal_category" attribute defined
-in Section 2.1 SHALL be:*
-
-| **Data Identifier** | **Attribute identifier** | **Encoding format** | **Notes** |**Disclosable**|
-|---------------------|--------------------------|---------------------|-----------|---------------|
-| attestation_legal_category | attestation_legal_category | string | Defined in Attestation Rulebook template |MUST NOT|
-
-Finally, illustrative examples SHALL be included.
-
-[RULEBOOK AUTHOR TO PROVIDE AN EXAMPLE OF THE JWT CLAIM SET USED BY THE PROVIDER]
-
-[RULEBOOK AUTHOR TO PROVIDE AN EXAMPLE OF THE ISSUED SD-JWT (IN base64 ENCODING)]
-
-[RULEBOOK AUTHOR TO PROVIDE AN EXAMPLE OF A HUMAN READABLE VERSION OF THE SD-JWT PAYLOAD
-AND A DESCRIPTION OF THE DISCLOSURES INCLUDED IN THE EXAMPLE]
-
-</details>
+* `data-schemas/sd-jwt/ds-membership-sd-jwt.json`
+* `data-schemas/sd-jwt/sample-data/ds-membership-sd-jwt-sample.json`
 
 ## 3.3 W3C Verifiable Credentials Data Model-based encoding
 
@@ -415,7 +459,7 @@ credential `id` (unique per credential).
 
 | **Data Identifier** | **VCDM location** | **Encoding** | **Optionality** |
 |---------------------|-------------------|--------------|-----------------|
-| `attestation_legal_category` | `credentialSubject.attestation_legal_category` | string (`non-qualified-EAA`) | M |
+| `attestation_legal_category` | `credentialSubject.attestation_legal_category` | string (`EAA`) | M |
 | `id` | `credentialSubject.id` | string (DID) | M |
 | `holderIdentifier` | `credentialSubject.holderIdentifier` | string (EUID) | M |
 | `memberOf` | `credentialSubject.memberOf` | string | M |
@@ -447,7 +491,7 @@ EUDI specification document is available.]*
   },
   "credentialSubject": {
     "id": "did:web:example.com:participant:123",
-    "attestation_legal_category": "non-qualified-EAA",
+    "attestation_legal_category": "EAA",
     "holderIdentifier": "BEEUID0123456789",
     "legalName": "Farm Example BV",
     "memberOf": "Agri-X",
@@ -530,7 +574,7 @@ credential and revocation of the superseded one. The credential carries a `crede
 The Membership Credential is defined as a **non-qualified EAA** under the [European Digital Identity
 Regulation]:
 
-* It includes an attribute indicating it is an EAA (`attestation_legal_category` = `non-qualified-EAA`,
+* It includes an attribute indicating it is an EAA (`attestation_legal_category` = `EAA`,
   Section 2.1 / 2.2), per ARB_12.
 * It carries attributes about the holder (`holderIdentifier`, `legalName`, `memberOf`, `roles`) per
   ARB_15 / ARB_17 (Annex V points b and c).
