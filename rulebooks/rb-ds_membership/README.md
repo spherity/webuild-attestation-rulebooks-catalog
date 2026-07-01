@@ -150,24 +150,23 @@ respect to the Attestation Rulebooks:*
 ### 2.1 Introduction
 
 The Membership Credential is a **non-qualified EAA**. This document defines the attribute
-`attestation_legal_category` which SHALL have the value `EAA`.
+[attestationLegalCategory](https://w3id.org/ebwv#attestationLegalCategory) which SHALL have the value `EAA`.
 
-The credential describes the holder (the `CredentialSubject`) together with the dataspace
-governance rulebook the holder conforms to (`conformanceTo`), the roles the holder has within the
-DSI or dataspace (`roles`), and information about the partner that onboarded the holder
+The credential describes the member (the `CredentialSubject`) together with the dataspace
+governance rulebook the member (holder of the credential) conforms to (`conformanceTo`), the roles the member has within the
+DSI or dataspace (`role`), and information about the partner that onboarded the member
 (`onboardedBy`).
 
 **Logical model.** The Membership Credential is structured as follows:
 
-* The credential subject is identified by `id` (a DID, may change) and `holderIdentifier` (a stable
-  identifier; for the MVP this re-uses the EUID from the EUBWOID, legal persons only).
+* The credential subject is identified by `id` (a UUID, may change) and `member` (a stable
+  identifier; for the MVP this re-uses the EUID from the EUBWOID of that EconomicOperator).
 * `memberOf` names the DSI or dataspace the membership is for.
-* `roles` is an array of roles the holder has within that DSI or dataspace. The membership and its
+* `role` is an array of roles the holder has within that DSI or dataspace. The membership and its
   set of roles share the same lifecycle: a change of roles requires re-issuance of the credential.
-* `conformanceTo` is an object referencing the accepted dataspace governance rulebook (URI,
+* `termsOfUse` is an object of type [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook) referencing the accepted dataspace governance rulebook (URL,
   version, SHA-256 hash, and acceptance datetime).
-* `onboardedBy` is an object describing the partner / service provider that onboarded the holder,
-  including the platform-specific identifier used for that holder.
+* `onboardedBy` is an object of type [Platform](https://w3id.org/ebwv#Platform) describing the platform-specific identifier (platformId) and name as well as the operator (partner / service provider) that onboarded the member.
 
 Standard credential metadata (issuer, issuance time, expiry, status) follows from the chosen VC
 format and is documented in Chapter 3 rather than as attributes here. Each Membership Credential
@@ -183,46 +182,46 @@ and `onboardedBy` are defined as sub-tables in Section 2.2.*
 
 ### 2.2 Mandatory attributes of object [Membership](https://w3id.org/ebwv#Membership)
 
-| **Data Identifier** | **Semantic Reference**                                             | **Definition** | **Data type**                                        | **Example value**                     |
-|-----------------------|--------------------------------------------------------------------|--------------|------------------------------------------------------|---------------------------------------|
-| `attestation_legal_category` | [attestationLegalCategory](https://w3id.org/ebwv#attestationLegalCategory) | Indication that the attestation is a non-qualified EAA (per ARB_12). | string                                               | [EAA](https://w3id.org/ebwv#EAA)      |
-| `id` (*) | @id                                                                | DID of the credential subject. May change, in contrast to `holderIdentifier` which is a persistent, stable identifier. Name kept for cross-dataspace interoperability. | string (DID)                                         | `did:web:example.com:participant:123` |
-| `conformanceTo` | [termsOfUse](https://www.w3.org/2018/credentials/#termsOfUse)      | Dataspace governance rulebook information. Object, see table below. | [ConformanceTo](https://w3id.org/ebwv#ConformanceTo) | *see 2.2.1*                           |
-| `holderIdentifier` (*) | [holderIdentifier](https://w3id.org/ebwv#holderIdentifier)         | Stable identifier that uniquely identifies the holder. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. | [EUID](https://w3id.org/ebwv#Euid)                   | `BEEUID...`                           |
-| `memberOf` (*) | [memberOf](https://w3id.org/ebwv#memberOf)                         | The DSI or dataspace the holder has a membership credential for. Within a DSI/DS all issued membership credentials use the same value. Name kept for cross-dataspace interoperability. See code list 2.8. | string                                               | `Agri-X`                              |
-| `roles` | [role](https://w3id.org/ebwv#role)                                | Array of roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. See code list 2.8. | array of strings                                     | `["DataProvider","DataConsumer"]`     |
-| `onboardedBy` | N/A                                                                | The partner or service provider that onboarded the holder into the DSI or dataspace, including identifiers used by that DSI/DS. Object, see table below. | object                                               | *see 2.2.2*                           |
+| **Data Identifier**          | **Semantic Reference**                                                     | **Definition**                                                                                                                                                                                                                                                                | **Data type**                                                  | **Example value**                     |
+|------------------------------|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|---------------------------------------|
+| `attestation_legal_category` | [attestationLegalCategory](https://w3id.org/ebwv#attestationLegalCategory) | Indication that the attestation is a non-qualified EAA (per ARB_12).                                                                                                                                                                                                          | string                                                         | [EAA](https://w3id.org/ebwv#EAA)      |
+| `id` (*)                     | @id                                                                        | UUID of the credential subject. May change, in contrast to `holderIdentifier` which is a persistent, stable identifier. Name kept for cross-dataspace interoperability.                                                                                                       | string (UUID)                                                  | `did:web:example.com:participant:123` |
+| `member` (**)                | [member](https://w3id.org/ebwv#member)                                     | Stable identifier that uniquely identifies the holder. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. #Therefore we go with EconomicOperator which has a legalName and legalIdentifier | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator)     | `BEEUID...`                           |
+| `memberOf` (*)               | [memberOf](https://w3id.org/ebwv#memberOf)                                 | The DSI or dataspace the holder is a member of. Within a DSI/DS all issued membership credentials use the same value. Name kept for cross-dataspace interoperability. See code list 2.8.                                                                                      | string                                                         | `Agri-X`                              |
+| `role`                       | [role](https://w3id.org/ebwv#role)                                         | Array of roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. See code list 2.8.                                                                                                             | array of strings                                               | `["DataProvider","DataConsumer"]`     |
+| `termsOfUse`                 | [termsOfUse](https://www.w3.org/2018/credentials/#termsOfUse)              | Dataspace governance rulebook information. Object, see table below.                                                                                                                                                                                                           | [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook) | *see 2.2.1*                           |
+| `onboardedBy`                | [platform](https://w3id.org/ebwv#platform)                                 | The partner or service provider that onboarded the holder into the DSI or dataspace, including identifiers used by that DSI/DS. Object, see table below.                                                                                                                      | [Platform](https://w3id.org/ebwv#Platform)                     | *see 2.2.2*                           |
 
-#### 2.2.1 `ConformanceTo` (object)
-
-| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Optionality** | **Example value** |
-|---------------------|------------------------|----------------|---------------|-----------------|-------------------|
-| `governanceRulebook` | N/A | Reference to the online dataspace governance rulebook for the given DSI or DS. | string (URI) | M | `https://agri-x.eu/rulebook` |
-| `rulebookVersion` | N/A | Version of the online rulebook at the time of acceptance. | string | M | `1.2` |
-| `rulebookHash` | N/A | SHA-256 hash of the rulebook, for quick comparison. | string (SHA-256 hash) | M | `9f86d081...` |
-| `rulebookAcceptedAt` | N/A | Datetime when the rulebook was accepted. May differ from issuance time in an outbound flow where a credential is issued to an existing member based on a previously completed onboarding flow. | datetime | O | `2026-06-01T10:00:00Z` |
-
-#### 2.2.2 `onboardedBy` (object)
+#### 2.2.1 `termsOfUse` object of type [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook)
 
 | **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Optionality** | **Example value** |
 |---------------------|------------------------|----------------|---------------|-----------------|-------------------|
-| `id` | N/A | DID identifying the partner that onboarded the holder. | string (DID) | M | `did:web:djustconnect.be` |
-| `holderIdentifier` | N/A | Stable, unique identifier used within the DSI or DS to refer to this holder. Only specified if different from the top-level `holderIdentifier`. | string | O | `BE0123456789` |
-| `holderIdentifierType` | N/A | Indication of how to interpret `onboardedBy.holderIdentifier`. See code list 2.8. | string | O | `VAT-ID` |
-| `platform` | N/A | Commercial name of the DSI or partner that onboarded the holder. | string | M | `DjustConnect` |
-| `organisation` | N/A | Legal name of the organisation that onboarded the holder and hosts the platform. | string | M | `ILVO` |
+| `url`               | N/A                    | Reference to the online dataspace governance rulebook for the given DSI or DS. | string (URI) | M | `https://agri-x.eu/rulebook` |
+| `version`           | N/A                    | Version of the online rulebook at the time of acceptance. | string | M | `1.2` |
+| `hash`              | N/A                    | SHA-256 hash of the rulebook, for quick comparison. | string (SHA-256 hash) | M | `9f86d081...` |
+| `acceptedAt`        | N/A                    | Datetime when the rulebook was accepted. May differ from issuance time in an outbound flow where a credential is issued to an existing member based on a previously completed onboarding flow. | datetime | O | `2026-06-01T10:00:00Z` |
+
+#### 2.2.2 `onboardedBy` object of [Platform](https://w3id.org/ebwv#Platform)
+
+| **Data Identifier** | **Semantic Reference**                                     | **Definition**                                                                                  | **Data type** | **Optionality** | **Example value**         |
+|---------------------|------------------------------------------------------------|-------------------------------------------------------------------------------------------------|---------------|-----------------|---------------------------|
+| `platformId`        | N/A                                                        | DID identifying the partner/platform that onboarded the member.                                 | string (DID)  | M               | `did:web:djustconnect.be` |
+| `name`              | N/A                                                        | Commercial name of the DSI or partner that onboarded the holder.                                | string        | M               | `DjustConnect`            |
+| `operator`          | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator) | Legal name and identifier of the organisation that onboarded the holder and hosts the platform. | object        | M               | see 2.3.3                 | 
+
+
+#### 2.2.3 `operator` object of [EconomicOperator](https://w3id.org/ebwv#EconomicOperator)
+
+| **Data Identifier** | **Semantic Reference**                                     | **Definition**                                                                                  | **Data type** | **Optionality** | **Example value** |
+|---------------------|------------------------------------------------------------|-------------------------------------------------------------------------------------------------|---------------|-----------------|-------------------|
+| `legalName`         | N/A                                                        | Legal name and identifier of the organisation that onboarded the holder and hosts the platform.                            | string (DID)  | M               | `ILVO`            |
+| `identifier`        | [identifier](https://w3id.org/ebwv#identifier)             | Commercial name of the DSI or partner that onboarded the holder.                                | string        | M               | `BE0123456789`    |
 
 ### 2.3 Optional attributes
 
 | **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Example value** |
 |------------------------|--------------------------|--------------|--------------|--------------|
 | `legalName` | N/A | Official name of the holder. Optional, contributes to readability when the holder is a legal person. See integrity rule IR-02. | string | `Farm Example BV` |
-
-### 2.4 Conditional attributes
-
-| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Example value** |
-|------------------------|--------------------------|--------------|--------------|--------------|
-| `holderIdentifierType` | N/A | Indication (code list) of whether `holderIdentifier` refers to a Legal Person or a Natural Person. The MVP scenario covers legal persons only; this is a future enhancement and is therefore not used in the MVP. | string | `LegalPerson` |
 
 ### 2.5 Mandatory metadata
 
@@ -261,43 +260,42 @@ governance level of the DSI or dataspace.
 | `memberOf` | `DjustConnect` | DSI operated by ILVO. | WE BUILD SC2 use case | |
 | `memberOf` | `Tritom` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | |
 
-**`roles`** — roles a member can have. A member may have multiple roles in one credential. Based on
+**`role`** — roles a member can have. A member may have multiple roles in one credential. Based on
 the common roles agreed across the piloting DSIs, treating Agri-X as a federation of DSIs. Not
 exhaustive; other DSIs may map their own role names to these.
 
 | **Field name** | **Allowed values** | **Meaning** | **Source / vocabulary** | **Notes / extensibility** |
-|----------------|--------------------|-------------|--------------------------|---------------------------|
-| `roles` | `DataRightsHolder` | Owns the rights to the data (e.g. farmers) and can consent to data being shared from a data provider to a data consumer. | WE BUILD SC2 use case | Non-exhaustive; mappable to DSI-specific names |
-| `roles` | `DataProvider` | Partner that enables sharing data, e.g. via an API. | WE BUILD SC2 use case | |
-| `roles` | `DataConsumer` | Partner that wants to use data, e.g. by calling an API. | WE BUILD SC2 use case | |
-| `roles` | `Operator` | Partner providing DSSC building-block services (identity management, consent management, logging, …). | WE BUILD SC2 use case (custom role part of DADS) | |
-| `roles` | `OnboardingServiceProvider` | Partner that onboards members into Agri-X; may be a DSI or another technology partner. | WE BUILD SC2 use case (role part of Catena-X) | |
+|-----------|--------------------|-------------|--------------------------|---------------------------|
+| `role` | `DataRightsHolder` | Owns the rights to the data (e.g. farmers) and can consent to data being shared from a data provider to a data consumer. | WE BUILD SC2 use case | Non-exhaustive; mappable to DSI-specific names |
+| `role` | `DataProvider` | Partner that enables sharing data, e.g. via an API. | WE BUILD SC2 use case | |
+| `role` | `DataConsumer` | Partner that wants to use data, e.g. by calling an API. | WE BUILD SC2 use case | |
+| `role` | `Operator` | Partner providing DSSC building-block services (identity management, consent management, logging, …). | WE BUILD SC2 use case (custom role part of DADS) | |
+| `role` | `OnboardingServiceProvider` | Partner that onboards members into Agri-X; may be a DSI or another technology partner. | WE BUILD SC2 use case (role part of Catena-X) | |
 
 **`onboardedBy.holderIdentifierType`** — defines how `onboardedBy.holderIdentifier` is interpreted.
 Most values refer to identifiers assigned by Business Registries. Given the open-ended range of
 member-state and domain-specific identifiers, this list need not be strictly enforced as a code
 list.
 
-| **Field name** | **Allowed values** | **Meaning** | **Source / vocabulary** | **Notes / extensibility** |
-|----------------|--------------------|-------------|--------------------------|---------------------------|
-| `onboardedBy.holderIdentifierType` | `PlatformSpecific` | Custom identifier type whose meaning is platform-specific and not known to other partners. | DSI-specific | Non-enforced; extensible per DSI / member state |
-| `onboardedBy.holderIdentifierType` | `VAT-ID` | VAT identifier. Used by DjustConnect and Tritom. | [European Business Wallet Vocabulary v0.1] | |
-| `onboardedBy.holderIdentifierType` | `KMG-MID` | Unique farm id used in Slovenia, issued by the Ministry of Agriculture. Used by the DADS platform. | National (SI) | |
+| **Field name**                          | **Allowed values** | **Meaning** | **Source / vocabulary** | **Notes / extensibility** |
+|-----------------------------------------|--------------------|-------------|--------------------------|---------------------------|
+| `onboardedBy.operator.identifier.value` | `PlatformSpecific` | Custom identifier type whose meaning is platform-specific and not known to other partners. | DSI-specific | Non-enforced; extensible per DSI / member state |
+| `onboardedBy.operator.identifier.value`      | `VAT-ID` | VAT identifier. Used by DjustConnect and Tritom. | [European Business Wallet Vocabulary v0.1] | |
+| `onboardedBy.operator.identifier.value`      | `KMG-MID` | Unique farm id used in Slovenia, issued by the Ministry of Agriculture. Used by the DADS platform. | National (SI) | |
 
-**`holderIdentifierType`** (credential subject) — intended to distinguish whether `holderIdentifier`
-refers to a Legal Person or a Natural Person. The MVP scenario pilots only legal persons (re-using
-the EUID from the EUBWOID), so this attribute is a future enhancement.[^holderidtype]
+**`onboardedBy.operator.identifier.value`** (credential subject) — intended to distinguish between the different identifier types for legal persons. The MVP scenario pilots only legal persons (re-using
+the EUID from the EUBWOID), so this attribute is a future enhancement.
 
-[^holderidtype]: A common code list for `holderIdentifierType` distinguishing Legal Person from
+[identifier.type]: A common code list for `identifier.type` distinguishing Legal Person from
 Natural Person is being prepared by the WE BUILD Semantics work group. Values to be added once
 provided.
 
 ### 2.9 Integrity rules
 
-| **Rule ID** | **Rule statement** | **Why it exists** | **Where enforced** | **Verifier / issuer behavior on failure** |
-|-------------|--------------------|-------------------|--------------------|-------------------------------------------|
-| `IR-01` | If `conformanceTo.rulebookAcceptedAt` is present, its value SHALL be a datetime less than or equal to the issuance datetime of the credential. | Acceptance of the rulebook cannot logically occur after the credential was issued; supports outbound flows where acceptance happened during an earlier onboarding. | Issuer business rules, schema validation, and verifier business validation. | Issuer SHALL reject the value; verifier SHALL treat `conformanceTo` as invalid. |
-| `IR-02` | If the holder is a Legal Person, `legalName` SHOULD be present. | Improves readability and identification of legal-person holders. | Issuer business rules. | Issuer SHOULD populate `legalName`; verifier MAY warn if absent. |
+| **Rule ID** | **Rule statement**                                                                                                                  | **Why it exists** | **Where enforced** | **Verifier / issuer behavior on failure** |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------|--------------------|-------------------------------------------|
+| `IR-01` | If `termsOfUse.acceptedAt` is present, its value SHALL be a datetime less than or equal to the issuance datetime of the credential. | Acceptance of the rulebook cannot logically occur after the credential was issued; supports outbound flows where acceptance happened during an earlier onboarding. | Issuer business rules, schema validation, and verifier business validation. | Issuer SHALL reject the value; verifier SHALL treat `termsOfUse` as invalid. |
+| `IR-02` | If the member is a Legal Person, `legalName` SHOULD be present.                                                                     | Improves readability and identification of legal-person holders. | Issuer business rules. | Issuer SHOULD populate `legalName`; verifier MAY warn if absent. |
 
 # 3 Attestation encoding
 
@@ -339,26 +337,26 @@ The following claims are standard JWT or SD-JWT VC claims.
 
 The following private claims map to the attributes defined in Chapter 2.
 
-| **Data Identifier** | **Attribute identifier** | **Encoding format** | **Reference / Notes** | **Disclosable** |
-|---------------------|--------------------------|---------------------|-----------------------|-----------------|
-| `attestation_legal_category` | `attestation_legal_category` | string | SHALL be `EAA`. | MUST NOT |
-| `id` | `id` | string (DID) | DID of the credential subject. | MUST |
-| `holderIdentifier` | `holderIdentifier` | string | Stable holder identifier. For the MVP, this re-uses the EUID from the EUBWOID. | MUST |
-| `holderIdentifierType` | `holderIdentifierType` | string | Conditional future enhancement for holder identifier type. | MAY |
-| `legalName` | `legalName` | string | Optional official name of the holder. | MAY |
-| `memberOf` | `memberOf` | string | DSI or dataspace membership value. See code list 2.8. | MUST |
-| `roles` | `roles` | array of strings | Non-empty array of role values. See code list 2.8. | MUST |
-| `conformanceTo` | `conformanceTo` | JSON object | Dataspace governance rulebook information. See Section 2.2.1. | MAY |
+| **Data Identifier**                | **Attribute identifier** | **Encoding format** | **Reference / Notes** | **Disclosable** |
+|------------------------------------|--------------------------|---------------------|-----------------------|-----------------|
+| `attestationLegalCategory`         | `attestation_legal_category` | string | SHALL be `EAA`. | MUST NOT |
+| `id`                               | `id` | string (DID) | DID of the credential subject. | MUST |
+| `holderIdentifier`                 | `holderIdentifier` | string | Stable holder identifier. For the MVP, this re-uses the EUID from the EUBWOID. | MUST |
+| `holderIdentifierType`             | `holderIdentifierType` | string | Conditional future enhancement for holder identifier type. | MAY |
+| `legalName`                        | `legalName` | string | Optional official name of the holder. | MAY |
+| `memberOf`                         | `memberOf` | string | DSI or dataspace membership value. See code list 2.8. | MUST |
+| `roles`                            | `roles` | array of strings | Non-empty array of role values. See code list 2.8. | MUST |
+| `conformanceTo`                    | `conformanceTo` | JSON object | Dataspace governance rulebook information. See Section 2.2.1. | MAY |
 | `conformanceTo.governanceRulebook` | `conformanceTo.governanceRulebook` | string (URI) | Reference to the online dataspace governance rulebook. | MAY |
-| `conformanceTo.rulebookVersion` | `conformanceTo.rulebookVersion` | string | Version of the online rulebook at the time of acceptance. | MAY |
-| `conformanceTo.rulebookHash` | `conformanceTo.rulebookHash` | string (SHA-256 hash) | SHA-256 hash of the rulebook, represented as 64 hexadecimal characters. | MAY |
+| `conformanceTo.rulebookVersion`    | `conformanceTo.rulebookVersion` | string | Version of the online rulebook at the time of acceptance. | MAY |
+| `conformanceTo.rulebookHash`       | `conformanceTo.rulebookHash` | string (SHA-256 hash) | SHA-256 hash of the rulebook, represented as 64 hexadecimal characters. | MAY |
 | `conformanceTo.rulebookAcceptedAt` | `conformanceTo.rulebookAcceptedAt` | string (date-time) | Datetime when the rulebook was accepted, where present. | MAY |
-| `onboardedBy` | `onboardedBy` | JSON object | Partner or service provider that onboarded the holder. See Section 2.2.2. | MAY |
-| `onboardedBy.id` | `onboardedBy.id` | string (DID) | DID identifying the partner that onboarded the holder. | MAY |
-| `onboardedBy.holderIdentifier` | `onboardedBy.holderIdentifier` | string | Stable holder identifier used within the onboarding DSI or dataspace, where different from the top-level `holderIdentifier`. | MAY |
+| `onboardedBy`                      | `onboardedBy` | JSON object | Partner or service provider that onboarded the holder. See Section 2.2.2. | MAY |
+| `onboardedBy.id`                   | `onboardedBy.id` | string (DID) | DID identifying the partner that onboarded the holder. | MAY |
+| `onboardedBy.holderIdentifier`     | `onboardedBy.holderIdentifier` | string | Stable holder identifier used within the onboarding DSI or dataspace, where different from the top-level `holderIdentifier`. | MAY |
 | `onboardedBy.holderIdentifierType` | `onboardedBy.holderIdentifierType` | string | Identifier type for `onboardedBy.holderIdentifier`. | MAY |
-| `onboardedBy.platform` | `onboardedBy.platform` | string | Commercial name of the DSI or partner that onboarded the holder. | MAY |
-| `onboardedBy.organisation` | `onboardedBy.organisation` | string | Legal name of the organisation that onboarded the holder and hosts the platform. | MAY |
+| `onboardedBy.platform`             | `onboardedBy.platform` | string | Commercial name of the DSI or partner that onboarded the holder. | MAY |
+| `onboardedBy.organisation`         | `onboardedBy.organisation` | string | Legal name of the organisation that onboarded the holder and hosts the platform. | MAY |
 
 In the Disclosable column, `MUST` means the issuer SHALL make the claim selectively disclosable;
 `MAY` means the issuer MAY make it selectively disclosable; and `MUST NOT` means the claim SHALL
@@ -478,36 +476,46 @@ EUDI specification document is available.]*
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://webuildconsortium.eu/contexts/membership/v1"
+    "https://w3id.org/ebwv/v0.1"
   ],
-  "type": ["VerifiableCredential", "MembershipCredential"],
+  "type": ["VerifiableCredential", "Membership"],
   "id": "urn:uuid:8d6f0e3c-1c2a-4e2b-9f1a-1234567890ab",
   "issuer": "did:web:djustconnect.be",
   "validFrom": "2026-06-23T09:00:00Z",
   "validUntil": "2027-06-23T09:00:00Z",
+  "attestationLegalCategory": "EAA",
   "credentialStatus": {
     "id": "https://djustconnect.be/status/membership#42",
     "type": "BitstringStatusListEntry"
   },
   "credentialSubject": {
-    "id": "did:web:example.com:participant:123",
-    "attestation_legal_category": "EAA",
-    "holderIdentifier": "BEEUID0123456789",
-    "legalName": "Farm Example BV",
+    "id": "urn:uuid:650805cd-8abf-4f2d-bc23-9552511c7e01",
+    "member": {
+      "type": "EconomicOperator",
+      "legalIdentifier":"BEEUID0123456789",
+      "legalName": "Farm Example BV"
+    },
     "memberOf": "Agri-X",
-    "roles": ["DataRightsHolder", "DataProvider"],
-    "conformanceTo": {
-      "governanceRulebook": "https://agri-x.eu/rulebook",
-      "rulebookVersion": "1.2",
-      "rulebookHash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-      "rulebookAcceptedAt": "2026-06-20T14:30:00Z"
+    "role": ["DataRightsHolder", "DataProvider"],
+    "termsOfUse": {
+      "type":"GovernanceRulebook",
+      "url": "https://agri-x.eu/rulebook",
+      "version": "1.2",
+      "hash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+      "acceptedAt": "2026-06-20T14:30:00Z" 
     },
     "onboardedBy": {
-      "id": "did:web:djustconnect.be",
-      "holderIdentifierType": "VAT-ID",
-      "holderIdentifier": "BE0123456789",
-      "platform": "DjustConnect",
-      "organisation": "ILVO"
+      "type": "Platform",
+      "platformId": "did:web:djustconnect.be",
+      "name": "DjustConnect",
+      "operator":{
+        "type": "EconomicOperator",
+        "legalName": "ILVO",
+        "identifier": {
+          "type": "VatId",
+          "value": "BE0123456789"
+        }
+      }
     }
   }
 }
