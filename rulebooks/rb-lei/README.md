@@ -1,6 +1,3 @@
-* Template version: 1.1, 20-08-2025
-
-
 # Attestation Rulebook for attestations of type Legal Entity Identifier (LEI)
 
 * Authors:
@@ -9,7 +6,7 @@
 
 | Version          | Date               | Description                                      |
 |------------------|--------------------|--------------------------------------------------|
-| 0.1                | 08.06.2026         | Initial Draft based on the WE BUILD LEI attestation description, using the [GLEIF LEI-CDF 3.1 data model](https://www.gleif.org/en/lei-data/access-and-use-lei-data/level-1-data-lei-cdf-3-1-format) |
+| 0.2                | 17.07.2026         | LEI attestation reduced to basic information |
 
 **Feedback:**
 Main feedback channel: [GitHub issues](https://github.com/webuild-consortium/eudi-wallet-rulebooks-and-schemas/issues)
@@ -26,14 +23,16 @@ The Legal Entity Identifier (LEI) is a unique, 20-character alphanumeric code us
 
 Each LEI links to a public database containing company information. By providing a standardized, machine-readable identity, the system reduces the complexity of verifying counterparts in cross-border markets. Essentially, it acts as a global "social security number" for businesses, ensuring that every participant in a trade is clearly and universally recognized.
 
-To reduce the need for querying an external database, the base information about the company is included in the attestation. This allows a broad range of applications, from KYC in finance to proving the identity of DPP issuers in an international setting.
+This attestation provides a minimal, verifiable proof that a given LEI exists, is currently valid, and belongs to the attestation owner.
 
 This document is based on the data model provided by GLEIF: <https://www.gleif.org/en/lei-data/access-and-use-lei-data/level-1-data-lei-cdf-3-1-format>.
 
-This attestation represents a Legal Entity Identifier (LEI) record. It embodies:
+This attestation represents a Legal Entity Identifier (LEI) record. It embodies only:
 - The LEI code uniquely identifying the legal entity (ISO 17442)
-- Base information about the legal entity (name, addresses, jurisdiction, legal form, status, creation date)
-- Registration metadata about the LEI record (managing LOU, registration dates, registration status)
+- The current status of the LEI (LEI Status)
+- The next renewal date of the LEI (LEI Renewal Date)
+
+**Issuance by an LOU.** The LEI attestation SHALL be issued by an accredited Local Operating Unit (LOU). This need not be the LOU that originally issued the LEI: any accredited LOU may issue the attestation on the basis of authoritative LEI data. Within the Global LEI System, an LOU (not GLEIF) is the authentic source: each LOU validates entity data against local registers and is accountable for its correctness, up to loss of accreditation. GLEIF acts only as an aggregator: it publishes a periodically refreshed copy of the LOUs' records in the Global LEI Index, performs a data-quality check but still publishes the data it receives even where it believes them to be incorrect, has no regulatory authority to guarantee accuracy, and bears no legal responsibility for errors. Because the Global LEI Index is synchronised only at intervals and depends on LOU systems being reachable at collection time, it may disseminate stale status or renewal information.
 
 ### 1.2 Introduction attribute specification
 
@@ -142,49 +141,28 @@ on the nature of the mechanism used for distributing trust anchors, detailed in 
 
 ### 2.1 Overview attributes attestation
 
-The LEI attestation is structured as a top-level `LegalEntityIdentifier` object containing the `lei` code and two nested objects: `legal_entity` (base entity information) and `registration` (LEI record registration metadata). The model is as follows:
+The LEI attestation is structured as a flat `LegalEntityIdentifier` object containing the `lei` code together with its current status and next renewal date. The model is as follows:
 
 ```
 LegalEntityIdentifier
 ├── lei (tstr)
-├── legal_entity (LegalEntity)
-│   ├── legal_name (tstr)
-│   ├── legal_address (Address)
-│   │   └── [Address attributes]
-│   ├── headquarters_address (Address)
-│   │   └── [Address attributes]
-│   ├── legal_jurisdiction (tstr)
-│   ├── entity_status (tstr)
-│   ├── entity_creation_date (tstr)
-│   └── legal_form (tstr)
-└── registration (Registration)
-    ├── managing_lou (tstr)
-    ├── initial_registration_date (tstr)
-    ├── last_update_date (tstr)
-    ├── registration_status (tstr)
-    └── next_renewal_date (tstr)
+├── lei_status (tstr)
+└── lei_renewal_date (tstr)
 ```
 
-The following table lists the top-level attributes of the LEI attestation. Attribute identifiers SHALL be used in requests and responses.
+The following table lists the attributes of the LEI attestation. Attribute identifiers SHALL be used in requests and responses.
 
 | **Data Identifier** | **Definition** | **Optionality** | **Encoding format** | **Semantic reference** |
 |---|---|---|---|---|
-| lei | A Legal Entity Identifier (LEI) code, in the format specified by ISO 17442. | M | tstr | [lei](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#lei) |
-| legal_entity | Base information about the legal entity. See [section 2.4](#24-legalentity-attributes). | M | LegalEntity (object) | — |
-| registration | Registration metadata about the LEI record. See [section 2.5](#25-registration-attributes). | M | Registration (object) | — |
+| lei | A Legal Entity Identifier (LEI) code, in the format specified by ISO 17442. | M | tstr | [lei](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#lei) |
+| lei_status | The status of the LEI record registration with the managing LOU. One of the values defined in [section 2.2](#22-code-lists). | M | tstr | [leiRegistrationStatus](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#leiRegistrationStatus) |
+| lei_renewal_date | The next renewal date of the LEI record, given as a date and time including the timezone, based on ISO 8601. | M | tstr | [leiNextRenewal](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#leiNextRenewal) |
 
 ### 2.2 Code lists
 
-The following code lists apply to specific attributes:
+The following code list applies to the `lei_status` attribute:
 
-**entity_status**
-
-Values:
-- ACTIVE
-- INACTIVE
-- NULL
-
-**registration_status**
+**lei_status**
 
 Values:
 - PENDING_VALIDATION
@@ -198,68 +176,13 @@ Values:
 - PENDING_TRANSFER
 - PENDING_ARCHIVAL
 
-**legal_jurisdiction**
-
-A 2-character country code conforming to ISO 3166-1 alpha-2, or a region code conforming to ISO 3166-2.
-
-**legal_form**
-
-A code taken from the ISO 20275 Entity Legal Form (ELF) code list maintained by GLEIF.
-
 ### 2.3 Integrity rules
 
 - lei MUST conform to the format specified by ISO 17442 (a 20-character alphanumeric code).
-- legal_jurisdiction, where present, MUST be a valid ISO 3166-1 alpha-2 country code or ISO 3166-2 region code.
-- legal_form, where present, MUST be a valid ISO 20275 (ELF) code.
-- entity_status MUST be one of the values defined in the entity_status code list.
-- registration_status MUST be one of the values defined in the registration_status code list.
-- All date and date-time attributes MUST follow ISO 8601.
-- managing_lou MUST be a valid LEI conforming to ISO 17442, identifying the LEI Issuer responsible for administering the record.
+- lei_status MUST be one of the values defined in the lei_status code list (section 2.2).
+- lei_renewal_date MUST follow ISO 8601.
 
-### 2.4 LegalEntity attributes
-
-The `legal_entity` object carries the base information about the legal entity identified by the LEI.
-
-| **Data Identifier** | **Definition** | **Optionality** | **Encoding format** | **Semantic reference** |
-|---|---|---|---|---|
-| legal_name | The Legal Name of the Entity. If an Entity is in a jurisdiction with more than one Legal Name (e.g., in different languages), this is the Primary Legal Name. | M | tstr | [legalName](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#legalName) |
-| legal_address | The address of the Entity as recorded in the registration of the Entity in its legal jurisdiction. See [section 2.6](#26-address). | M | Address (object) | [registeredAddress](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#registeredAddress) |
-| headquarters_address | The address of the headquarters of the Entity. May be equivalent to legal_address. See [section 2.6](#26-address). | O | Address (object) | [correspondenceAddress](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#correspondenceAddress) |
-| legal_jurisdiction | The jurisdiction of legal formation and registration of the Entity (and on which the legal_form data element is also dependent). Either a 2-character country code conforming to ISO 3166-1 alpha-2 or a region code conforming to ISO 3166-2. | O | tstr | [jurisdiction](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#jurisdiction) |
-| legal_form | The legal form of the Entity, taken from the ISO Entity Legal Form (ELF) code list maintained by GLEIF. | O | tstr | [legalForm](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#legalForm) |
-| entity_status | The status of the Legal Entity. Either "ACTIVE", "INACTIVE" or "NULL". | M | tstr | [legalStatus](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#legalStatus) |
-| entity_creation_date | The date on which the legal entity was first established as defined in ISO 17442. | O | tstr | [dateOfRegistration](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#dateOfRegistration) |
-
-### 2.5 Registration attributes
-
-The `registration` object carries metadata about the LEI record's registration with the managing LEI Issuer (LOU).
-
-| **Data Identifier** | **Definition** | **Optionality** | **Encoding format** | **Semantic reference** |
-|---|---|---|---|---|
-| managing_lou | The LEI of the LEI Issuer that is responsible for administering this LEI Record. | M | tstr | [managingLeiIssuer](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#managingLeiIssuer) |
-| initial_registration_date | The date at which the information was first collected by the managing_lou. | M | tstr | [leiRegistrationDate](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#leiRegistrationDate) |
-| last_update_date | The date at which the information was most recently updated by the managing_lou. A date and time, including the timezone, based on ISO 8601. | M | tstr | [leiLastUpdate](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#leiLastUpdate) |
-| registration_status | The status of the Legal Entity's LEI Record registration with the managing_lou. One of: "PENDING_VALIDATION", "ISSUED", "DUPLICATE", "LAPSED", "RETIRED", "ANNULLED", "CANCELLED", "TRANSFERRED", "PENDING_TRANSFER", "PENDING_ARCHIVAL". | M | tstr | [leiRegistrationStatus](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#leiRegistrationStatus) |
-| next_renewal_date | A date and time, including the timezone, based on ISO 8601, indicating the next renewal date of the LEI record. | M | tstr | [leiNextRenewal](https://webuild-consortium.github.io/wp4-semantics-group/ebwv/vocabulary.html#leiNextRenewal) |
-
-### 2.6 Address
-
-The `Address` structure applies to both `legal_address` and `headquarters_address`. The attributes follow the `Address` class defined in the [European Business Wallet Vocabulary](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#Address), which in turn re-uses the INSPIRE/ISA Core Location address components.
-
-| **Data Identifier** | **Definition** | **Optionality** | **Encoding format** | **Semantic reference** |
-|---|---|---|---|---|
-| full_address | The complete address written out as a formatted string. | M | string | [fullAddress](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#fullAddress) |
-| thorough_fare | An address component that represents the name of a passage or way through from one location to another (e.g., a street). | O | string | [thoroughfare](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#thoroughfare) |
-| locator_designator | A number or a sequence of characters that uniquely identifies the locator within the relevant scope(s) (e.g., a house number). | O | string | [locatorDesignator](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#locatorDesignator) |
-| locator_name | Proper noun(s) applied to the real-world entity identified by the locator (e.g., a building name). | O | string | [locatorName](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#locatorName) |
-| address_area | The name of a geographic area that groups a number of addressable objects for addressing purposes, without being an administrative unit. | O | string | [addressArea](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#addressArea) |
-| post_code | The code created and maintained for postal purposes to identify a subdivision of addresses and postal delivery points. | O | string | [postCode](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#postCode) |
-| post_name | A name created and maintained for postal purposes to identify a subdivision of addresses and postal delivery points (e.g., a city or town). | O | string | [postName](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#postName) |
-| po_box | A location designator for a postal delivery point at a post office, usually a number. | O | string | [poBox](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#poBox) |
-| admin_unit_level_1 | The name of the uppermost level of the administrative hierarchy of a country (the country itself). | O | string | [adminUnitL1](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#adminUnitL1) |
-| admin_unit_level_2 | The name of a secondary level/region of the administrative hierarchy of a country (e.g., a region, province, or state). | O | string | [adminUnitL2](https://webuild-consortium.github.io/wp4-semantics-group/ebwv//vocabulary.html#adminUnitL2) |
-
-### 2.7 Mandatory metadata
+### 2.4 Mandatory metadata
 
 | **Data Identifier**  | **Definition**                                                                                                                                                                                           |
 |----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -268,7 +191,7 @@ The `Address` structure applies to both `legal_address` and `headquarters_addres
 | issuing_country      | Alpha-2 country code, as specified in ISO 3166-1, of the country or territory of the provider of the attestation data.                                                                                   |
 | attestation_legal_category | Indicates the legal category of this attestation ("EAA" or "pubEAA"/"QEAA")                                                                                       |
 
-### 2.8 Conditional metadata
+### 2.5 Conditional metadata
 
 | **Data Identifier**  | **Definition**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 |----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -296,35 +219,13 @@ The . notation is used to indicate the nesting of attributes.
 
 | **Data Identifier**                                | **Attribute identifier**                          | **Encoding format** | **Reference/Notes**                                                        |
 |----------------------------------------------------|---------------------------------------------------|---------------------|----------------------------------------------------------------------------|
-| issuing_authority                                  | iss                                               | string              | RFC 7519 / Section 2.7                                                     |
-| expiry_date                                        | exp                                               | number              | RFC 7519 / Section 2.7 (Unix timestamp)                                    |
-| attestation_legal_category                                    | attestation_legal_category                                   | string              | Section 2.7                                                         |
+| issuing_authority                                  | iss                                               | string              | RFC 7519 / Section 2.4                                                     |
+| expiry_date                                        | exp                                               | number              | RFC 7519 / Section 2.4 (Unix timestamp)                                    |
+| attestation_legal_category                         | attestation_legal_category                        | string              | Section 2.4                                                                |
 | issuing_country                                    | issuing_country                                   | string              | ISO 3166-1 alpha-2                                                         |
 | lei                                                | lei                                               | string              | ISO 17442 (20-character alphanumeric)                                      |
-| legal_entity                                       | legal_entity                                      | object              | See section 2.4                                                            |
-| legal_entity.legal_name                            | legal_entity.legal_name                           | string              | Primary Legal Name of the Entity                                          |
-| legal_entity.legal_address                         | legal_entity.legal_address                        | object              | See section 2.6 for structure                                             |
-| legal_entity.legal_address.full_address            | legal_entity.legal_address.full_address           | string              |                                                                            |
-| legal_entity.legal_address.thorough_fare           | legal_entity.legal_address.thorough_fare          | string              |                                                                            |
-| legal_entity.legal_address.locator_designator      | legal_entity.legal_address.locator_designator     | string              |                                                                            |
-| legal_entity.legal_address.locator_name            | legal_entity.legal_address.locator_name           | string              |                                                                            |
-| legal_entity.legal_address.address_area            | legal_entity.legal_address.address_area           | string              |                                                                            |
-| legal_entity.legal_address.post_code               | legal_entity.legal_address.post_code              | string              |                                                                            |
-| legal_entity.legal_address.post_name               | legal_entity.legal_address.post_name              | string              |                                                                            |
-| legal_entity.legal_address.po_box                  | legal_entity.legal_address.po_box                 | string              |                                                                            |
-| legal_entity.legal_address.admin_unit_level_1      | legal_entity.legal_address.admin_unit_level_1     | string              |                                                                            |
-| legal_entity.legal_address.admin_unit_level_2      | legal_entity.legal_address.admin_unit_level_2     | string              |                                                                            |
-| legal_entity.headquarters_address                  | legal_entity.headquarters_address                 | object              | See section 2.6 for structure                                             |
-| legal_entity.legal_jurisdiction                    | legal_entity.legal_jurisdiction                   | string              | ISO 3166-1 alpha-2 or ISO 3166-2                                          |
-| legal_entity.legal_form                            | legal_entity.legal_form                           | string              | ISO 20275 (ELF) code                                                      |
-| legal_entity.entity_status                         | legal_entity.entity_status                        | string              | ACTIVE / INACTIVE / NULL                                                  |
-| legal_entity.entity_creation_date                  | legal_entity.entity_creation_date                 | string              | ISO 8601                                                                  |
-| registration                                       | registration                                      | object              | See section 2.5                                                            |
-| registration.managing_lou                          | registration.managing_lou                         | string              | LEI of the managing LOU                                                   |
-| registration.initial_registration_date            | registration.initial_registration_date           | string              | ISO 8601                                                                  |
-| registration.last_update_date                      | registration.last_update_date                     | string              | ISO 8601 (date-time with timezone)                                        |
-| registration.registration_status                  | registration.registration_status                 | string              | See registration_status code list                                         |
-| registration.next_renewal_date                     | registration.next_renewal_date                    | string              | ISO 8601 (date-time with timezone)                                        |
+| lei_status                                         | lei_status                                        | string              | See lei_status code list (section 2.2)                                    |
+| lei_renewal_date                                   | lei_renewal_date                                  | string              | ISO 8601 (date-time with timezone)                                        |
 | location_status                                    | status                                            | object              | See chapter [3.2.1](#321-attribute-status)                                |
 
 
@@ -388,14 +289,14 @@ The LEI attestation SHALL include a status claim `credentialStatus` if the techn
 
 ## 4 Attestation usage
 
-The LEI attestation is intended to be used as a standardised, machine-verifiable proof of a legal entity's identity and base registration information, to be presented by a Wallet User to a Relying Party in cross-border and domestic contexts.
+The LEI attestation is intended to be used as a standardised, machine-verifiable proof of a legal entity's LEI and its current registration status, to be presented by a Wallet User to a Relying Party in cross-border and domestic contexts.
 
 Typical scenarios include, but are not limited to:
 
-- **Know Your Customer (KYC) and onboarding in finance**: providing a globally recognized, registry-backed identifier and base entity data during customer onboarding and counterparty verification.
-- **Cross-border business onboarding (B2B)**: sharing official legal entity identification during supplier/customer onboarding, procurement qualification, or partner due diligence.
+- **Know Your Customer (KYC) and onboarding in finance**: providing a globally recognized, registry-backed identifier and its current status during customer onboarding and counterparty verification.
+- **Cross-border business onboarding (B2B)**: sharing an authoritative legal entity identifier during supplier/customer onboarding, procurement qualification, or partner due diligence.
 - **Authentication of issuers in international settings**: proving the identity of issuers (e.g. of Digital Product Passports) where a globally unique entity identifier is required.
-- **Reducing external database queries**: including base entity information in the attestation so that Relying Parties do not need to query the GLEIF database for every verification.
+- **Confirming LEI validity without external lookups**: including the LEI status and renewal date in the attestation so that Relying Parties can confirm the LEI is currently valid without querying the Global LEI Index at verification time.
 
 The LEI attestation is **not** intended to be used as a standalone authentication mechanism to replace processes that legally require a natural person to act and be authenticated in their own right.
 
@@ -406,8 +307,9 @@ The LEI attestation is **not** intended to be used as a standalone authenticatio
 
 ### 4.1 Issuance of the LEI attestation
 
-* The Authentic Source of the data contained in the LEI attestation MUST be the Global LEI System (GLEIF) and the managing LEI Issuer (LOU). The LOU can or MUST authorize an issuer to issue LEI attestations on their behalf.
-* The Issuance SHALL be based on up-to-date, authoritative data from the authoritative source (the Global LEI System).
+* The LEI attestation SHALL be issued by an accredited Local Operating Unit (LOU). This need not be the LOU that originally issued the LEI; any accredited LOU may issue the attestation on the basis of authoritative LEI data. An LOU can authorize an issuer to issue LEI attestations on its behalf.
+* The Authentic Source of the data contained in the LEI attestation MUST be an LOU, which validates the data against local registers and is accountable for its correctness. The Global LEI Index operated by GLEIF is an aggregated, periodically refreshed copy and MUST NOT be used as the authentic source, as it may disseminate stale or incorrect status and renewal information.
+* The Issuance SHALL be based on up-to-date, authoritative data obtained directly from an LOU.
 * The LEI attestation SHALL be key bound to the wallet, IF the wallet belongs to the entity that the LEI attestation is issued for.
 * If the LEI attestation is issued to a wallet that is not owned by the entity that the attestation is issued for, the attestation SHALL NOT be key bound to the wallet.
 * The LEI attestation SHALL be issued in a format that is compatible with the EUDI Wallet ecosystem (e.g., **OpenID4VP** profiles adopted by the ecosystem).
@@ -508,7 +410,6 @@ that will be specified by the Commission.
 | [HAIP] | Yasuda, K. *et al,* OpenID4VC High Assurance Interoperability Profile, OpenId Foundation, Version draft-03 |
 | [IANA-JWT-Claims] | IANA JSON Web Token Claims Registry. Available: <https://www.iana.org/assignments/jwt/jwt.xhtml> |
 | [ISO 17442] | ISO 17442-1:2020, Financial services --- Legal entity identifier (LEI) --- Part 1: Assignment |
-| [ISO 20275] | ISO 20275:2017, Financial services --- Entity legal forms (ELF) |
 | [ISO 3166-1] | ISO 3166-1, Codes for the representation of names of countries and their subdivisions --- Part 1: Country code |
 | [ISO/IEC 18013-5] |  ISO/IEC 18013-5, Personal identification --- ISO-compliant driving licence - Part 5: Mobile driving licence (mDL) application, First edition, 2021-09 |
 | [OIDC] | Sakimura, N. et al., "OpenID Connect Core 1.0", OpenID Foundation. Available: <https://openid.net/specs/openid-connect-core-1_0.html> |
