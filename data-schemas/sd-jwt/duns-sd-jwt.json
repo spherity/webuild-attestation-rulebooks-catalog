@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://webuildconsortium.eu/schemas/duns-sd-jwt.json",
+  "title": "WeBuild – DUNS Legal Entity Attestation – SD-JWT VC payload",
+  "description": "Schema for the SD-JWT VC payload of a DUNS Legal Entity Attestation as defined in the DUNS Attestation Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing. The attestation provides a standardized, verifiable representation of a legal entity's business profile as registered with Dun & Bradstreet, including legal identity, operational status, registration details, and industry classification.",
+  "type": "object",
+  "version": "0.1.0",
+  "additionalProperties": true,
+  "properties": {
+    "vct": {
+      "type": "string",
+      "description": "Verifiable Credential Type identifier. SHALL be 'eu.we-build:duns:1'.",
+      "examples": [
+        "eu.we-build:duns:1"
+      ]
+    },
+    "iss": {
+      "type": "string",
+      "format": "uri",
+      "description": "Issuer of the attestation.",
+      "examples": [
+        "https://issuer.example.com"
+      ]
+    },
+    "iat": {
+      "type": "integer",
+      "description": "Issuance date as a Unix timestamp."
+    },
+    "exp": {
+      "type": "integer",
+      "description": "Expiry date as a Unix timestamp."
+    },
+    "attestation_legal_category": {
+      "type": "string",
+      "description": "Legal category of the attestation ('EAA' or 'QEAA').",
+      "enum": [
+        "EAA",
+        "QEAA"
+      ]
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Version of the attestation schema.",
+      "minLength": 1,
+      "examples": [
+        "1.0",
+        "0.1.0"
+      ]
+    },
+    "trust_anchor_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the trust anchor.",
+      "examples": [
+        "https://trust.webuildconsortium.eu/anchors/eidas-tl"
+      ]
+    },
+    "duns_number": {
+      "type": "string",
+      "description": "Nine-digit unique identifier from Dun & Bradstreet.",
+      "pattern": "^[0-9]{9}$",
+      "examples": [
+        "123456789"
+      ]
+    },
+    "legal_entity": {
+      "type": "object",
+      "description": "Object encapsulating the legal identity of the entity.",
+      "properties": {
+        "legal_name": {
+          "type": "string",
+          "description": "Registered legal name of the entity.",
+          "minLength": 1
+        },
+        "legal_form": {
+          "type": "string",
+          "description": "Legal form of the entity.",
+          "minLength": 1
+        },
+        "address": {
+          "type": "object",
+          "description": "The official registered address of the entity.",
+          "properties": {
+            "street": {
+              "type": "string",
+              "description": "Street name."
+            },
+            "nr": {
+              "type": "string",
+              "description": "Street or building number."
+            },
+            "postal_code": {
+              "type": "string",
+              "description": "Postal or ZIP code."
+            },
+            "city": {
+              "type": "string",
+              "description": "City or municipality."
+            },
+            "country": {
+              "type": "string",
+              "description": "Country (ISO 3166-1 alpha-2).",
+              "pattern": "^[A-Z]{2}$"
+            }
+          }
+        }
+      },
+      "required": [
+        "legal_name",
+        "legal_form",
+        "address"
+      ]
+    },
+    "status": {
+      "type": "object",
+      "description": "Status object for revocation checking.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "examples": [
+            "status-list"
+          ]
+        },
+        "status_list_credential": {
+          "type": "string",
+          "format": "uri"
+        },
+        "status_list_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status_purpose": {
+          "type": "string",
+          "examples": [
+            "revocation"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "status_list_credential",
+        "status_list_index",
+        "status_purpose"
+      ]
+    },
+    "cnf": {
+      "type": "object",
+      "description": "Confirmation claims for holder binding.",
+      "properties": {
+        "jwk": {
+          "type": "object",
+          "description": "Public key bound to the holder wallet.",
+          "properties": {
+            "kty": {
+              "type": "string"
+            },
+            "crv": {
+              "type": "string"
+            },
+            "x": {
+              "type": "string"
+            },
+            "y": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kty"
+          ]
+        }
+      },
+      "required": [
+        "jwk"
+      ]
+    }
+  },
+  "required": [
+    "vct",
+    "iss",
+    "iat",
+    "exp",
+    "attestation_legal_category",
+    "duns_number",
+    "legal_entity",
+    "cnf"
+  ]
+}

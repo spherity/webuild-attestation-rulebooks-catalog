@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://webuildconsortium.eu/schemas/gln-sd-jwt.json",
+  "title": "WeBuild – GLN Number (Global Location Number) Attestation – SD-JWT VC payload",
+  "description": "Schema for the SD-JWT VC payload of a GLN Number Attestation as defined in the GLN Attestation Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing. The attestation provides a verifiable, standardized representation of a legal entity's GS1-registered identity and location data, based on a company's Global Company Prefix, supporting supply chain transparency and supplier due diligence within KYS processes.",
+  "type": "object",
+  "version": "0.1.0",
+  "additionalProperties": true,
+  "properties": {
+    "vct": {
+      "type": "string",
+      "const": "eu.we-build:gln:1"
+    },
+    "iss": {
+      "type": "string",
+      "format": "uri"
+    },
+    "iat": {
+      "type": "integer"
+    },
+    "exp": {
+      "type": "integer"
+    },
+    "sub": {
+      "type": "string"
+    },
+    "attestation_legal_category": {
+      "type": "string",
+      "enum": [
+        "EAA",
+        "QEAA"
+      ]
+    },
+    "trust_anchor_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "cnf": {
+      "type": "object",
+      "properties": {
+        "jwk": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "jwk"
+      ]
+    },
+    "status": {
+      "type": "object",
+      "properties": {
+        "status_list": {
+          "type": "object",
+          "properties": {
+            "idx": {
+              "type": "integer"
+            },
+            "uri": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "idx",
+            "uri"
+          ]
+        }
+      },
+      "required": [
+        "status_list"
+      ]
+    },
+    "@context": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "type": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "id": {
+      "type": "string",
+      "format": "uri"
+    },
+    "issuer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "credentialSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ]
+    },
+    "renderMethod": {
+      "type": "array"
+    },
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "description": "GS1 Digital Link URI for the GLN."
+        },
+        "keyAuthorization": {
+          "type": "string",
+          "format": "uri"
+        },
+        "organization": {
+          "type": "object",
+          "properties": {
+            "@type": {
+              "type": "string",
+              "const": "gs1:Organization"
+            },
+            "gs1:partyGLN": {
+              "type": "string",
+              "pattern": "^[0-9]{13}$"
+            },
+            "gs1:organizationName": {
+              "type": "string"
+            },
+            "gs1:organizationLegalName": {
+              "type": "string"
+            },
+            "gs1:address": {
+              "type": "object",
+              "properties": {
+                "@type": {
+                  "type": "string",
+                  "const": "gs1:PostalAddress"
+                },
+                "gs1:postalCode": {
+                  "type": "string"
+                },
+                "gs1:addressLocality": {
+                  "type": "string"
+                },
+                "gs1:addressRegion": {
+                  "type": "string"
+                },
+                "gs1:addressCountry": {
+                  "type": "object",
+                  "properties": {
+                    "@type": {
+                      "type": "string",
+                      "const": "gs1:Country"
+                    },
+                    "gs1:countryCode": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{2}$"
+                    }
+                  },
+                  "required": [
+                    "gs1:countryCode"
+                  ]
+                }
+              },
+              "required": [
+                "gs1:postalCode",
+                "gs1:addressLocality"
+              ]
+            }
+          },
+          "required": [
+            "gs1:partyGLN",
+            "gs1:organizationName",
+            "gs1:organizationLegalName",
+            "gs1:address"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "organization"
+      ]
+    }
+  },
+  "required": [
+    "vct",
+    "iss",
+    "iat",
+    "exp",
+    "attestation_legal_category",
+    "@context",
+    "type",
+    "id",
+    "issuer",
+    "validFrom",
+    "credentialSubject",
+    "status",
+    "cnf"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "vct": "eu.we-build:site:1",
+  "iss": "did:example:robert-bosch-gmbh",
+  "iat": 1746000000,
+  "exp": 1777536000,
+  "attestation_legal_category": "EAA",
+  "name": "Bosch Karlsruhe Manufacturing Site",
+  "identifier": "urn:uuid:550e8400-e29b-41d4-a716-446655440000",
+  "additional_identifiers": {
+    "bpns": "BPNS0000000001XY",
+    "gln": "4012345000016"
+  },
+  "address": {
+    "street": "Auf der Breit",
+    "house_number": "4",
+    "locality": "Karlsruhe",
+    "region": "Baden-Württemberg",
+    "postal_code": "76227",
+    "country": "DE"
+  },
+  "additional_addresses": [
+    {
+      "street": "Robert-Bosch-Strasse",
+      "house_number": "2",
+      "locality": "Karlsruhe",
+      "region": "Baden-Württemberg",
+      "postal_code": "76131",
+      "country": "DE"
+    }
+  ],
+  "economic_operator": {
+    "identifier": {
+      "euid": "DE.HRB.12345",
+      "bpnl": "BPNL00000003CML1"
+    }
+  },
+  "status": {
+    "type": "status-list",
+    "status_list_credential": "https://issuer.example.com/status/site/2026",
+    "status_list_index": 789,
+    "status_purpose": "revocation"
+  },
+  "cnf": {
+    "jwk": {
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc",
+      "y": "ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ"
+    }
+  }
+}
