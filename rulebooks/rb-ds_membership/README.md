@@ -6,7 +6,7 @@ DADS (ITC) and Tritom (Dataspace Europe), and the common agriculture dataspace "
 
 * Author(s):
     * Ingo Wolf, [Spherity GmbH](https://www.spherity.com)
-    * [NAME SURNAME, AFFILIATION]
+    * Martin Domajnko, [Lutra Labs d.o.o.](https://lutralabs.io)
 * Previous Authors
     * [NAME SURNAME, AFFILIATION (versions)]
 
