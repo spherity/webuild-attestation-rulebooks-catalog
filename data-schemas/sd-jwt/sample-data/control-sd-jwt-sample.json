@@ -1,78 +1,157 @@
 {
-  "vct": "eu.we-build.control.1",
+  "vct": "eu.we-build:control:1",
+  "iss": "https://issuer.example.com",
+  "iat": 1736935200,
+  "exp": 1768471200,
   "attestation_legal_category": "EAA",
-  "issuing_entity": "did:example:legal-entity-456",
-  "control": [
+  "schema_version": "0.9.0",
+  "trust_anchor_url": "https://trust.webuildconsortium.eu/anchors/eidas-tl",
+  "controller": [
     {
-      "natural_person": {
-        "family_name": "Garcia",
-        "given_name": "Maria",
-        "birth_date": "1968-07-22",
-        "natural_person_identifier": {
-          "document_type": "National identity card",
-          "document_number": "ES12345678X",
-          "issuing_country": "ESP"
-        },
-        "residence_address": {
-          "address": "Calle Mayor 10",
-          "locality": "Madrid",
-          "postal_code": "28001",
-          "country": "ESP"
-        },
-        "stake": {
-          "effective_control": 55.00,
-          "legal_person_id": "54321098765432109876",
-          "control_mechanism": ["Voting rights", "Board control"]
+      "type": "Person",
+      "jurisdiction": "DE",
+      "person": {
+        "first_name": "Alice",
+        "surname": "Smith",
+        "birth_date": "1975-03-20"
+      },
+      "address": {
+        "street": "Hauptstrasse",
+        "house_number": "10",
+        "locality": "Berlin",
+        "region": "Berlin",
+        "postal_code": "10115",
+        "country": "DE"
+      },
+      "controls": {
+        "type": [
+          "voting_rights",
+          "board"
+        ],
+        "level": "direct",
+        "basis": "shareholding",
+        "voting_percentage": 60.0,
+        "appointment_rights": "Right to appoint majority of supervisory board",
+        "rights": [
+          "dividend_rights",
+          "liquidation_rights"
+        ]
+      },
+      "effective_date": "2020-01-15",
+      "evidence": [
+        {
+          "id": "src-001",
+          "type": "officialRegister",
+          "url": "https://example.com/docs/shareholder-register-2024.pdf"
         }
-      }
+      ]
     },
     {
-      "legal_person": {
-        "legal_person_name": "Global Solutions Ltd.",
-        "legal_form_type": "Private Limited Company",
-        "legal_person_identifier": {
-          "lei": "54321098765432109876"
+      "type": "Entity",
+      "jurisdiction": "DE",
+      "entity": {
+        "category": "legal_entity",
+        "name": "HoldCo GmbH",
+        "identifier": {
+          "euid": "DE987654321",
+          "lei": "529900T8BM49AURSDO55",
+          "tax": "DE123456789"
         },
-        "registered_address": {
-          "address": "1 Global Plaza",
-          "locality": "London",
-          "postal_code": "EC2Y 5AU",
-          "country": "GBR"
-        },
-        "stake": {
-          "effective_control": 30.00,
-          "legal_person_id": "54321098765432109876",
-          "control_mechanism": ["Influence via parent or holding company"]
+        "jurisdiction": "DE",
+        "form": "private_company",
+        "legal_form": "GmbH"
+      },
+      "address": {
+        "street": "Musterstra\u00dfe",
+        "house_number": "45",
+        "locality": "Frankfurt",
+        "region": "Hessen",
+        "postal_code": "60311",
+        "country": "DE"
+      },
+      "controls": {
+        "type": [
+          "nominee",
+          "voting_rights"
+        ],
+        "level": "indirect",
+        "basis": "shareholding",
+        "voting_percentage": 40.0,
+        "rights": [
+          "dividend_rights"
+        ]
+      },
+      "effective_date": "2019-06-01",
+      "evidence": [
+        {
+          "id": "src-002",
+          "type": "governanceChart",
+          "url": "https://example.com/docs/governance-chart-2024.pdf"
         }
-      }
-    }
-  ],
-  "evidence": [
-    {
-      "evidence_id": "https://example.com/governance-chart-2024.pdf",
-      "evidence_type": "Evidence",
-      "evidence_confirmation": true,
-      "evidence_date": "2024-03-01"
+      ]
     },
     {
-      "evidence_id": "urn:webuild:articles-of-association",
-      "evidence_type": "Evidence",
-      "evidence_data": "PGh0bWw+DQogIDxoZWFkPg0KICAgIDx0aXRsZT5BcnRpY2xlcyBvZiBBc3NvY2lhdGlvbjwvdGl0bGU+DQogIDwvaGVhZD4NCiAgPGJvZHk+DQogICAgPHA+VGhpcyBpcyBhIGxhdyBkb2N1bWVudC48L3A+DQogIDwvYm9keT4NCjwvaHRtbD4="
+      "type": "Entity",
+      "jurisdiction": "LU",
+      "entity": {
+        "category": "legal_arrangement",
+        "name": "Smith Family Trust",
+        "identifier": {
+          "lei": "549300ABCDEF12345678"
+        },
+        "jurisdiction": "LU",
+        "form": "trust",
+        "subtype_info": {
+          "settlement": "Settled under Luxembourg trust law on 2015-03-01",
+          "purpose": "Family wealth management and succession planning",
+          "assets": "Real estate, securities portfolios, and cash holdings",
+          "reason_for_registration": "Registered for tax transparency under CRS"
+        }
+      },
+      "address": {
+        "street": "Rue de la Forêt",
+        "house_number": "7",
+        "locality": "Luxembourg",
+        "region": "Luxembourg",
+        "postal_code": "L-1234",
+        "country": "LU"
+      },
+      "controls": {
+        "type": [
+          "agreements",
+          "other_means_of_control"
+        ],
+        "level": "indirect",
+        "basis": "trust_arrangement",
+        "voting_percentage": 0.0,
+        "other_details": "Control exercised through trustee appointment rights over beneficiary assets",
+        "rights": [
+          "dividend_rights",
+          "liquidation_rights"
+        ]
+      },
+      "effective_date": "2015-03-01",
+      "evidence": [
+        {
+          "id": "src-003",
+          "type": "trustDeed",
+          "url": "https://example.com/docs/trust-deed-2015.pdf"
+        }
+      ]
     }
   ],
   "status": {
     "type": "status-list",
-    "status_list_credential": "https://example.com/status/control-list-1",
-    "status_list_index": 789,
+    "status_list_credential": "https://issuer.example.com/status/control/2025",
+    "status_list_index": 456,
     "status_purpose": "revocation"
   },
-  "trust_anchor_url": "https://webuildconsortium.eu/trust-anchor.json",
-  "schema_version": "0.1.0",
   "cnf": {
     "jwk": {
-      "kty": "RSA",
-      "n": "q_u_X8P_S0_0F8_C_f83_oX1f8m5y_B7D9S9-C_0R5-Q0_u_X8P_S0_0F8_C",
-      "e": "AQAB"
+      "kty": "EC",
+      "crv": "P-256",
+      "x": "TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc",
+      "y": "ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ"
     }
   }
 }
