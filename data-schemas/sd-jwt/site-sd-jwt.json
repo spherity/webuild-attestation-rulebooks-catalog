@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://webuildconsortium.eu/schemas/site-attestation/0.4.0/site-attestation-schema.json",
+  "title": "Site Attestation",
+  "description": "SD-JWT VC schema for the WeBuild Site Attestation (vct: eu.we-build:site:1).",
+  "type": "object",
+  "properties": {
+    "vct": {
+      "type": "string",
+      "const": "eu.we-build:site:1"
+    },
+    "iss": {
+      "type": "string",
+      "minLength": 1
+    },
+    "iat": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "exp": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "jti": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attestation_legal_category": {
+      "type": "string",
+      "const": "EAA"
+    },
+    "name": {
+      "type": "string",
+      "description": "The common name of the site.",
+      "minLength": 1
+    },
+    "identifier": {
+      "type": "string",
+      "description": "Globally unique identifier (UUID) for the site.",
+      "format": "uuid"
+    },
+    "additional_identifiers": {
+      "type": "object",
+      "description": "Object containing additional standardized identifiers for the site.",
+      "properties": {
+        "gln": {
+          "type": "string"
+        },
+        "duns": {
+          "type": "string"
+        },
+        "bpns": {
+          "type": "string"
+        },
+        "siret": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "address": {
+      "type": "object",
+      "description": "The primary physical address of the site.",
+      "properties": {
+        "street": {
+          "type": "string"
+        },
+        "house_number": {
+          "type": "string"
+        },
+        "locality": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "street",
+        "house_number",
+        "locality",
+        "postal_code",
+        "country"
+      ]
+    },
+    "additional_addresses": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/FullAddress"
+      }
+    },
+    "economic_operator": {
+      "type": "object",
+      "properties": {
+        "identifier": {
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "euid": {
+              "type": "string"
+            },
+            "lei": {
+              "type": "string"
+            },
+            "tax": {
+              "type": "string"
+            },
+            "gln": {
+              "type": "string"
+            },
+            "duns": {
+              "type": "string"
+            },
+            "eori": {
+              "type": "string"
+            },
+            "bpnl": {
+              "type": "string"
+            },
+            "siren": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": [
+        "identifier"
+      ]
+    },
+    "status": {
+      "type": "object",
+      "required": [
+        "type",
+        "status_list_credential",
+        "status_list_index",
+        "status_purpose"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "status-list"
+        },
+        "status_list_credential": {
+          "type": "string",
+          "format": "uri"
+        },
+        "status_list_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status_purpose": {
+          "type": "string",
+          "const": "revocation"
+        }
+      }
+    },
+    "trust_anchor_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "cnf": {
+      "type": "object",
+      "properties": {
+        "jwk": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  "required": [
+    "vct",
+    "iss",
+    "iat",
+    "exp",
+    "attestation_legal_category",
+    "name",
+    "identifier",
+    "address",
+    "economic_operator"
+  ],
+  "$defs": {
+    "FullAddress": {
+      "type": "object",
+      "title": "Full Address",
+      "required": [
+        "street",
+        "house_number",
+        "locality",
+        "region",
+        "postal_code",
+        "country"
+      ],
+      "properties": {
+        "street": {
+          "type": "string"
+        },
+        "house_number": {
+          "type": "string"
+        },
+        "locality": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

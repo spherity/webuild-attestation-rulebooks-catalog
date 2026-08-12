@@ -1,98 +1,136 @@
 {
-  "vct": "eu.we-build.ubo.1",
+  "vct": "eu.we-build:ubo:1",
+  "iss": "https://issuer.example.com",
+  "iat": 1736935200,
+  "exp": 1768471200,
   "attestation_legal_category": "EAA",
-  "issuing_entity": "did:example:legal-entity-456",
+  "schema_version": "0.4.0",
+  "trust_anchor_url": "https://trust.webuildconsortium.eu/anchors/eidas-tl",
   "ubo": [
     {
+      "jurisdiction": "DE",
       "person": {
-        "first_name": "Alice",
-        "surname": "Smith",
-        "date_of_birth": "1975-03-20"
+        "first_name": "Anna",
+        "surname": "M\u00fcller",
+        "birth_date": "1978-04-15"
       },
       "birth_place": {
-        "locality": "London",
-        "country": "GBR",
-        "region": "England"
+        "locality": "Munich",
+        "country": "DE",
+        "region": "Bavaria"
       },
-      "citizenship": ["GBR"],
-      "residence_address": {
-        "street": "10 Downing St",
-        "house_number": "10",
-        "locality": "London",
-        "region": "England",
-        "postal_code": "SW1A 2AA",
-        "country": "GBR"
+      "citizenship": [
+        "DE",
+        "AT"
+      ],
+      "residential_address": {
+        "street": "Hauptstrass",
+        "house_number": "12",
+        "locality": "Munich",
+        "region": "Bavaria",
+        "postal_code": "80331",
+        "country": "DE"
       },
       "contact_address": {
-        "street": "123 Business Rd",
-        "house_number": "A",
-        "locality": "Reading",
-        "region": "England",
-        "postal_code": "RG1 1AB",
-        "country": "GBR"
+        "street": "Marienplatz",
+        "house_number": "1",
+        "locality": "Munich",
+        "region": "Bavaria",
+        "postal_code": "80331",
+        "country": "DE"
       },
-      "natural_person_identifier": {
-        "document_type": "Passport",
-        "document_number": "GB12345678",
-        "issuing_country": "GBR",
-        "document_expiry_date": "2030-10-26"
+      "person_identifier": {
+        "document_type": "PASSPORT",
+        "document_number": "C01X00T47",
+        "issuing_country": "DE",
+        "expiry_date": "2030-04-14"
       },
-      "natural_person_unique_identifier": {
-        "id_number": "NI123456C",
-        "id_source": "UK National Insurance Number"
+      "person_unique_identifier": {
+        "identifier_unique": "DE-12345678",
+        "identifier_issuing_authority": "Bundesamt für Justiz"
       },
-      "ownership": {
-        "determination_methodology": ["Direct ownership", "Control through voting rights"],
-        "stake": 60.5,
-        "held_date": "2023-01-15"
-      }
+      "justification": {
+        "threshold_met": [
+          "ownership_25_plus",
+          "control_voting_25_plus",
+          "control_management"
+        ],
+        "ownership_percentage": 45.0,
+        "voting_rights_percentage": 45.0,
+        "control_details": "Additionally controls via contractual right to appoint CEO per shareholders agreement dated 2015-03-01"
+      },
+      "effective_date": "2015-03-01",
+      "source": [
+        {
+          "id": "src-ubo-001",
+          "type": "ShareRegister",
+          "url": "https://example.com/docs/share-register-extract-2024.pdf"
+        },
+        {
+          "id": "src-ubo-002",
+          "type": "ShareholderAgreement",
+          "url": "https://example.com/docs/shareholder-agreement-2015.pdf"
+        }
+      ]
     },
     {
+      "jurisdiction": "DE",
       "person": {
-        "first_name": "Bob",
-        "surname": "Johnson",
-        "date_of_birth": "1982-06-10"
+        "first_name": "Klaus",
+        "surname": "Weber",
+        "birth_date": "1965-11-30"
       },
       "birth_place": {
-        "locality": "Paris",
-        "country": "FRA"
+        "locality": "Hamburg",
+        "country": "DE"
       },
-      "citizenship": ["FRA", "DEU"],
-      "residence_address": {
-        "street": "Rue de la Paix",
-        "house_number": "25",
-        "locality": "Paris",
-        "region": "Ile-de-France",
-        "postal_code": "75002",
-        "country": "FRA"
+      "citizenship": [
+        "DE"
+      ],
+      "residential_address": {
+        "street": "Alsterufer",
+        "house_number": "5",
+        "locality": "Hamburg",
+        "region": "Hamburg",
+        "postal_code": "20354",
+        "country": "DE"
       },
-      "natural_person_identifier": {
-        "document_type": "National identity card",
-        "document_number": "FR987654321",
-        "issuing_country": "FRA",
-        "document_expiry_date": "2028-05-01"
+      "person_identifier": {
+        "document_type": "NATIONAL_ID",
+        "document_number": "L01X00T28",
+        "issuing_country": "DE",
+        "expiry_date": "2028-11-29"
       },
-      "ownership": {
-        "determination_methodology": ["Indirect ownership", "Control through formal or informal agreements"],
-        "stake": 35.0,
-        "held_date": "2023-02-01"
-      }
+      "justification": {
+        "threshold_met": [
+          "ownership_indirect",
+          "control_voting_indirect"
+        ],
+        "ownership_percentage": 30.0,
+        "voting_rights_percentage": 30.0
+      },
+      "effective_date": "2018-07-15",
+      "source": [
+        {
+          "id": "src-ubo-003",
+          "type": "CommercialRegister",
+          "url": "https://handelsregister.example.de/extract/HRB-12345"
+        }
+      ]
     }
   ],
   "status": {
     "type": "status-list",
-    "status_list_credential": "https://issuer.example.com/status/ubolist/2025",
-    "status_list_index": 45,
+    "status_list_credential": "https://issuer.example.com/status/ubo/2025",
+    "status_list_index": 101,
     "status_purpose": "revocation"
   },
-  "trust_anchor_url": "https://trust.webuildconsortium.eu/anchors/qtsp/eidas-tl",
-  "schema_version": "0.1.0",
   "cnf": {
     "jwk": {
       "kty": "EC",
       "crv": "P-256",
-      "x": "abc-123_def-456_ghi-789_jkl-012",
-      "y": "mno-345_pqr-678_stu-901_vwx-234"
+      "x": "TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc",
+      "y": "ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ"
     }
   }
 }
