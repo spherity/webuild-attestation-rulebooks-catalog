@@ -4,7 +4,7 @@
   "title": "WE BUILD - Membership Credential - SD-JWT VC payload",
   "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
   "type": "object",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "additionalProperties": true,
   "properties": {
     "iss": {
@@ -80,24 +80,25 @@
     },
     "roles": {
       "type": "array",
-      "description": "Non-empty array of roles the holder has within the DSI or dataspace.",
+      "description": "Non-empty array of roles the holder has within the DSI or dataspace. Each value is an absolute URI under the https://w3id.org/ebwv/roles# namespace.",
       "minItems": 1,
       "items": {
         "type": "string",
-        "minLength": 1,
+        "format": "uri",
+        "pattern": "^https://w3id\\.org/ebwv/roles#.+$",
         "examples": [
-          "DataRightsHolder",
-          "DataProvider",
-          "DataConsumer",
-          "Operator",
-          "OnboardingServiceProvider"
+          "https://w3id.org/ebwv/roles#DataRightsHolder",
+          "https://w3id.org/ebwv/roles#DataProvider",
+          "https://w3id.org/ebwv/roles#DataConsumer",
+          "https://w3id.org/ebwv/roles#Operator",
+          "https://w3id.org/ebwv/roles#OnboardingServiceProvider"
         ]
       }
     },
     "conformanceTo": {
       "type": "object",
       "description": "Dataspace governance rulebook information.",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
         "governanceRulebook": {
           "type": "string",

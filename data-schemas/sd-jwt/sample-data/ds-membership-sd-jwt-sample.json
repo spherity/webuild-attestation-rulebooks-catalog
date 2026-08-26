@@ -11,8 +11,8 @@
   "legalName": "Farm Example BV",
   "memberOf": "Agri-X",
   "roles": [
-    "DataRightsHolder",
-    "DataProvider"
+    "https://w3id.org/ebwv/roles#DataRightsHolder",
+    "https://w3id.org/ebwv/roles#DataProvider"
   ],
   "conformanceTo": {
     "governanceRulebook": "https://agri-x.eu/rulebook",
