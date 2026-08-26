@@ -12,7 +12,7 @@ DADS (ITC) and Tritom (Dataspace Europe), and the common agriculture dataspace "
 |---------|------------|-------------------------------------------------------------------------------------|
 | 01      | 25.06.2026 | Initial Rulebook derived from the MVP Membership credential attestation description. |
 | 02      | 26.08.2026 | consolidated draft                                                                  |
-| 03      | 26.08.2026 | BREAKING: `role`/`roles` values changed from bare strings to absolute URIs under `https://w3id.org/ebwv/roles#`. See Section 2.8. |
+| 03      | 26.08.2026 | BREAKING: `role`/`roles` values changed from bare strings to absolute URIs under `https://w3id.org/ebwv/roles#`; `memberOf` values changed from bare strings to absolute URIs minted per-DSI under the DSI's own domain. See Section 2.8. |
 
 **Feedback:**
 * Main feedback channel: [GitHub issues](https://github.com/webuild-consortium/eudi-wallet-rulebooks-and-schemas/issues)
@@ -186,7 +186,7 @@ and `onboardedBy` are defined as sub-tables in Section 2.2.*
 | `attestation_legal_category` | [attestationLegalCategory](https://w3id.org/ebwv#attestationLegalCategory) | Indication that the attestation is a non-qualified EAA (per ARB_12).                                                                                                                                                                                                          | string                                                         | [EAA](https://w3id.org/ebwv#EAA)      |
 | `id` (*)                     | @id                                                                        | UUID of the credential subject. May change, in contrast to `holderIdentifier` which is a persistent, stable identifier. Name kept for cross-dataspace interoperability.                                                                                                       | string (UUID)                                                  | `did:web:example.com:participant:123` |
 | `member` (**)                | [member](https://w3id.org/ebwv#member)                                     | Stable identifier that uniquely identifies the holder. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. #Therefore we go with EconomicOperator which has a legalName and legalIdentifier | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator)     | `BEEUID...`                           |
-| `memberOf` (*)               | [memberOf](https://w3id.org/ebwv#memberOf)                                 | The DSI or dataspace the holder is a member of. Within a DSI/DS all issued membership credentials use the same value. Name kept for cross-dataspace interoperability. See code list 2.8.                                                                                      | string                                                         | `Agri-X`                              |
+| `memberOf` (*)               | [memberOf](https://w3id.org/ebwv#memberOf)                                 | The DSI or dataspace the holder is a member of. Within a DSI/DS all issued membership credentials use the same value. Value is an absolute URI, minted and owned by that DSI/dataspace under its own domain. Name kept for cross-dataspace interoperability. See code list 2.8. | string (URI)                                                    | `https://agri-x.eu/id#Agri-X`         |
 | `role`                       | [role](https://w3id.org/ebwv#role)                                         | Array of roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. Each value is an absolute URI under the `https://w3id.org/ebwv/roles#` namespace. See code list 2.8.                          | array of URIs (IRIs)                                            | `["https://w3id.org/ebwv/roles#DataProvider","https://w3id.org/ebwv/roles#DataConsumer"]` |
 | `termsOfUse`                 | [termsOfUse](https://www.w3.org/2018/credentials/#termsOfUse)              | Dataspace governance rulebook information. Object, see table below.                                                                                                                                                                                                           | [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook) | *see 2.2.1*                           |
 | `onboardedBy`                | [platform](https://w3id.org/ebwv#platform)                                 | The partner or service provider that onboarded the holder into the DSI or dataspace, including identifiers used by that DSI/DS. Object, see table below.                                                                                                                      | [Platform](https://w3id.org/ebwv#Platform)                     | *see 2.2.2*                           |
@@ -249,15 +249,18 @@ defined by this Rulebook beyond `attestation_legal_category` (Section 2.2).*
 The following code lists apply to attributes defined in Section 2. Lists are kept fit-for-pilot:
 they cover the minimal set needed by the three participating DSIs and are not exhaustive.
 
-**`memberOf`** — fixes the DSI or dataspace the holder is a member of. The value is decided by the
-governance level of the DSI or dataspace.
+**`memberOf`** — fixes the DSI or dataspace the holder is a member of. The value is an absolute URI,
+decided and minted by the governance level of the DSI or dataspace itself, under that DSI's own
+domain (unlike `role`, which is minted centrally by the WE BUILD Semantics work group). A Relying
+Party matches `memberOf` by exact URI, since each value identifies a distinct DSI/dataspace rather
+than a shared, hierarchical vocabulary.
 
-| **Field name** | **Allowed values** | **Meaning** | **Source / vocabulary** | **Notes / extensibility** |
+| **Field name** | **Allowed values (IRI)** | **Meaning** | **Source / vocabulary** | **Notes / extensibility** |
 |----------------|--------------------|-------------|--------------------------|---------------------------|
-| `memberOf` | `Agri-X` | The common agriculture dataspace (federation level). | WE BUILD SC2 use case | Casing as listed. Additional values are set by DSI/DS governance. |
-| `memberOf` | `DADS` | DSI operated by ITC. | WE BUILD SC2 use case | |
-| `memberOf` | `DjustConnect` | DSI operated by ILVO. | WE BUILD SC2 use case | |
-| `memberOf` | `Tritom` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | |
+| `memberOf` | `https://agri-x.eu/id#Agri-X` | The common agriculture dataspace (federation level). | WE BUILD SC2 use case | Additional values are minted by DSI/DS governance under their own domain. |
+| `memberOf` | `https://[DADS-DOMAIN]/id#DADS` | DSI operated by ITC. | WE BUILD SC2 use case | Domain not yet published in this catalog; to be confirmed by ITC. |
+| `memberOf` | `https://djustconnect.be/id#DjustConnect` | DSI operated by ILVO. | WE BUILD SC2 use case | |
+| `memberOf` | `https://[TRITOM-DOMAIN]/id#Tritom` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | Domain not yet published in this catalog; to be confirmed by DataSpace Europe Oy. |
 
 **`role`** — roles a member can have. A member may have multiple roles in one credential. Based on
 the common roles agreed across the piloting DSIs, treating Agri-X as a federation of DSIs. Role
@@ -346,7 +349,7 @@ The following private claims map to the attributes defined in Chapter 2.
 | `holderIdentifier`                 | `holderIdentifier` | string | Stable holder identifier. For the MVP, this re-uses the EUID from the EUBWOID. | MUST |
 | `holderIdentifierType`             | `holderIdentifierType` | string | Conditional future enhancement for holder identifier type. | MAY |
 | `legalName`                        | `legalName` | string | Optional official name of the holder. | MAY |
-| `memberOf`                         | `memberOf` | string | DSI or dataspace membership value. See code list 2.8. | MUST |
+| `memberOf`                         | `memberOf` | string (absolute URI, minted by the owning DSI/dataspace) | DSI or dataspace membership value. See code list 2.8. | MUST |
 | `roles`                            | `roles` | array of strings (absolute URI, `https://w3id.org/ebwv/roles#` namespace) | Non-empty array of role values. See code list 2.8. | MUST |
 | `conformanceTo`                    | `conformanceTo` | JSON object | Dataspace governance rulebook information. See Section 2.2.1. | MAY |
 | `conformanceTo.governanceRulebook` | `conformanceTo.governanceRulebook` | string (URI) | Reference to the online dataspace governance rulebook. | MAY |
@@ -409,7 +412,7 @@ The following non-normative example shows the JWT claim set before SD-JWT proces
   "id": "did:web:example.com:participant:123",
   "holderIdentifier": "BEEUID0123456789",
   "legalName": "Farm Example BV",
-  "memberOf": "Agri-X",
+  "memberOf": "https://agri-x.eu/id#Agri-X",
   "roles": ["https://w3id.org/ebwv/roles#DataRightsHolder", "https://w3id.org/ebwv/roles#DataProvider"],
   "conformanceTo": {
     "governanceRulebook": "https://agri-x.eu/rulebook",
@@ -462,7 +465,7 @@ credential `id` (unique per credential).
 | `attestation_legal_category` | `credentialSubject.attestation_legal_category` | string (`EAA`) | M |
 | `id` | `credentialSubject.id` | string (DID) | M |
 | `holderIdentifier` | `credentialSubject.holderIdentifier` | string (EUID) | M |
-| `memberOf` | `credentialSubject.memberOf` | string | M |
+| `memberOf` | `credentialSubject.memberOf` | string (URI, `@id`-typed in `@context`) | M |
 | `roles` | `credentialSubject.roles` | array of URIs (`@id`-typed in `@context`, `https://w3id.org/ebwv/roles#` namespace) | M |
 | `conformanceTo` | `credentialSubject.conformanceTo` | object | M |
 | `onboardedBy` | `credentialSubject.onboardedBy` | object | M |
@@ -497,7 +500,7 @@ EUDI specification document is available.]*
       "legalIdentifier":"BEEUID0123456789",
       "legalName": "Farm Example BV"
     },
-    "memberOf": "Agri-X",
+    "memberOf": "https://agri-x.eu/id#Agri-X",
     "role": ["https://w3id.org/ebwv/roles#DataRightsHolder", "https://w3id.org/ebwv/roles#DataProvider"],
     "termsOfUse": {
       "type":"GovernanceRulebook",
@@ -570,6 +573,13 @@ service provider, resolvable from the issuer DID (`issuer` in the VCDM credentia
 document). A Relying Party obtains the trust anchor by resolving that DID and verifies the
 credential proof against it. Authorisation of an issuer to issue Membership Credentials for a given
 `memberOf` value is governed by the WE BUILD / dataspace trust framework (WP4).
+
+**memberOf vocabulary governance.** `memberOf` values are absolute URIs minted by the owning
+DSI/dataspace under its own domain (e.g. `https://agri-x.eu/id#Agri-X`,
+`https://djustconnect.be/id#DjustConnect`), not by a shared central registry. A Relying Party SHALL
+match `memberOf` by exact URI and confirm WP4 authorization for that specific URI; unlike `role`,
+prefix-based trust does not apply since each `memberOf` value identifies a distinct DSI/dataspace
+rather than a term in a shared vocabulary.
 
 **Role vocabulary governance.** `role` values are minted and published under the
 `https://w3id.org/ebwv/roles#` namespace by the WE BUILD Semantics work group, independent of this

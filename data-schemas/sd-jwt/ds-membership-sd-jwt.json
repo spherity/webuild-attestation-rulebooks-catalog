@@ -5,7 +5,7 @@
   "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
   "type": "object",
   "version": "0.2.0",
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "iss": {
       "type": "string",
@@ -74,9 +74,10 @@
     },
     "memberOf": {
       "type": "string",
+      "format": "uri",
       "minLength": 1,
-      "description": "DSI or dataspace membership value. Values are governed by the relevant DSI or dataspace.",
-      "examples": ["Agri-X", "DADS", "DjustConnect", "Tritom"]
+      "description": "DSI or dataspace membership value. An absolute URI minted by the owning DSI/dataspace under its own domain.",
+      "examples": ["https://agri-x.eu/id#Agri-X", "https://djustconnect.be/id#DjustConnect"]
     },
     "roles": {
       "type": "array",

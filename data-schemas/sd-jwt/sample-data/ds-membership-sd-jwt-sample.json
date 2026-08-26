@@ -9,7 +9,7 @@
   "id": "did:web:example.com:participant:123",
   "holderIdentifier": "BEEUID0123456789",
   "legalName": "Farm Example BV",
-  "memberOf": "Agri-X",
+  "memberOf": "https://agri-x.eu/id#Agri-X",
   "roles": [
     "https://w3id.org/ebwv/roles#DataRightsHolder",
     "https://w3id.org/ebwv/roles#DataProvider"
