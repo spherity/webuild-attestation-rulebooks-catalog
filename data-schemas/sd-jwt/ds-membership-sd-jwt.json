@@ -2,10 +2,47 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://webuildconsortium.eu/schemas/ds-membership-sd-jwt.json",
   "title": "WE BUILD - Membership Credential - SD-JWT VC payload",
-  "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
+  "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-ds-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
   "type": "object",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "object",
+      "description": "An identifier together with the scheme it belongs to. See Rulebook Section 2.2.4 and code list 2.8.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier scheme. Indicative, not a closed enumeration: platform-specific and member-state-specific schemes are permitted.",
+          "examples": ["EUID", "VAT-ID", "KMG-MID", "PlatformSpecific"]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The identifier value, in the scheme given by type.",
+          "examples": ["BEEUID0123456789", "BE0123456789"]
+        }
+      },
+      "required": ["type", "value"]
+    },
+    "economicOperator": {
+      "type": "object",
+      "description": "An economic operator, identified by its legal name and an identifier. See Rulebook Section 2.2.3.",
+      "additionalProperties": true,
+      "properties": {
+        "legalName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Official legal name of the economic operator.",
+          "examples": ["Farm Example BV"]
+        },
+        "identifier": { "$ref": "#/$defs/identifier" }
+      },
+      "required": ["legalName", "identifier"]
+    }
+  },
   "properties": {
     "iss": {
       "type": "string",
@@ -51,26 +88,12 @@
     "id": {
       "type": "string",
       "minLength": 1,
-      "description": "DID of the credential subject. DS-specific name retained for interoperability.",
+      "description": "DID of the credential subject. May change, in contrast to member.identifier. DS-specific name retained for interoperability.",
       "examples": ["did:web:example.com:participant:123"]
     },
-    "holderIdentifier": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Stable holder identifier. For the MVP this re-uses the EUID from the EUBWOID.",
-      "examples": ["BEEUID0123456789"]
-    },
-    "holderIdentifierType": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Conditional future enhancement for distinguishing Legal Person from Natural Person holder identifiers.",
-      "examples": ["LegalPerson"]
-    },
-    "legalName": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Optional official name of the holder.",
-      "examples": ["Farm Example BV"]
+    "member": {
+      "allOf": [{ "$ref": "#/$defs/economicOperator" }],
+      "description": "The holder of the credential, as an economic operator. member.identifier carries the stable, EU-level identifier; for the MVP this re-uses the EUID from the holder's EUBWOID. DS-specific name retained for interoperability."
     },
     "memberOf": {
       "type": "string",
@@ -79,7 +102,7 @@
       "description": "DSI or dataspace membership value. An absolute URI minted by the owning DSI/dataspace under its own domain.",
       "examples": ["https://agri-x.eu/id#Agri-X", "https://djustconnect.be/id#DjustConnect"]
     },
-    "roles": {
+    "role": {
       "type": "array",
       "description": "Non-empty array of roles the holder has within the DSI or dataspace. Each value is an absolute URI under the https://w3id.org/ebwv/roles# namespace.",
       "minItems": 1,
@@ -96,83 +119,65 @@
         ]
       }
     },
-    "conformanceTo": {
+    "termsOfUse": {
       "type": "object",
-      "description": "Dataspace governance rulebook information.",
+      "description": "Dataspace governance rulebook information. See Rulebook Section 2.2.1.",
       "additionalProperties": true,
       "properties": {
-        "governanceRulebook": {
+        "url": {
           "type": "string",
           "format": "uri",
           "description": "Reference to the online dataspace governance rulebook.",
           "examples": ["https://agri-x.eu/rulebook"]
         },
-        "rulebookVersion": {
+        "version": {
           "type": "string",
           "minLength": 1,
           "description": "Version of the online rulebook at the time of acceptance.",
           "examples": ["1.2"]
         },
-        "rulebookHash": {
+        "hash": {
           "type": "string",
           "pattern": "^[A-Fa-f0-9]{64}$",
           "description": "SHA-256 hash of the rulebook, represented as 64 hexadecimal characters.",
           "examples": ["9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"]
         },
-        "rulebookAcceptedAt": {
+        "acceptedAt": {
           "type": "string",
           "format": "date-time",
-          "description": "Datetime when the rulebook was accepted, where present.",
+          "description": "Datetime when the rulebook was accepted, where present. Subject to integrity rule IR-01.",
           "examples": ["2026-06-20T14:30:00Z"]
         }
       },
-      "required": [
-        "governanceRulebook",
-        "rulebookVersion",
-        "rulebookHash"
-      ]
+      "required": ["url", "version", "hash"]
     },
     "onboardedBy": {
       "type": "object",
-      "description": "Partner or service provider that onboarded the holder.",
-      "additionalProperties": false,
+      "description": "The platform through which the holder was onboarded: the platform itself, the economic operator hosting it, and the identifier by which that platform knows the holder. See Rulebook Section 2.2.2.",
+      "additionalProperties": true,
       "properties": {
-        "id": {
+        "platformId": {
           "type": "string",
           "minLength": 1,
-          "description": "DID identifying the partner that onboarded the holder.",
+          "description": "DID identifying the platform through which the holder was onboarded.",
           "examples": ["did:web:djustconnect.be"]
         },
-        "holderIdentifier": {
+        "name": {
           "type": "string",
           "minLength": 1,
-          "description": "Stable holder identifier used within the onboarding DSI or dataspace, where different from the top-level holderIdentifier.",
-          "examples": ["BE0123456789"]
-        },
-        "holderIdentifierType": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Identifier type for onboardedBy.holderIdentifier.",
-          "examples": ["VAT-ID", "KMG-MID", "PlatformSpecific"]
-        },
-        "platform": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Commercial name of the DSI or partner that onboarded the holder.",
+          "description": "Commercial name of the platform (DSI or onboarding partner).",
           "examples": ["DjustConnect"]
         },
-        "organisation": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Legal name of the organisation that onboarded the holder and hosts the platform.",
-          "examples": ["ILVO"]
+        "operator": {
+          "allOf": [{ "$ref": "#/$defs/economicOperator" }],
+          "description": "The economic operator hosting and running the platform. Its identifier identifies that organisation, NOT the holder."
+        },
+        "memberIdentifier": {
+          "allOf": [{ "$ref": "#/$defs/identifier" }],
+          "description": "The identifier by which the platform knows THE HOLDER (the credential subject, not the platform operator). Bridges the EU-level identifier in member.identifier to a legacy or platform-local identifier of the same holder. Subject to integrity rules IR-03 and IR-04."
         }
       },
-      "required": [
-        "id",
-        "platform",
-        "organisation"
-      ]
+      "required": ["platformId", "name", "operator"]
     },
     "status": {
       "type": "object",
@@ -228,9 +233,7 @@
           }
         }
       },
-      "required": [
-        "jwk"
-      ]
+      "required": ["jwk"]
     }
   },
   "required": [
@@ -241,10 +244,10 @@
     "vct",
     "attestation_legal_category",
     "id",
-    "holderIdentifier",
+    "member",
     "memberOf",
-    "roles",
-    "conformanceTo",
+    "role",
+    "termsOfUse",
     "onboardedBy",
     "status"
   ]

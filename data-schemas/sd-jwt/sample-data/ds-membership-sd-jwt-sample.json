@@ -7,25 +7,38 @@
   "vct": "eu.we-build.ds-membership.1",
   "attestation_legal_category": "EAA",
   "id": "did:web:example.com:participant:123",
-  "holderIdentifier": "BEEUID0123456789",
-  "legalName": "Farm Example BV",
+  "member": {
+    "legalName": "Farm Example BV",
+    "identifier": {
+      "type": "EUID",
+      "value": "BEEUID0123456789"
+    }
+  },
   "memberOf": "https://agri-x.eu/id#Agri-X",
-  "roles": [
+  "role": [
     "https://w3id.org/ebwv/roles#DataRightsHolder",
     "https://w3id.org/ebwv/roles#DataProvider"
   ],
-  "conformanceTo": {
-    "governanceRulebook": "https://agri-x.eu/rulebook",
-    "rulebookVersion": "1.2",
-    "rulebookHash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-    "rulebookAcceptedAt": "2026-06-20T14:30:00Z"
+  "termsOfUse": {
+    "url": "https://agri-x.eu/rulebook",
+    "version": "1.2",
+    "hash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "acceptedAt": "2026-06-20T14:30:00Z"
   },
   "onboardedBy": {
-    "id": "did:web:djustconnect.be",
-    "holderIdentifierType": "VAT-ID",
-    "holderIdentifier": "BE0123456789",
-    "platform": "DjustConnect",
-    "organisation": "ILVO"
+    "platformId": "did:web:djustconnect.be",
+    "name": "DjustConnect",
+    "operator": {
+      "legalName": "Instituut voor Landbouw-, Visserij- en Voedingsonderzoek (ILVO)",
+      "identifier": {
+        "type": "VAT-ID",
+        "value": "BE0848278827"
+      }
+    },
+    "memberIdentifier": {
+      "type": "VAT-ID",
+      "value": "BE0123456789"
+    }
   },
   "status": {
     "type": "status-list",
