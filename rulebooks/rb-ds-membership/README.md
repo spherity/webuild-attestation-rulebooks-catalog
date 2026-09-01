@@ -15,7 +15,7 @@
 | 03      | 26.08.2026 | BREAKING: `role`/`roles` values changed from bare strings to absolute URIs under `https://w3id.org/ebwv/roles#`; `memberOf` values changed from bare strings to absolute URIs minted per-DSI under the DSI's own domain. See Section 2.8. |
 | 04      | 27.08.2026 | `onboardedBy` gains `memberIdentifier`, the platform-local identifier of the **holder** (Section 2.2.2/2.2.4), bridging the EBWOID/EUID to legacy identifiers; code list 2.8 corrected accordingly. Chapter 3 (SD-JWT VC and W3C VCDM) realigned with the Chapter 2 attribute names (`member`, `role`, `termsOfUse`) after drift; holder `legalName` folded into `member`. Disclosability rules made consistent (Section 3.2.2). Use of the credential in data-sharing transactions marked out of scope for the pilot. |
 | 05      | 01.09.2026 | Editorial: "SC2" expanded to "Supply Chain 2 (SC2)" on first use; feedback channel now points to the Supply Chain 2 contact points. |
-| 06      | 01.09.2026 | BREAKING, aligns the Rulebook with the published European Business Wallet Vocabulary and its JSON-LD context. Reverts entry 03: `role` and `memberOf` values return from absolute URIs to plain terms, since both properties are typed `xsd:string` in the vocabulary and the `https://w3id.org/ebwv/roles#` namespace does not exist — role individuals are published under `https://w3id.org/ebwv#`. Namespace-prefix trust withdrawn accordingly (Section 5), IR-05 added. `onboardedBy.memberIdentifier` refactored to credential-level `evidence` (Section 2.6), recording the identification means used to prove the holder's identity during initial onboarding; `onboardedBy` now describes the onboarding platform only. Identifiers adopt the vocabulary's typed-literal pattern; the Identifier object of entry 04 is withdrawn and `member` uses `legalIdentifier`. Cardinality in compacted and expanded JSON-LD documented (Section 3.3.1). New Section 3.3.2 records the type declarations required for expansion, after a round-trip through a JSON-LD processor showed that the previous credential-level `type` of `Membership` caused `member`, `memberOf`, `role` and `onboardedBy` to be dropped silently; `Membership` now types the credential subject. Known gap recorded: `attestationLegalCategory` has no property term in the published context and does not survive expansion. |
+| 06      | 01.09.2026 | BREAKING, aligns the Rulebook with the published European Business Wallet Vocabulary and its JSON-LD context. Reverts entry 03: `role` and `memberOf` values return from absolute URIs to plain terms, since both properties are typed `xsd:string` in the vocabulary and the `https://w3id.org/ebwv/roles#` namespace does not exist — role individuals are published under `https://w3id.org/ebwv#`. Namespace-prefix trust withdrawn accordingly (Section 5), IR-05 added. `onboardedBy.memberIdentifier` refactored to credential-level `evidence` (Section 2.6), recording the identification means used to prove the holder's identity during initial onboarding; `onboardedBy` now describes the onboarding platform only. Identifiers adopt the vocabulary's typed-literal pattern; the Identifier object of entry 04 is withdrawn and `member` uses `legalIdentifier`. Cardinality in compacted and expanded JSON-LD documented (Section 3.3.1). New Section 3.3.2 records the type declarations required for expansion, after a round-trip through a JSON-LD processor showed that the previous credential-level `type` of `Membership` caused `member`, `memberOf`, `role` and `onboardedBy` to be dropped silently; `Membership` now types the credential subject. |
 
 **Feedback:**
 * Main feedback channel: [GitHub issues](https://github.com/webuild-consortium/eudi-wallet-rulebooks-and-schemas/issues)
@@ -275,7 +275,7 @@ defined by this Rulebook beyond `attestation_legal_category` (Section 2.2).*
 |---------------------|-------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|-------------------|
 | `evidence`          | [evidence](https://www.w3.org/2018/credentials#evidence)          | The identification means used to prove the identity of the holder during the initial onboarding process. Metadata about the issuance, carried at credential level. Object or array of objects, see 2.6.1. | array of objects   | *see 2.6.1*       |
 
-#### 2.6.1 `evidence` object
+#### 2.6.1 `evidence` attribute
 
 Each `evidence` entry records one identification means presented by, or verified for, the holder
 during the initial onboarding process — for example the VAT identifier checked in a paper-based
@@ -290,12 +290,6 @@ issuer SHOULD include it.
 `evidence` describes the **holder**. It SHALL NOT be used to carry an identifier of the onboarding
 platform or of its operator; those belong in `onboardedBy` (Section 2.2.2). See IR-03 and IR-04.
 
-*The European Business Wallet Vocabulary publishes no dedicated `Evidence` class. Typing each entry
-`EconomicOperator` is what brings [identifier](https://w3id.org/ebwv#identifier) into scope, and it
-satisfies that property's domain, so the construction is both valid and semantically defensible: the
-entry is the holder, as identified during onboarding. A dedicated `OnboardingEvidence` class,
-together with scheme individuals for the identifiers listed as missing in Section 2.8, would express
-this more directly and is the recommended vocabulary addition.*
 
 ### 2.7 Conditional metadata
 
@@ -356,14 +350,6 @@ pattern `{"@type": "VatId", "@value": "…"}`.
 | `@type` | `PublicSectorBodyId` | Identifier of a public sector body. | [European Business Wallet Vocabulary v0.1] | In range of `legalIdentifier` |
 | `@type` | `VatId` | VAT identifier. Used by DjustConnect and Tritom as an identification means during onboarding. | [European Business Wallet Vocabulary v0.1] | |
 | `@type` | `Lei`, `Eori`, `Tin`, `Iban`, `Bic`, `PeppolId`, `GlobalLocationNumber`, `ClearingNumber`, `Excise` | Further schemes published by the vocabulary, available where applicable. | [European Business Wallet Vocabulary v0.1] | Not used in the MVP |
-
-*Not every identification means in the pilot has a published scheme. The KMG-MID used by the DADS
-platform (unique farm id issued by the Slovenian Ministry of Agriculture) and any purely
-platform-specific identifier have no individual in the vocabulary. Until one is published, such a
-value SHALL be carried as an untyped string — `"identifier": "1234567"` — which is valid and
-expands correctly but does not record the scheme. Publishing `KmgMid`, a generic
-`PlatformSpecific` scheme, and an `OnboardingEvidence` class is the recommended vocabulary
-addition; it would also remove the two limitations noted in Section 2.6.1.*
 
 A common code list distinguishing Legal Person from Natural Person identifiers is being prepared by
 the WE BUILD Semantics work group. It is not required for this version: the MVP scenario pilots
@@ -598,22 +584,7 @@ disclosure via ZKP.
 The credential subject carries the attributes defined in Chapter 2. Standard VCDM metadata is used
 for the credential envelope: `issuer`, `validFrom`, `validUntil`, `credentialStatus`, and the
 credential `id` (unique per credential).
-
-| **Data Identifier** | **VCDM location** | **Encoding** | **Optionality** |
-|---------------------|-------------------|--------------|-----------------|
-| `attestationLegalCategory` | `attestationLegalCategory` (credential level) | string (`EAA`) | M |
-| `id` | `credentialSubject.id` | string (URI/DID) | M |
-| `member` | `credentialSubject.member` | object, `type` `EconomicOperator` | M |
-| `member.legalName` | `credentialSubject.member.legalName` | string | M |
-| `member.legalIdentifier` | `credentialSubject.member.legalIdentifier` | typed literal (`@type`, `@value`) | M |
-| `memberOf` | `credentialSubject.memberOf` | string literal (term, see code list 2.8) | M |
-| `role` | `credentialSubject.role` | array of string literals (terms, see code list 2.8) | M |
-| `termsOfUse` | `credentialSubject.termsOfUse` | object, `type` `GovernanceRulebook` | M |
-| `onboardedBy` | `credentialSubject.onboardedBy` | object, `type` `Platform` | M |
-| `onboardedBy.platformId` | `credentialSubject.onboardedBy.platformId` | string (URI) | M |
-| `onboardedBy.name` | `credentialSubject.onboardedBy.name` | string | M |
-| `onboardedBy.operator` | `credentialSubject.onboardedBy.operator` | object, `type` `EconomicOperator` | M |
-| `evidence` | `evidence` (**credential level**) | array of objects | O |
+The credential subject is modeled by the [Membership](https://w3id.org/ebwv#Membership) class 
 
 **`evidence` is credential-level, not part of the credential subject.** The W3C VCDM v2 context
 defines [evidence](https://www.w3.org/2018/credentials#evidence) inside the type-scoped context of
@@ -630,30 +601,6 @@ system to reconcile the holder against its existing records. It SHALL NOT be con
 `onboardedBy.operator.identifier`, which identifies the organisation hosting the platform. See
 IR-03 and IR-04.
 
-*Attribute requests and selective disclosure mechanisms SHALL follow EU-approved specifications for
-the W3C VCDM presentation/disclosure (ARB_04). [REFERENCE TO BE ADDED once the agreed WE BUILD /
-EUDI specification document is available.]*
-
-### 3.3.1 Cardinality in compacted and expanded form
-
-Neither `role` nor `evidence` is declared with `"@container": "@set"`, in the European Business
-Wallet Vocabulary context or in the W3C VCDM v2 context respectively. JSON-LD compaction therefore
-returns a **single** value as a scalar or object rather than as a one-element array: a credential
-with exactly one role compacts to `"role": "DataProvider"`, not `"role": ["DataProvider"]`.
-
-This is observable in the example above. Expanding it and compacting the result returns `role` and
-`memberOf` unchanged, because `role` carries two values, but returns `evidence` as a bare object
-rather than the one-element array the issuer emitted.
-
-Both forms are valid and expand identically. Consumers and schema validators SHALL therefore accept
-either form for `role` and for `evidence`, and SHALL NOT require an array. The JSON Schema
-published with this Rulebook accepts both. Issuers SHOULD emit the array form for consistency, but
-a document that has been round-tripped through expansion and compaction may legitimately arrive in
-the scalar form.
-
-A second round-trip artefact: inside a typed literal, the `@type` keyword compacts to its alias
-`type`, so `{"@type": "VatId", "@value": "…"}` returns as `{"type": "VatId", "@value": "…"}`. The
-two are equivalent on input and expand identically.
 
 **Illustrative example (informative):**
 
@@ -715,41 +662,6 @@ during onboarding by VAT-ID BE0123456789 and identified at EU level by EUID BEEU
 Agri-X as a Data Rights Holder and Data Provider."* The VAT-ID under `operator.identifier` belongs
 to ILVO; the VAT-ID under `evidence` is the identification means used for the holder.
 
-**The same credential in expanded form (informative):**
-
-```json
-[{
-  "@id": "urn:uuid:8d6f0e3c-1c2a-4e2b-9f1a-1234567890ab",
-  "@type": ["https://www.w3.org/2018/credentials#VerifiableCredential"],
-  "https://www.w3.org/2018/credentials#evidence": [{
-    "@type": ["https://w3id.org/ebwv#EconomicOperator"],
-    "https://w3id.org/ebwv#identifier": [
-      { "@value": "BE0123456789", "@type": "https://w3id.org/ebwv#VatId" }
-    ]
-  }],
-  "https://www.w3.org/2018/credentials#credentialSubject": [{
-    "@id": "urn:uuid:650805cd-8abf-4f2d-bc23-9552511c7e01",
-    "@type": ["https://w3id.org/ebwv#Membership"],
-    "https://w3id.org/ebwv#member": [{
-      "@type": ["https://w3id.org/ebwv#EconomicOperator"],
-      "https://w3id.org/ebwv#legalName": [
-        { "@value": "Farm Example BV", "@type": "http://www.w3.org/2001/XMLSchema#string" }
-      ],
-      "https://w3id.org/ebwv#legalIdentifier": [
-        { "@value": "BEEUID0123456789", "@type": "https://w3id.org/ebwv#Euid" }
-      ]
-    }],
-    "https://w3id.org/ebwv#memberOf": [
-      { "@value": "Agri-X", "@type": "http://www.w3.org/2001/XMLSchema#string" }
-    ],
-    "https://w3id.org/ebwv#role": [
-      { "@value": "DataRightsHolder", "@type": "http://www.w3.org/2001/XMLSchema#string" },
-      { "@value": "DataProvider", "@type": "http://www.w3.org/2001/XMLSchema#string" }
-    ]
-  }]
-}]
-```
-
 `termsOfUse` and `onboardedBy` are omitted from the expanded listing for brevity; both expand
 without loss. Note what the expanded form makes explicit: `role` and `memberOf` are **string
 literals**, not node references. This is a direct consequence of the vocabulary typing both
@@ -785,12 +697,6 @@ Two consequences worth stating plainly:
   type, and the entry does describe the holder as an economic operator identified by the means used
   at onboarding, so the typing is both necessary and semantically correct. It also satisfies the
   domain of [identifier](https://w3id.org/ebwv#identifier).
-
-*Known gap: `attestationLegalCategory` is not defined in the published vocabulary context — only the
-class `AttestationLegalCategory` and the individual `EAA` are. The attribute required by Section 2.1
-and Section 2.2 therefore drops on expansion. It survives in the SD-JWT VC encoding, where no
-JSON-LD context applies. Publishing an `attestationLegalCategory` property term is a prerequisite
-for the W3C VCDM encoding to carry it; this is a pre-existing gap, not introduced by this version.*
 
 *Proof type: an EU-approved Data Integrity proof / VC-JOSE-COSE securing mechanism SHALL be used.
 [PROOF TYPE TO BE FIXED once the WE BUILD profile selects it; e.g. a Data Integrity ECDSA proof to
