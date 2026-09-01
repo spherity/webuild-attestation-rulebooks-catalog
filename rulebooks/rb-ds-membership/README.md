@@ -1,8 +1,8 @@
 # WE BUILD Attestation Rulebook for attestations of type *Membership Credential*
 
-*This WE BUILD v1 Rulebook specifies the Membership Credential used in the WE BUILD SC2 MVP
-scenario "seamless onboarding" piloted by the Data Sharing Initiatives (DSI) DjustConnect (ILVO),
-DADS (ITC) and Tritom (Dataspace Europe), and the common agriculture dataspace "Agri-X".*
+*This WE BUILD v1 Rulebook specifies the Membership Credential used in the WE BUILD Supply Chain 2
+(SC2) MVP scenario "seamless onboarding" piloted by the Data Sharing Initiatives (DSI) DjustConnect
+(ILVO), DADS (ITC) and Tritom (Dataspace Europe), and the common agriculture dataspace "Agri-X".*
 
 * Author(s):
     * Ingo Wolf, [Spherity GmbH](https://www.spherity.com)
@@ -14,10 +14,11 @@ DADS (ITC) and Tritom (Dataspace Europe), and the common agriculture dataspace "
 | 02      | 26.08.2026 | consolidated draft                                                                  |
 | 03      | 26.08.2026 | BREAKING: `role`/`roles` values changed from bare strings to absolute URIs under `https://w3id.org/ebwv/roles#`; `memberOf` values changed from bare strings to absolute URIs minted per-DSI under the DSI's own domain. See Section 2.8. |
 | 04      | 27.08.2026 | `onboardedBy` gains `memberIdentifier`, the platform-local identifier of the **holder** (Section 2.2.2/2.2.4), bridging the EBWOID/EUID to legacy identifiers; code list 2.8 corrected accordingly. Chapter 3 (SD-JWT VC and W3C VCDM) realigned with the Chapter 2 attribute names (`member`, `role`, `termsOfUse`) after drift; holder `legalName` folded into `member`. Disclosability rules made consistent (Section 3.2.2). Use of the credential in data-sharing transactions marked out of scope for the pilot. |
+| 05      | 01.09.2026 | Editorial: "SC2" expanded to "Supply Chain 2 (SC2)" on first use; feedback channel now points to the Supply Chain 2 contact points. |
 
 **Feedback:**
 * Main feedback channel: [GitHub issues](https://github.com/webuild-consortium/eudi-wallet-rulebooks-and-schemas/issues)
-* Alternative: Contact Business usecase 2 contact points in WE BUILD.
+* Alternative: contact Supply Chain 2 contact points in WE BUILD.
 
 ## 1 Introduction
 
