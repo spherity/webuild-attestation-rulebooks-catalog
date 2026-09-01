@@ -9,15 +9,15 @@
   "id": "did:web:example.com:participant:123",
   "member": {
     "legalName": "Farm Example BV",
-    "identifier": {
-      "type": "EUID",
+    "legalIdentifier": {
+      "scheme": "Euid",
       "value": "BEEUID0123456789"
     }
   },
-  "memberOf": "https://agri-x.eu/id#Agri-X",
+  "memberOf": "Agri-X",
   "role": [
-    "https://w3id.org/ebwv/roles#DataRightsHolder",
-    "https://w3id.org/ebwv/roles#DataProvider"
+    "DataRightsHolder",
+    "DataProvider"
   ],
   "termsOfUse": {
     "url": "https://agri-x.eu/rulebook",
@@ -31,15 +31,19 @@
     "operator": {
       "legalName": "Instituut voor Landbouw-, Visserij- en Voedingsonderzoek (ILVO)",
       "identifier": {
-        "type": "VAT-ID",
+        "scheme": "VatId",
         "value": "BE0848278827"
       }
-    },
-    "memberIdentifier": {
-      "type": "VAT-ID",
-      "value": "BE0123456789"
     }
   },
+  "evidence": [
+    {
+      "identifier": {
+        "scheme": "VatId",
+        "value": "BE0123456789"
+      }
+    }
+  ],
   "status": {
     "type": "status-list",
     "status_list_credential": "https://djustconnect.be/status/membership/1",

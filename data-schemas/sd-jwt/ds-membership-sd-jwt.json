@@ -4,28 +4,50 @@
   "title": "WE BUILD - Membership Credential - SD-JWT VC payload",
   "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-ds-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
   "type": "object",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "additionalProperties": false,
   "$defs": {
     "identifier": {
-      "type": "object",
-      "description": "An identifier together with the scheme it belongs to. See Rulebook Section 2.2.4 and code list 2.8.",
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Identifier scheme. Indicative, not a closed enumeration: platform-specific and member-state-specific schemes are permitted.",
-          "examples": ["EUID", "VAT-ID", "KMG-MID", "PlatformSpecific"]
+      "description": "An identifier together with the scheme it belongs to. SD-JWT VC form of the typed literal described in Rulebook Section 2.2.3; the W3C VCDM encoding uses {\"@type\", \"@value\"}. Where no scheme from code list 2.8 applies, a plain string.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scheme": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Identifier scheme, published as a named individual by the European Business Wallet Vocabulary. See Rulebook code list 2.8.",
+              "examples": ["Euid", "VatId", "PublicSectorBodyId", "Lei", "Eori", "Tin"]
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The identifier value, in the scheme given by scheme.",
+              "examples": ["BEEUID0123456789", "BE0123456789"]
+            }
+          },
+          "required": ["scheme", "value"]
         },
-        "value": {
+        {
           "type": "string",
           "minLength": 1,
-          "description": "The identifier value, in the scheme given by type.",
-          "examples": ["BEEUID0123456789", "BE0123456789"]
+          "description": "Untyped identifier, used where the scheme has no individual published in the vocabulary (for example the KMG-MID used by the DADS platform).",
+          "examples": ["1234567"]
+        }
+      ]
+    },
+    "evidenceEntry": {
+      "type": "object",
+      "description": "One identification means presented by, or verified for, the holder during the initial onboarding process. See Rulebook Section 2.6.1.",
+      "additionalProperties": true,
+      "properties": {
+        "identifier": {
+          "allOf": [{ "$ref": "#/$defs/identifier" }],
+          "description": "The identifier by which the holder's identity was proven during onboarding."
         }
       },
-      "required": ["type", "value"]
+      "required": ["identifier"]
     },
     "economicOperator": {
       "type": "object",
@@ -38,9 +60,15 @@
           "description": "Official legal name of the economic operator.",
           "examples": ["Farm Example BV"]
         },
-        "identifier": { "$ref": "#/$defs/identifier" }
-      },
-      "required": ["legalName", "identifier"]
+        "legalIdentifier": {
+          "allOf": [{ "$ref": "#/$defs/identifier" }],
+          "description": "The stable, EU-level identifier. Scheme is Euid or PublicSectorBodyId (range of the legalIdentifier property). Used by member."
+        },
+        "identifier": {
+          "allOf": [{ "$ref": "#/$defs/identifier" }],
+          "description": "A further identifier of the economic operator, in any scheme from code list 2.8. Used by onboardedBy.operator."
+        }
+      }
     }
   },
   "properties": {
@@ -88,36 +116,40 @@
     "id": {
       "type": "string",
       "minLength": 1,
-      "description": "DID of the credential subject. May change, in contrast to member.identifier. DS-specific name retained for interoperability.",
+      "description": "DID of the credential subject. May change, in contrast to member.legalIdentifier. DS-specific name retained for interoperability.",
       "examples": ["did:web:example.com:participant:123"]
     },
     "member": {
       "allOf": [{ "$ref": "#/$defs/economicOperator" }],
-      "description": "The holder of the credential, as an economic operator. member.identifier carries the stable, EU-level identifier; for the MVP this re-uses the EUID from the holder's EUBWOID. DS-specific name retained for interoperability."
+      "description": "The holder of the credential, as an economic operator. member.legalIdentifier carries the stable, EU-level identifier; for the MVP this re-uses the EUID from the holder's EUBWOID. DS-specific name retained for interoperability.",
+      "required": ["legalName", "legalIdentifier"]
     },
     "memberOf": {
       "type": "string",
-      "format": "uri",
       "minLength": 1,
-      "description": "DSI or dataspace membership value. An absolute URI minted by the owning DSI/dataspace under its own domain.",
-      "examples": ["https://agri-x.eu/id#Agri-X", "https://djustconnect.be/id#DjustConnect"]
+      "description": "DSI or dataspace membership value. A term registered in Rulebook code list 2.8, matched as an exact, case-sensitive string. Not a URI: the memberOf property is typed xsd:string in the European Business Wallet Vocabulary.",
+      "examples": ["Agri-X", "DjustConnect", "DADS", "Tritom"]
     },
     "role": {
-      "type": "array",
-      "description": "Non-empty array of roles the holder has within the DSI or dataspace. Each value is an absolute URI under the https://w3id.org/ebwv/roles# namespace.",
-      "minItems": 1,
-      "items": {
-        "type": "string",
-        "format": "uri",
-        "pattern": "^https://w3id\\.org/ebwv/roles#.+$",
-        "examples": [
-          "https://w3id.org/ebwv/roles#DataRightsHolder",
-          "https://w3id.org/ebwv/roles#DataProvider",
-          "https://w3id.org/ebwv/roles#DataConsumer",
-          "https://w3id.org/ebwv/roles#Operator",
-          "https://w3id.org/ebwv/roles#OnboardingServiceProvider"
-        ]
-      }
+      "description": "The roles the holder has within the DSI or dataspace. Each value is a term registered in Rulebook code list 2.8. A single role may appear as a scalar rather than a one-element array, because the vocabulary context does not declare @container: @set; both forms are accepted. See Rulebook Section 3.3.1.",
+      "oneOf": [
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "examples": [
+              "DataRightsHolder",
+              "DataProvider",
+              "DataConsumer",
+              "Operator",
+              "OnboardingServiceProvider"
+            ]
+          }
+        },
+        { "type": "string", "minLength": 1 }
+      ]
     },
     "termsOfUse": {
       "type": "object",
@@ -153,7 +185,7 @@
     },
     "onboardedBy": {
       "type": "object",
-      "description": "The platform through which the holder was onboarded: the platform itself, the economic operator hosting it, and the identifier by which that platform knows the holder. See Rulebook Section 2.2.2.",
+      "description": "The platform through which the holder was onboarded: the platform itself and the economic operator hosting it. Describes the onboarding party only; how the holder was identified is recorded in evidence. See Rulebook Section 2.2.2.",
       "additionalProperties": true,
       "properties": {
         "platformId": {
@@ -170,14 +202,22 @@
         },
         "operator": {
           "allOf": [{ "$ref": "#/$defs/economicOperator" }],
-          "description": "The economic operator hosting and running the platform. Its identifier identifies that organisation, NOT the holder."
-        },
-        "memberIdentifier": {
-          "allOf": [{ "$ref": "#/$defs/identifier" }],
-          "description": "The identifier by which the platform knows THE HOLDER (the credential subject, not the platform operator). Bridges the EU-level identifier in member.identifier to a legacy or platform-local identifier of the same holder. Subject to integrity rules IR-03 and IR-04."
+          "description": "The economic operator hosting and running the platform. Its identifier identifies that organisation, NOT the holder.",
+          "required": ["legalName", "identifier"]
         }
       },
       "required": ["platformId", "name", "operator"]
+    },
+    "evidence": {
+      "description": "The identification means used to prove the holder's identity during the initial onboarding process. Describes the HOLDER, never the platform or its operator. Subject to integrity rules IR-03 and IR-04. A single entry may appear as an object rather than a one-element array; both forms are accepted. See Rulebook Sections 2.6.1 and 3.3.1.",
+      "oneOf": [
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/evidenceEntry" }
+        },
+        { "$ref": "#/$defs/evidenceEntry" }
+      ]
     },
     "status": {
       "type": "object",
