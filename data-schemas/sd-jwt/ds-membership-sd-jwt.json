@@ -4,7 +4,7 @@
   "title": "WE BUILD - Membership Credential - SD-JWT VC payload",
   "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-ds-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
   "type": "object",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "additionalProperties": false,
   "$defs": {
     "identifier": {
@@ -18,22 +18,37 @@
               "type": "string",
               "minLength": 1,
               "description": "Identifier scheme, published as a named individual by the European Business Wallet Vocabulary. See Rulebook code list 2.8.",
-              "examples": ["Euid", "VatId", "PublicSectorBodyId", "Lei", "Eori", "Tin"]
+              "examples": [
+                "Euid",
+                "VatId",
+                "PublicSectorBodyId",
+                "Lei",
+                "Eori",
+                "Tin"
+              ]
             },
             "value": {
               "type": "string",
               "minLength": 1,
               "description": "The identifier value, in the scheme given by scheme.",
-              "examples": ["BEEUID0123456789", "BE0123456789"]
+              "examples": [
+                "BEEUID0123456789",
+                "BE0123456789"
+              ]
             }
           },
-          "required": ["scheme", "value"]
+          "required": [
+            "scheme",
+            "value"
+          ]
         },
         {
           "type": "string",
           "minLength": 1,
           "description": "Untyped identifier, used where the scheme has no individual published in the vocabulary (for example the KMG-MID used by the DADS platform).",
-          "examples": ["1234567"]
+          "examples": [
+            "1234567"
+          ]
         }
       ]
     },
@@ -43,11 +58,17 @@
       "additionalProperties": true,
       "properties": {
         "identifier": {
-          "allOf": [{ "$ref": "#/$defs/identifier" }],
+          "allOf": [
+            {
+              "$ref": "#/$defs/identifier"
+            }
+          ],
           "description": "The identifier by which the holder's identity was proven during onboarding."
         }
       },
-      "required": ["identifier"]
+      "required": [
+        "identifier"
+      ]
     },
     "economicOperator": {
       "type": "object",
@@ -58,14 +79,24 @@
           "type": "string",
           "minLength": 1,
           "description": "Official legal name of the economic operator.",
-          "examples": ["Farm Example BV"]
+          "examples": [
+            "Farm Example BV"
+          ]
         },
         "legalIdentifier": {
-          "allOf": [{ "$ref": "#/$defs/identifier" }],
+          "allOf": [
+            {
+              "$ref": "#/$defs/identifier"
+            }
+          ],
           "description": "The stable, EU-level identifier. Scheme is Euid or PublicSectorBodyId (range of the legalIdentifier property). Used by member."
         },
         "identifier": {
-          "allOf": [{ "$ref": "#/$defs/identifier" }],
+          "allOf": [
+            {
+              "$ref": "#/$defs/identifier"
+            }
+          ],
           "description": "A further identifier of the economic operator, in any scheme from code list 2.8. Used by onboardedBy.operator."
         }
       }
@@ -77,31 +108,41 @@
       "minLength": 1,
       "format": "uri",
       "description": "Issuer identifier. For the SD-JWT VC profile this is normally the onboarding service provider HTTPS URL.",
-      "examples": ["https://djustconnect.be"]
+      "examples": [
+        "https://djustconnect.be"
+      ]
     },
     "iat": {
       "type": "integer",
       "minimum": 0,
       "description": "Issued-at timestamp as a JWT NumericDate.",
-      "examples": [1782205200]
+      "examples": [
+        1782205200
+      ]
     },
     "nbf": {
       "type": "integer",
       "minimum": 0,
       "description": "Not-before timestamp as a JWT NumericDate, where used.",
-      "examples": [1782205200]
+      "examples": [
+        1782205200
+      ]
     },
     "exp": {
       "type": "integer",
       "minimum": 0,
       "description": "Expiration timestamp as a JWT NumericDate.",
-      "examples": [1813741200]
+      "examples": [
+        1813741200
+      ]
     },
     "jti": {
       "type": "string",
       "minLength": 1,
       "description": "Unique credential instance identifier.",
-      "examples": ["urn:uuid:8d6f0e3c-1c2a-4e2b-9f1a-1234567890ab"]
+      "examples": [
+        "urn:uuid:8d6f0e3c-1c2a-4e2b-9f1a-1234567890ab"
+      ]
     },
     "vct": {
       "type": "string",
@@ -117,38 +158,64 @@
       "type": "string",
       "minLength": 1,
       "description": "DID of the credential subject. May change, in contrast to member.legalIdentifier. DS-specific name retained for interoperability.",
-      "examples": ["did:web:example.com:participant:123"]
+      "examples": [
+        "did:web:example.com:participant:123"
+      ]
     },
     "member": {
-      "allOf": [{ "$ref": "#/$defs/economicOperator" }],
+      "allOf": [
+        {
+          "$ref": "#/$defs/economicOperator"
+        }
+      ],
       "description": "The holder of the credential, as an economic operator. member.legalIdentifier carries the stable, EU-level identifier; for the MVP this re-uses the EUID from the holder's EUBWOID. DS-specific name retained for interoperability.",
-      "required": ["legalName", "legalIdentifier"]
+      "required": [
+        "legalName",
+        "legalIdentifier"
+      ]
     },
     "memberOf": {
       "type": "string",
+      "format": "uri",
       "minLength": 1,
-      "description": "DSI or dataspace membership value. A term registered in Rulebook code list 2.8, matched as an exact, case-sensitive string. Not a URI: the memberOf property is typed xsd:string in the European Business Wallet Vocabulary.",
-      "examples": ["Agri-X", "DjustConnect", "DADS", "Tritom"]
+      "description": "DSI or dataspace membership value. An absolute IRI registered in Rulebook code list 2.8, under the owning DSI's or dataspace's own domain. The memberOf property is typed @id in the European Business Wallet Vocabulary, so the value is an IRI and not a plain label.",
+      "examples": [
+        "https://agri-x.eu",
+        "https://djustconnect.be"
+      ]
+    },
+    "holderIdentifier": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable and unique identifier used within the DSI or dataspace to refer to THE HOLDER. Populated only where it differs from member.legalIdentifier. Subject to integrity rules IR-06 and IR-07.",
+      "examples": [
+        "BE0123456789"
+      ]
     },
     "role": {
-      "description": "The roles the holder has within the DSI or dataspace. Each value is a term registered in Rulebook code list 2.8. A single role may appear as a scalar rather than a one-element array, because the vocabulary context does not declare @container: @set; both forms are accepted. See Rulebook Section 3.3.1.",
+      "description": "The roles the holder has within the DSI or dataspace. Each value is an absolute IRI; those registered in Rulebook code list 2.8 are the DataSpaceRole individuals under https://w3id.org/ebwv#. A DSI may mint further role IRIs under a namespace it owns. A single role may appear as a scalar rather than a one-element array; both forms are accepted. See Rulebook Section 3.3.1.",
       "oneOf": [
         {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "string",
+            "format": "uri",
             "minLength": 1,
             "examples": [
-              "DataRightsHolder",
-              "DataProvider",
-              "DataConsumer",
-              "Operator",
-              "OnboardingServiceProvider"
+              "https://w3id.org/ebwv#DataRightsHolder",
+              "https://w3id.org/ebwv#DataProvider",
+              "https://w3id.org/ebwv#DataConsumer",
+              "https://w3id.org/ebwv#Operator",
+              "https://w3id.org/ebwv#OnboardingServiceProvider"
             ]
           }
         },
-        { "type": "string", "minLength": 1 }
+        {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        }
       ]
     },
     "termsOfUse": {
@@ -160,28 +227,40 @@
           "type": "string",
           "format": "uri",
           "description": "Reference to the online dataspace governance rulebook.",
-          "examples": ["https://agri-x.eu/rulebook"]
+          "examples": [
+            "https://agri-x.eu/rulebook"
+          ]
         },
         "version": {
           "type": "string",
           "minLength": 1,
           "description": "Version of the online rulebook at the time of acceptance.",
-          "examples": ["1.2"]
+          "examples": [
+            "1.2"
+          ]
         },
         "hash": {
           "type": "string",
           "pattern": "^[A-Fa-f0-9]{64}$",
           "description": "SHA-256 hash of the rulebook, represented as 64 hexadecimal characters.",
-          "examples": ["9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"]
+          "examples": [
+            "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+          ]
         },
         "acceptedAt": {
           "type": "string",
           "format": "date-time",
           "description": "Datetime when the rulebook was accepted, where present. Subject to integrity rule IR-01.",
-          "examples": ["2026-06-20T14:30:00Z"]
+          "examples": [
+            "2026-06-20T14:30:00Z"
+          ]
         }
       },
-      "required": ["url", "version", "hash"]
+      "required": [
+        "url",
+        "version",
+        "hash"
+      ]
     },
     "onboardedBy": {
       "type": "object",
@@ -192,21 +271,36 @@
           "type": "string",
           "minLength": 1,
           "description": "DID identifying the platform through which the holder was onboarded.",
-          "examples": ["did:web:djustconnect.be"]
+          "examples": [
+            "did:web:djustconnect.be"
+          ]
         },
         "name": {
           "type": "string",
           "minLength": 1,
           "description": "Commercial name of the platform (DSI or onboarding partner).",
-          "examples": ["DjustConnect"]
+          "examples": [
+            "DjustConnect"
+          ]
         },
         "operator": {
-          "allOf": [{ "$ref": "#/$defs/economicOperator" }],
+          "allOf": [
+            {
+              "$ref": "#/$defs/economicOperator"
+            }
+          ],
           "description": "The economic operator hosting and running the platform. Its identifier identifies that organisation, NOT the holder.",
-          "required": ["legalName", "identifier"]
+          "required": [
+            "legalName",
+            "identifier"
+          ]
         }
       },
-      "required": ["platformId", "name", "operator"]
+      "required": [
+        "platformId",
+        "name",
+        "operator"
+      ]
     },
     "evidence": {
       "description": "The identification means used to prove the holder's identity during the initial onboarding process. Describes the HOLDER, never the platform or its operator. Subject to integrity rules IR-03 and IR-04. A single entry may appear as an object rather than a one-element array; both forms are accepted. See Rulebook Sections 2.6.1 and 3.3.1.",
@@ -214,9 +308,13 @@
         {
           "type": "array",
           "minItems": 1,
-          "items": { "$ref": "#/$defs/evidenceEntry" }
+          "items": {
+            "$ref": "#/$defs/evidenceEntry"
+          }
         },
-        { "$ref": "#/$defs/evidenceEntry" }
+        {
+          "$ref": "#/$defs/evidenceEntry"
+        }
       ]
     },
     "status": {
@@ -233,13 +331,17 @@
           "type": "string",
           "format": "uri",
           "description": "URI of the Status List Credential that contains the status bitstring.",
-          "examples": ["https://djustconnect.be/status/membership/1"]
+          "examples": [
+            "https://djustconnect.be/status/membership/1"
+          ]
         },
         "status_list_index": {
           "type": "integer",
           "minimum": 0,
           "description": "Zero-based index into the status list bitstring for this credential.",
-          "examples": [42]
+          "examples": [
+            42
+          ]
         },
         "status_purpose": {
           "type": "string",
@@ -264,16 +366,30 @@
           "description": "Public key bound to the holder.",
           "additionalProperties": true,
           "properties": {
-            "kty": { "type": "string" },
-            "crv": { "type": "string" },
-            "x": { "type": "string" },
-            "y": { "type": "string" },
-            "n": { "type": "string" },
-            "e": { "type": "string" }
+            "kty": {
+              "type": "string"
+            },
+            "crv": {
+              "type": "string"
+            },
+            "x": {
+              "type": "string"
+            },
+            "y": {
+              "type": "string"
+            },
+            "n": {
+              "type": "string"
+            },
+            "e": {
+              "type": "string"
+            }
           }
         }
       },
-      "required": ["jwk"]
+      "required": [
+        "jwk"
+      ]
     }
   },
   "required": [

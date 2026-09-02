@@ -14,10 +14,11 @@
       "value": "BEEUID0123456789"
     }
   },
-  "memberOf": "Agri-X",
+  "memberOf": "https://agri-x.eu",
+  "holderIdentifier": "BE0123456789",
   "role": [
-    "DataRightsHolder",
-    "DataProvider"
+    "https://w3id.org/ebwv#DataRightsHolder",
+    "https://w3id.org/ebwv#DataProvider"
   ],
   "termsOfUse": {
     "url": "https://agri-x.eu/rulebook",
