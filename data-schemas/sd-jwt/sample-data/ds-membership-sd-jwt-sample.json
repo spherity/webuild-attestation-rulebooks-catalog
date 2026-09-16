@@ -17,11 +17,11 @@
       {
         "scheme": "VatId",
         "value": "BE0123456789"
-      }
+      },
+      "DC-2026-004711"
     ]
   },
   "memberOf": "https://agri-x.eu",
-  "holderIdentifier": "DC-2026-004711",
   "role": [
     "https://w3id.org/ebwv#DataRightsHolder",
     "https://w3id.org/ebwv#DataProvider"

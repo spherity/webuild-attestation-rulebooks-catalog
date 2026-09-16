@@ -242,15 +242,7 @@ dsm:MembershipShape
         sh:message "onboardedBy is mandatory and must be a valid Platform (Section 2.2.2)." ;
     ] ;
 
-    sh:property [
-        sh:path ebwv:holderIdentifier ;
-        sh:name "holderIdentifier" ;
-        sh:maxCount 1 ;
-        sh:datatype xsd:string ;
-        sh:minLength 1 ;
-        sh:message "holderIdentifier, where present, must be a single non-empty string (Section 2.3)." ;
-    ] ;
- .
+.
 
 # IR-06 cannot be expressed in SHACL Core: it compares the lexical forms of two
 # values that sit on different nodes and carry different datatypes, which
@@ -312,7 +304,7 @@ dsm:MemberShape
         sh:path ebwv:identifier ;
         sh:name "member.identifier" ;
         sh:node dsm:IdentifierValueShape ;
-        sh:message "Each additional identifier of the member must be a non-empty literal, typed with its scheme where the vocabulary publishes one (Section 2.2.3, code list 2.8)." ;
+        sh:message "Each additional identifier of the member must be a non-empty literal, typed with its scheme where the vocabulary publishes one, or an untyped string where it does not (Section 2.2.3, code list 2.8)." ;
     ] ;
 
     sh:property [

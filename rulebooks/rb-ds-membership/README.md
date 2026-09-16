@@ -18,7 +18,7 @@
 | 06      | 01.09.2026 | BREAKING, aligns the Rulebook with the published European Business Wallet Vocabulary and its JSON-LD context. Reverts entry 03: `role` and `memberOf` values return from absolute URIs to plain terms, since both properties are typed `xsd:string` in the vocabulary and the `https://w3id.org/ebwv/roles#` namespace does not exist — role individuals are published under `https://w3id.org/ebwv#`. Namespace-prefix trust withdrawn accordingly (Section 5), IR-05 added. `onboardedBy.memberIdentifier` refactored to credential-level `evidence` (Section 2.6), recording the identification means used to prove the holder's identity during initial onboarding; `onboardedBy` now describes the onboarding platform only. Identifiers adopt the vocabulary's typed-literal pattern; the Identifier object of entry 04 is withdrawn and `member` uses `legalIdentifier`. Cardinality in compacted and expanded JSON-LD documented (Section 3.3.1). New Section 3.3.2 records the type declarations required for expansion, after a round-trip through a JSON-LD processor showed that the previous credential-level `type` of `Membership` caused `member`, `memberOf`, `role` and `onboardedBy` to be dropped silently; `Membership` now types the credential subject. |
 | 07      | 02.09.2026 | The credential subject gains the optional `holderIdentifier` attribute (Section 2.3), derived from the source attestation description (*MVP Membership credential — attestation description*, v1.0, section 1.4.1). It carries the identifier by which the onboarding platform refers to the holder, and is populated only where the value differs from `member.legalIdentifier`. It sits alongside `memberOf` on the credential subject rather than inside `onboardedBy`, because it describes the holder and not the onboarding platform; `onboardedBy` now identifies the onboarding party only. No companion `holderIdentifierType` is defined: the scheme follows from the onboarding platform named in `onboardedBy`, and where it must be stated explicitly the identifier is carried as `evidence`, whose scheme is machine-readable. IR-06 and IR-07 added. The attribute has no property term in the published vocabulary context, so it is recorded among the known expansion gaps in Section 3.3.2. The credential-level `type` now includes `ElectronicAttestationOfAttributes`, which is what brings `attestationLegalCategory` into scope; that attribute previously dropped on expansion and now resolves to the `EAA` individual, closing the gap recorded in entry 06. `attestation_legal_category` moved from the Membership attribute table (Section 2.2) to mandatory metadata (Section 2.5), since it qualifies the attestation rather than the member and is carried at credential level. |
 | 08      | 02.09.2026 | BREAKING, follows the European Business Wallet Vocabulary context republished on 2 September 2026. That context retypes `role` and `memberOf` from `xsd:string` to `@id`, so both now carry **absolute IRIs** and expand to node references; the plain terms introduced in entry 06 are withdrawn. Role values are the `DataSpaceRole` individuals under `https://w3id.org/ebwv#`. Verified by expansion: a relative value such as `DataRightsHolder` resolves against the document base, yielding a different IRI for every location a credential is served from. Namespace-prefix trust for `role` is reinstated (Section 5) and a DSI may now mint its own role IRIs without a vocabulary or Rulebook change. The same context adds `holderIdentifier` to the `Membership` type-scoped context, closing the last expansion gap from entry 07; Section 3.3.2 now records full coverage. IR-05 restated in terms of IRI matching. |
-| 09      | 09.09.2026 | Splits a proposed redesign of the illustrative example into the part that the published vocabulary supports today and the part that does not. **Deferred, pending a change request to the WE BUILD Semantics work group:** an `OnboardingDetails` class to replace `Platform`, a `member` property in that class's type-scoped context to carry the holder as the onboarding platform knows them, and identifier scheme individuals `Bpn` and `KmgMid`. None of the four is published, and each was verified to fail: an undefined scheme used as the datatype of a typed literal aborts JSON-LD expansion outright, while an undefined class name silently deactivates the type-scoped context, dropping `platformId` and `operator` without error. The illustrative example in Section 3.3 is therefore kept on `Platform`, and the platform-local identifier of the holder continues to be carried by `holderIdentifier` (Section 2.3) or `evidence` (Section 2.6). `member` MAY now carry additional identifiers beyond `legalIdentifier` via the repeatable `identifier` property (Section 2.2.3), in both encodings. `holderIdentifier` is retained and is now demonstrated in both examples with a platform-local value that has no published identifier scheme, which is the case it exists for; where a published scheme applies, the identifier belongs in `member.identifier` instead. The data type of `id` (Section 2.2) is corrected from `UUID` to an absolute URI, a DID or a `urn:uuid:` URN, which is what every example in this Rulebook has always used and what the `@id` keyword requires. `termsOfUse` moves from the Membership attributes (Section 2.2) to mandatory metadata (Section 2.5), carried at credential level: W3C VCDM defines it as a property of the credential rather than of its subject, and the SD-JWT VC encoding already carried it as a top-level claim, so the two encodings now agree. IR-01 is unchanged in meaning. |
+| 09      | 09.09.2026 | Splits a proposed redesign of the illustrative example into the part that the published vocabulary supports today and the part that does not. **Deferred, pending a change request to the WE BUILD Semantics work group:** an `OnboardingDetails` class to replace `Platform`, a `member` property in that class's type-scoped context to carry the holder as the onboarding platform knows them, and identifier scheme individuals `Bpn` and `KmgMid`. None of the four is published, and each was verified to fail: an undefined scheme used as the datatype of a typed literal aborts JSON-LD expansion outright, while an undefined class name silently deactivates the type-scoped context, dropping `platformId` and `operator` without error. The illustrative example in Section 3.3 is therefore kept on `Platform`, and the platform-local identifier of the holder continues to be carried by `holderIdentifier` (Section 2.3) or `evidence` (Section 2.6). `member` MAY now carry additional identifiers beyond `legalIdentifier` via the repeatable `identifier` property (Section 2.2.3), in both encodings. `holderIdentifier` is withdrawn: `member.identifier` subsumes it, since code list 2.8 already permits an untyped string where the scheme has no published individual, which was the only case `holderIdentifier` still covered. IR-06 and IR-07 are restated against `member.identifier`, keeping the rule that `member.legalIdentifier` remains the authoritative identifier of the holder. The data type of `id` (Section 2.2) is corrected from `UUID` to an absolute URI, a DID or a `urn:uuid:` URN, which is what every example in this Rulebook has always used and what the `@id` keyword requires. `termsOfUse` moves from the Membership attributes (Section 2.2) to mandatory metadata (Section 2.5), carried at credential level: W3C VCDM defines it as a property of the credential rather than of its subject, and the SD-JWT VC encoding already carried it as a top-level claim, so the two encodings now agree. IR-01 is unchanged in meaning. |
 
 **Feedback:**
 * Main feedback channel: [GitHub issues](https://github.com/webuild-consortium/eudi-wallet-rulebooks-and-schemas/issues)
@@ -180,9 +180,6 @@ which the holder's identity was proven during the initial onboarding process.
 * `memberOf` names the DSI or dataspace the membership is for.
 * `role` is an array of roles the holder has within that DSI or dataspace. The membership and its
   set of roles share the same lifecycle: a change of roles requires re-issuance of the credential.
-* `holderIdentifier` optionally carries the identifier by which the onboarding platform refers to
-  the holder, where that differs from `member.legalIdentifier`. It sits alongside `memberOf` on the
-  credential subject, because it describes the holder rather than the platform.
 * `onboardedBy` is an object of type [Platform](https://w3id.org/ebwv#Platform) identifying the
   onboarding party: the platform's identifier (`platformId`) and commercial `name`, and the
   `operator` — the economic operator hosting and running the platform.
@@ -234,9 +231,9 @@ This object identifies **the onboarding party**: which platform performed the on
 legal entity hosts it. Example reading: *"DjustConnect, a platform hosted by ILVO, onboarded farmer
 XYZ."*
 
-Identifiers of the **holder** are not carried here. The identifier by which the onboarding platform
-refers to the holder is `holderIdentifier` at credential-subject level (Section 2.3), and the
-identification means used to prove the holder's identity is `evidence` at credential level
+Identifiers of the **holder** are not carried here. Any identifier of the holder, including the one
+by which the onboarding platform refers to it, is carried by `member.identifier` (Section 2.2.3),
+and the identification means used to prove the holder's identity is `evidence` at credential level
 (Section 2.6). The only identifier in this object, `operator.identifier`, belongs to the
 organisation hosting the platform.
 
@@ -266,30 +263,15 @@ the value as an untyped string (Section 2.8).
 
 ### 2.3 Optional attributes
 
-This attribute belongs to the [Membership](https://w3id.org/ebwv#Membership) credential subject,
-alongside the mandatory attributes of Section 2.2. It describes **the holder**, not the onboarding
-platform, and is optional: an issuer populates it only where the onboarding platform holds an
-identifier for the holder other than the one in `member.legalIdentifier`.
+*No optional attributes are defined on the credential subject. The holder's official name is
+carried by `member.legalName`, and any further identifier of the holder — including a platform-local
+reference with no published scheme — by the repeatable `member.identifier` (both Section 2.2.3). The
+identification means used to prove the holder's identity at onboarding is the credential-level
+`evidence` metadata (Section 2.6).*
 
-| **Data Identifier**    | **Semantic Reference**                                                               | **Definition** | **Data type** | **Example value** |
-|------------------------|--------------------------------------------------------------------------------------|----------------|---------------|-------------------|
-| `holderIdentifier`     | [holderIdentifier](https://w3id.org/ebwv#holderIdentifier) | Stable and unique identifier used within the DSI or dataspace to refer to the holder. To be specified only where it differs from `member.legalIdentifier`. Supports platforms whose own identifier for a data partner is not recognisable or interoperable at EU level. See IR-06, IR-07. | string | `BE0123456789` |
-
-The scheme of the value is not stated by a separate attribute. It follows from the onboarding
-platform, which `onboardedBy` identifies (Section 2.2.2): a Relying Party that knows the platform
-knows which identifier that platform issues. Where the scheme has to be stated explicitly and
-machine-readably, `evidence` carries it as the datatype of a typed literal (Section 2.6.1).
-
-The holder's official name is carried by `member.legalName` (Section 2.2.3).
-
-*Relationship to `evidence` (Section 2.6). The two are distinct and may both be present.
-`holderIdentifier` is the identifier the onboarding platform uses operationally to refer to the
-holder — the value that appears in that platform's own APIs and records. `evidence` records the
-identification means by which the holder's identity was **proven** at onboarding. In practice a
-platform will often use the same value for both, for instance a VAT identifier that was both
-checked during onboarding and used as the platform's reference thereafter. Where an issuer has only
-one of the two facts, it SHOULD populate only the corresponding attribute rather than duplicating
-the value into both.*
+| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Example value** |
+|------------------------|--------------------------|--------------|--------------|--------------|
+| N/A | N/A | N/A | N/A | N/A |
 
 ### 2.5 Mandatory metadata
 
@@ -408,10 +390,10 @@ value SHALL be carried as an untyped string — `"identifier": "1234567"` — wh
 expands correctly but does not record the scheme. Publishing `KmgMid`, a generic `PlatformSpecific`
 scheme, and an `OnboardingEvidence` class is the recommended vocabulary addition.*
 
-*No code list applies to `holderIdentifier` (Section 2.3). Its scheme is not stated by a separate
-attribute: it follows from the onboarding platform identified by `onboardedBy`. Where the scheme
-has to be stated explicitly, the identifier is carried as `evidence` instead, using the schemes in
-the table above.*
+*A platform-local identifier of the holder whose scheme has no published individual is carried as an
+untyped string in `member.identifier` (Section 2.2.3). It is then interpreted by reference to the
+onboarding platform named in `onboardedBy`: a Relying Party that knows the platform knows which
+identifier that platform issues.*
 
 A common code list distinguishing Legal Person from Natural Person identifiers is being prepared by
 the WE BUILD Semantics work group. It is not required for this version: the MVP scenario pilots
@@ -426,8 +408,8 @@ legal persons only. Values will be added once provided.
 | `IR-03` | Every `evidence` entry SHALL record an identification means by which the identity of the holder — the legal person identified by `member` — was proven during the initial onboarding process. `evidence` SHALL NOT carry an identifier of the onboarding platform or of its operator. | Evidence is about proofing the holder. Recording the platform operator's own identifier there would misidentify the holder, which is the failure this separation exists to prevent. | Issuer business rules and verifier business validation. | Issuer SHALL NOT issue the credential; verifier SHALL treat the credential as inconsistent. |
 | `IR-04` | A Relying Party SHALL NOT treat an `evidence` identifier as an authoritative identifier of the holder. `member.legalIdentifier` is authoritative. | An identification means may be a legacy or platform-local identifier with no recognition or interoperability outside the onboarding platform, and it records how proofing was done rather than who the holder is at EU level. | Verifier business validation. | Verifier MAY use the value only to reconcile the holder against its own legacy records, never as the basis of identification. |
 | `IR-05` | `role` and `memberOf` values SHALL be absolute IRIs. A Relying Party SHALL match them by exact IRI comparison against code list 2.8, or for `role` by namespace prefix where its policy permits, and SHALL ignore any value it does not recognise. | A relative value is resolved against the document base, so the same credential would yield different IRIs depending on where it was retrieved from. Inferring authorisation from an unrecognised value would grant access on an unverifiable claim. | Verifier business validation. | Verifier SHALL disregard the unrecognised value and SHALL NOT treat it as conferring any role or membership. |
-| `IR-06` | If `holderIdentifier` is present, it SHALL identify the same legal person as `member`, and SHALL be populated only where its value differs from `member.legalIdentifier`. | It is the same holder under the onboarding platform's own scheme, not a second subject. Repeating a value already carried by `member.legalIdentifier` adds no information and risks the two drifting apart. | Issuer business rules and verifier business validation. | Issuer SHALL NOT issue the credential; verifier SHALL treat the credential as inconsistent. |
-| `IR-07` | A Relying Party SHALL NOT treat `holderIdentifier` as an authoritative identifier of the holder. `member.legalIdentifier` is authoritative. | The value is the onboarding platform's operational reference for the holder and may have no recognition or interoperability outside that platform. | Verifier business validation. | Verifier MAY use the value only to reconcile the holder against its own records, never as the basis of identification. |
+| `IR-06` | A value of `member.identifier` SHALL NOT repeat the value of `member.legalIdentifier`. | Both describe the same holder, so repeating the authoritative identifier under a second property adds no information and risks the two drifting apart. | Issuer business rules and verifier business validation. | Issuer SHALL NOT issue the credential; verifier SHALL treat the credential as inconsistent. |
+| `IR-07` | A Relying Party SHALL NOT treat a value of `member.identifier` as an authoritative identifier of the holder. `member.legalIdentifier` is authoritative. | A further identifier may be a legacy or platform-local reference with no recognition or interoperability outside the platform that issued it. | Verifier business validation. | Verifier MAY use the value only to reconcile the holder against its own records, never as the basis of identification. |
 
 # 3 Attestation encoding
 
@@ -481,7 +463,6 @@ to the Chapter 2 data identifiers; the two SHALL be kept in step.
 | `member.legalIdentifier.value`            | `member.legalIdentifier.value` | string | Identifier value. For the MVP this re-uses the EUID from the EUBWOID. | M | MUST |
 | `member.identifier`                       | `member.identifier` | array of JSON objects | Further identifiers of the holder, each as `scheme` and `value`. Repeatable; `member.legalIdentifier` remains authoritative. See Section 2.2.3. | O | MUST |
 | `memberOf`                                | `memberOf` | string (absolute IRI, see code list 2.8) | DSI or dataspace membership value. | M | MUST |
-| `holderIdentifier`                        | `holderIdentifier` | string | Identifier used within the DSI or dataspace to refer to **the holder**, where it differs from `member.legalIdentifier`. See IR-06, IR-07. | O | MUST |
 | `role`                                    | `role` | array of strings (absolute IRIs, see code list 2.8) | Non-empty array of role values. | M | MUST (per element) |
 | `termsOfUse`                              | `termsOfUse` | JSON object | Dataspace governance rulebook information. See Section 2.5.1. | M | MUST |
 | `termsOfUse.url`                          | `termsOfUse.url` | string (URI) | Reference to the online dataspace governance rulebook. | M | MUST |
@@ -586,11 +567,11 @@ The following non-normative example shows the JWT claim set before SD-JWT proces
       "value": "BEEUID0123456789"
     },
     "identifier": [
-      { "scheme": "VatId", "value": "BE0123456789" }
+      { "scheme": "VatId", "value": "BE0123456789" },
+      "DC-2026-004711"
     ]
   },
   "memberOf": "https://agri-x.eu",
-  "holderIdentifier": "DC-2026-004711",
   "role": ["https://w3id.org/ebwv#DataRightsHolder", "https://w3id.org/ebwv#DataProvider"],
   "termsOfUse": {
     "url": "https://agri-x.eu/rulebook",
@@ -638,10 +619,10 @@ Note the distinct roles of the identifiers. `member.legalIdentifier` is the hold
 EU-level identifier, its EUID; `member.identifier` carries a further identifier of the same holder,
 its VAT-ID. `onboardedBy.operator.identifier` is the VAT-ID of ILVO, the organisation hosting the
 platform, not of the holder. `evidence[0].identifier` is the identification means by which the
-holder's identity was proven at onboarding. `holderIdentifier` is DjustConnect's own reference for
-the holder, `DC-2026-004711`: a platform-local value with no published scheme, which is precisely
-the case that attribute exists for. Where a platform's reference does have a published scheme, it
-belongs in `member.identifier` instead.
+holder's identity was proven at onboarding. The second value of `member.identifier`,
+`DC-2026-004711`, is DjustConnect's own reference for the holder: a platform-local value whose
+scheme has no published individual, so it is carried as an untyped string rather than as a typed
+literal.
 
 The SD-JWT VC JSON Schema and sample payload are published at:
 
@@ -715,11 +696,11 @@ IR-03 and IR-04.
       "legalName": "Farm Example BV",
       "legalIdentifier": { "@type": "Euid", "@value": "BEEUID0123456789" },
       "identifier": [
-        { "@type": "VatId", "@value": "BE0123456789" }
+        { "@type": "VatId", "@value": "BE0123456789" },
+        "DC-2026-004711"
       ]
     },
     "memberOf": "https://agri-x.eu",
-    "holderIdentifier": "DC-2026-004711",
     "role": ["https://w3id.org/ebwv#DataRightsHolder", "https://w3id.org/ebwv#DataProvider"],
     "onboardedBy": {
       "type": "Platform",
@@ -740,16 +721,15 @@ This example reads: *"DjustConnect, a platform hosted by ILVO, onboarded Farm Ex
 during onboarding by VAT-ID BE0123456789 and identified at EU level by EUID BEEUID0123456789 — into
 Agri-X as a Data Rights Holder and Data Provider, where DjustConnect refers to it internally as
 DC-2026-004711."* The VAT-ID under `operator.identifier` belongs to ILVO; the VAT-ID under
-`evidence` is the identification means used for the holder; `holderIdentifier` is the platform's
-own reference, which has no published scheme and so is carried as a plain string.
+`evidence` is the identification means used for the holder; the untyped second value of
+`member.identifier` is the platform's own reference, which has no published scheme.
 
 Expanding this example makes three things explicit. `role` and `memberOf` become **node
 references** — `{"@id": "https://w3id.org/ebwv#DataProvider"}`, `{"@id": "https://agri-x.eu"}` —
 because the vocabulary types both properties `@id` (Section 2.8). This is why their values are
 absolute IRIs: a relative value would be resolved against the document base, producing a different
-IRI for every location the credential is served from. `holderIdentifier`, by contrast, is typed
-`xsd:string` and expands as a plain literal. Identifiers expand as **typed literals** carrying
-their scheme as the datatype IRI, for example
+IRI for every location the credential is served from. Identifiers expand as **typed literals**
+carrying their scheme as the datatype IRI, for example
 `{"@value": "BE0123456789", "@type": "https://w3id.org/ebwv#VatId"}`. And
 `attestationLegalCategory` expands to a node reference, `{"@id": "https://w3id.org/ebwv#EAA"}`,
 because the vocabulary types it `@vocab`. Section 3.3.2 sets out the type declarations this
@@ -795,8 +775,7 @@ Three consequences worth stating plainly:
 
 **Coverage.** Every attribute defined by this Rulebook now has a property term in the European
 Business Wallet Vocabulary context, and the illustrative example in Section 3.3 expands without
-loss. This was verified against the context published on 2 September 2026, which added
-`holderIdentifier` to the `Membership` type-scoped context.
+loss. This was verified against the context published on 2 September 2026.
 
 Because that context sets no `@vocab`, an attribute with no term is **silently dropped on
 expansion** rather than raising an error. Issuers and verifiers SHOULD therefore treat a successful
