@@ -306,6 +306,15 @@ dsm:MemberShape
     ] ;
 
     # Range of ebwv:legalIdentifier is PublicSectorBodyId or Euid
+    # Section 2.2.3: additional identifiers of the holder, beyond the
+    # authoritative legalIdentifier. Optional and repeatable.
+    sh:property [
+        sh:path ebwv:identifier ;
+        sh:name "member.identifier" ;
+        sh:node dsm:IdentifierValueShape ;
+        sh:message "Each additional identifier of the member must be a non-empty literal, typed with its scheme where the vocabulary publishes one (Section 2.2.3, code list 2.8)." ;
+    ] ;
+
     sh:property [
         sh:path ebwv:legalIdentifier ;
         sh:name "member.legalIdentifier" ;
@@ -380,7 +389,7 @@ dsm:OperatorShape
     sh:property [
         sh:path ebwv:identifier ;
         sh:name "operator.identifier" ;
-        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:minCount 1 ;
         sh:node dsm:IdentifierValueShape ;
         sh:message "operator.identifier is mandatory: the identifier of the hosting organisation, as a typed literal (Section 2.2.3). It identifies the operator, never the holder (IR-03)." ;
     ] .
