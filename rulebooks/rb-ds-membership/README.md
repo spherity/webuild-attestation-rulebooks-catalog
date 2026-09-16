@@ -18,6 +18,7 @@
 | 06      | 01.09.2026 | BREAKING, aligns the Rulebook with the published European Business Wallet Vocabulary and its JSON-LD context. Reverts entry 03: `role` and `memberOf` values return from absolute URIs to plain terms, since both properties are typed `xsd:string` in the vocabulary and the `https://w3id.org/ebwv/roles#` namespace does not exist — role individuals are published under `https://w3id.org/ebwv#`. Namespace-prefix trust withdrawn accordingly (Section 5), IR-05 added. `onboardedBy.memberIdentifier` refactored to credential-level `evidence` (Section 2.6), recording the identification means used to prove the holder's identity during initial onboarding; `onboardedBy` now describes the onboarding platform only. Identifiers adopt the vocabulary's typed-literal pattern; the Identifier object of entry 04 is withdrawn and `member` uses `legalIdentifier`. Cardinality in compacted and expanded JSON-LD documented (Section 3.3.1). New Section 3.3.2 records the type declarations required for expansion, after a round-trip through a JSON-LD processor showed that the previous credential-level `type` of `Membership` caused `member`, `memberOf`, `role` and `onboardedBy` to be dropped silently; `Membership` now types the credential subject. |
 | 07      | 02.09.2026 | The credential subject gains the optional `holderIdentifier` attribute (Section 2.3), derived from the source attestation description (*MVP Membership credential — attestation description*, v1.0, section 1.4.1). It carries the identifier by which the onboarding platform refers to the holder, and is populated only where the value differs from `member.legalIdentifier`. It sits alongside `memberOf` on the credential subject rather than inside `onboardedBy`, because it describes the holder and not the onboarding platform; `onboardedBy` now identifies the onboarding party only. No companion `holderIdentifierType` is defined: the scheme follows from the onboarding platform named in `onboardedBy`, and where it must be stated explicitly the identifier is carried as `evidence`, whose scheme is machine-readable. IR-06 and IR-07 added. The attribute has no property term in the published vocabulary context, so it is recorded among the known expansion gaps in Section 3.3.2. The credential-level `type` now includes `ElectronicAttestationOfAttributes`, which is what brings `attestationLegalCategory` into scope; that attribute previously dropped on expansion and now resolves to the `EAA` individual, closing the gap recorded in entry 06. `attestation_legal_category` moved from the Membership attribute table (Section 2.2) to mandatory metadata (Section 2.5), since it qualifies the attestation rather than the member and is carried at credential level. |
 | 08      | 02.09.2026 | BREAKING, follows the European Business Wallet Vocabulary context republished on 2 September 2026. That context retypes `role` and `memberOf` from `xsd:string` to `@id`, so both now carry **absolute IRIs** and expand to node references; the plain terms introduced in entry 06 are withdrawn. Role values are the `DataSpaceRole` individuals under `https://w3id.org/ebwv#`. Verified by expansion: a relative value such as `DataRightsHolder` resolves against the document base, yielding a different IRI for every location a credential is served from. Namespace-prefix trust for `role` is reinstated (Section 5) and a DSI may now mint its own role IRIs without a vocabulary or Rulebook change. The same context adds `holderIdentifier` to the `Membership` type-scoped context, closing the last expansion gap from entry 07; Section 3.3.2 now records full coverage. IR-05 restated in terms of IRI matching. |
+| 09      | 09.09.2026 | Splits a proposed redesign of the illustrative example into the part that the published vocabulary supports today and the part that does not. **Deferred, pending a change request to the WE BUILD Semantics work group:** an `OnboardingDetails` class to replace `Platform`, a `member` property in that class's type-scoped context to carry the holder as the onboarding platform knows them, and identifier scheme individuals `Bpn` and `KmgMid`. None of the four is published, and each was verified to fail: an undefined scheme used as the datatype of a typed literal aborts JSON-LD expansion outright, while an undefined class name silently deactivates the type-scoped context, dropping `platformId` and `operator` without error. The illustrative example in Section 3.3 is therefore kept on `Platform`, and the platform-local identifier of the holder continues to be carried by `holderIdentifier` (Section 2.3) or `evidence` (Section 2.6). |
 
 **Feedback:**
 * Main feedback channel: [GitHub issues](https://github.com/webuild-consortium/eudi-wallet-rulebooks-and-schemas/issues)
@@ -683,8 +684,15 @@ IR-03 and IR-04.
       "identifier": { "@type": "VatId", "@value": "BE0123456789" }
     }
   ],
+  "termsOfUse": {
+      "type":"GovernanceRulebook",
+      "url": "https://agri-x.eu/rulebook",
+      "version": "1.2",
+      "hash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+      "acceptedAt": "2026-06-20T14:30:00Z"
+    },
   "credentialSubject": {
-    "id": "urn:uuid:650805cd-8abf-4f2d-bc23-9552511c7e01",
+    "id": "did:web:example:org:holder",
     "type": "Membership",
     "member": {
       "type": "EconomicOperator",
@@ -692,20 +700,13 @@ IR-03 and IR-04.
       "legalIdentifier": { "@type": "Euid", "@value": "BEEUID0123456789" }
     },
     "memberOf": "https://agri-x.eu",
-    "holderIdentifier": "BE0123456789",
-      "role": ["https://w3id.org/ebwv#DataRightsHolder", "https://w3id.org/ebwv#DataProvider"],
-    "termsOfUse": {
-      "type":"GovernanceRulebook",
-      "url": "https://agri-x.eu/rulebook",
-      "version": "1.2",
-      "hash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-      "acceptedAt": "2026-06-20T14:30:00Z" 
-    },
+    "role": ["https://w3id.org/ebwv#DataRightsHolder", "https://w3id.org/ebwv#DataProvider"],
     "onboardedBy": {
       "type": "Platform",
       "platformId": "did:web:djustconnect.be",
       "name": "DjustConnect",
       "operator": {
+        "id":"did:web:example:org:onboarding-operator",
         "type": "EconomicOperator",
         "legalName": "Instituut voor Landbouw-, Visserij- en Voedingsonderzoek (ILVO)",
         "identifier": { "@type": "VatId", "@value": "BE0848278827" }
