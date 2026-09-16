@@ -18,7 +18,7 @@
 | 06      | 01.09.2026 | BREAKING, aligns the Rulebook with the published European Business Wallet Vocabulary and its JSON-LD context. Reverts entry 03: `role` and `memberOf` values return from absolute URIs to plain terms, since both properties are typed `xsd:string` in the vocabulary and the `https://w3id.org/ebwv/roles#` namespace does not exist — role individuals are published under `https://w3id.org/ebwv#`. Namespace-prefix trust withdrawn accordingly (Section 5), IR-05 added. `onboardedBy.memberIdentifier` refactored to credential-level `evidence` (Section 2.6), recording the identification means used to prove the holder's identity during initial onboarding; `onboardedBy` now describes the onboarding platform only. Identifiers adopt the vocabulary's typed-literal pattern; the Identifier object of entry 04 is withdrawn and `member` uses `legalIdentifier`. Cardinality in compacted and expanded JSON-LD documented (Section 3.3.1). New Section 3.3.2 records the type declarations required for expansion, after a round-trip through a JSON-LD processor showed that the previous credential-level `type` of `Membership` caused `member`, `memberOf`, `role` and `onboardedBy` to be dropped silently; `Membership` now types the credential subject. |
 | 07      | 02.09.2026 | The credential subject gains the optional `holderIdentifier` attribute (Section 2.3), derived from the source attestation description (*MVP Membership credential — attestation description*, v1.0, section 1.4.1). It carries the identifier by which the onboarding platform refers to the holder, and is populated only where the value differs from `member.legalIdentifier`. It sits alongside `memberOf` on the credential subject rather than inside `onboardedBy`, because it describes the holder and not the onboarding platform; `onboardedBy` now identifies the onboarding party only. No companion `holderIdentifierType` is defined: the scheme follows from the onboarding platform named in `onboardedBy`, and where it must be stated explicitly the identifier is carried as `evidence`, whose scheme is machine-readable. IR-06 and IR-07 added. The attribute has no property term in the published vocabulary context, so it is recorded among the known expansion gaps in Section 3.3.2. The credential-level `type` now includes `ElectronicAttestationOfAttributes`, which is what brings `attestationLegalCategory` into scope; that attribute previously dropped on expansion and now resolves to the `EAA` individual, closing the gap recorded in entry 06. `attestation_legal_category` moved from the Membership attribute table (Section 2.2) to mandatory metadata (Section 2.5), since it qualifies the attestation rather than the member and is carried at credential level. |
 | 08      | 02.09.2026 | BREAKING, follows the European Business Wallet Vocabulary context republished on 2 September 2026. That context retypes `role` and `memberOf` from `xsd:string` to `@id`, so both now carry **absolute IRIs** and expand to node references; the plain terms introduced in entry 06 are withdrawn. Role values are the `DataSpaceRole` individuals under `https://w3id.org/ebwv#`. Verified by expansion: a relative value such as `DataRightsHolder` resolves against the document base, yielding a different IRI for every location a credential is served from. Namespace-prefix trust for `role` is reinstated (Section 5) and a DSI may now mint its own role IRIs without a vocabulary or Rulebook change. The same context adds `holderIdentifier` to the `Membership` type-scoped context, closing the last expansion gap from entry 07; Section 3.3.2 now records full coverage. IR-05 restated in terms of IRI matching. |
-| 09      | 09.09.2026 | Splits a proposed redesign of the illustrative example into the part that the published vocabulary supports today and the part that does not. **Deferred, pending a change request to the WE BUILD Semantics work group:** an `OnboardingDetails` class to replace `Platform`, a `member` property in that class's type-scoped context to carry the holder as the onboarding platform knows them, and identifier scheme individuals `Bpn` and `KmgMid`. None of the four is published, and each was verified to fail: an undefined scheme used as the datatype of a typed literal aborts JSON-LD expansion outright, while an undefined class name silently deactivates the type-scoped context, dropping `platformId` and `operator` without error. The illustrative example in Section 3.3 is therefore kept on `Platform`, and the platform-local identifier of the holder continues to be carried by `holderIdentifier` (Section 2.3) or `evidence` (Section 2.6). |
+| 09      | 09.09.2026 | Splits a proposed redesign of the illustrative example into the part that the published vocabulary supports today and the part that does not. **Deferred, pending a change request to the WE BUILD Semantics work group:** an `OnboardingDetails` class to replace `Platform`, a `member` property in that class's type-scoped context to carry the holder as the onboarding platform knows them, and identifier scheme individuals `Bpn` and `KmgMid`. None of the four is published, and each was verified to fail: an undefined scheme used as the datatype of a typed literal aborts JSON-LD expansion outright, while an undefined class name silently deactivates the type-scoped context, dropping `platformId` and `operator` without error. The illustrative example in Section 3.3 is therefore kept on `Platform`, and the platform-local identifier of the holder continues to be carried by `holderIdentifier` (Section 2.3) or `evidence` (Section 2.6). `termsOfUse` moves from the Membership attributes (Section 2.2) to mandatory metadata (Section 2.5), carried at credential level: W3C VCDM defines it as a property of the credential rather than of its subject, and the SD-JWT VC encoding already carried it as a top-level claim, so the two encodings now agree. IR-01 is unchanged in meaning. |
 
 **Feedback:**
 * Main feedback channel: [GitHub issues](https://github.com/webuild-consortium/eudi-wallet-rulebooks-and-schemas/issues)
@@ -166,7 +166,7 @@ credential level, outside the credential subject; in the W3C VCDM encoding the c
 is what defines the attribute. See Section 3.3.2.
 
 The credential describes the member (the `CredentialSubject`) together with the dataspace
-governance rulebook the member conforms to (`termsOfUse`), the roles the member has within the
+roles the member has within the
 DSI or dataspace (`role`), and the platform through which the member was onboarded
 (`onboardedBy`). Separately, at credential level, `evidence` records the identification means by
 which the holder's identity was proven during the initial onboarding process.
@@ -180,14 +180,17 @@ which the holder's identity was proven during the initial onboarding process.
 * `memberOf` names the DSI or dataspace the membership is for.
 * `role` is an array of roles the holder has within that DSI or dataspace. The membership and its
   set of roles share the same lifecycle: a change of roles requires re-issuance of the credential.
-* `termsOfUse` is an object of type [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook) referencing the accepted dataspace governance rulebook (URL,
-  version, SHA-256 hash, and acceptance datetime).
 * `holderIdentifier` optionally carries the identifier by which the onboarding platform refers to
   the holder, where that differs from `member.legalIdentifier`. It sits alongside `memberOf` on the
   credential subject, because it describes the holder rather than the platform.
 * `onboardedBy` is an object of type [Platform](https://w3id.org/ebwv#Platform) identifying the
   onboarding party: the platform's identifier (`platformId`) and commercial `name`, and the
   `operator` — the economic operator hosting and running the platform.
+* `termsOfUse` is an object of type [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook)
+  referencing the accepted dataspace governance rulebook (URL, version, SHA-256 hash, and
+  acceptance datetime). It is carried at credential level, not in the credential subject: W3C VCDM
+  defines `termsOfUse` as a property of the credential, and the SD-JWT VC encoding already carried
+  it as a top-level claim, so this placement makes the two encodings agree (Section 2.5.1).
 * `evidence` records the identification means used to prove the holder's identity during the
   initial onboarding process, for example the VAT identifier presented in a paper-based onboarding
   flow. It is credential metadata about the issuance, not an attribute of the subject, and is
@@ -211,8 +214,9 @@ extensibility purposes the JSON Schema definition allows additional properties i
 data type definition.
 
 *Subsections 2.2 - 2.7 define the attributes and metadata in an encoding-independent manner. Code
-lists are in Section 2.8 and integrity rules in Section 2.9. The structured objects `termsOfUse`
-and `onboardedBy` are defined as sub-tables in Section 2.2; `evidence` is defined in Section 2.6.*
+lists are in Section 2.8 and integrity rules in Section 2.9. The structured object `onboardedBy` is
+defined as a sub-table in Section 2.2; `termsOfUse` is defined in Section 2.5 and `evidence` in
+Section 2.6.*
 
 ### 2.2 Mandatory attributes of object [Membership](https://w3id.org/ebwv#Membership)
 
@@ -222,17 +226,7 @@ and `onboardedBy` are defined as sub-tables in Section 2.2; `evidence` is define
 | `member` (*)                 | [member](https://w3id.org/ebwv#member)                                     | The holder, as an economic operator carrying the stable identifier that uniquely identifies it. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. Object, see table below.                 | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator)                 | *see 2.2.3*                           |
 | `memberOf` (*)               | [memberOf](https://w3id.org/ebwv#memberOf)                                 | The DSI or dataspace the holder is a member of. Within a DSI/DS all issued membership credentials use the same value. The value is an absolute IRI registered in code list 2.8, matched by exact IRI comparison. Name kept for cross-dataspace interoperability.               | URL                                                                        | `https://agri-x.eu`                              |
 | `role`                       | [role](https://w3id.org/ebwv#role)                                         | The roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. Each value is an absolute IRI from code list 2.8. See also Section 3.3.1 on cardinality.        | array of IRIs                                                              | `["https://w3id.org/ebwv#DataProvider"]` |
-| `termsOfUse`                 | [termsOfUse](https://www.w3.org/2018/credentials#termsOfUse)               | Dataspace governance rulebook information. Object, see table below.                                                                                                                                                                                                           | [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook)             | *see 2.2.1*                           |
 | `onboardedBy`                | [onboardedBy](https://w3id.org/ebwv#onboardedBy)                           | The platform through which the holder was onboarded into the DSI or dataspace: the platform itself and the economic operator hosting it. Object, see table below.                                                                                                             | [Platform](https://w3id.org/ebwv#Platform)                                 | *see 2.2.2*                           |
-
-#### 2.2.1 `termsOfUse` object of type [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook)
-
-| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Optionality** | **Example value** |
-|---------------------|------------------------|----------------|---------------|-----------------|-------------------|
-| `url`               | N/A                    | Reference to the online dataspace governance rulebook for the given DSI or DS. | string (URI) | M | `https://agri-x.eu/rulebook` |
-| `version`           | N/A                    | Version of the online rulebook at the time of acceptance. | string | M | `1.2` |
-| `hash`              | N/A                    | SHA-256 hash of the rulebook, for quick comparison. | string (SHA-256 hash) | M | `9f86d081...` |
-| `acceptedAt`        | N/A                    | Datetime when the rulebook was accepted. May differ from issuance time in an outbound flow where a credential is issued to an existing member based on a previously completed onboarding flow. | datetime | O | `2026-06-01T10:00:00Z` |
 
 #### 2.2.2 `onboardedBy` object of type [Platform](https://w3id.org/ebwv#Platform)
 
@@ -294,12 +288,22 @@ the value into both.*
 ### 2.5 Mandatory metadata
 
 *Standard VC metadata (issuer, issuance time, expiry, status, credential `id`) is provided by the
-chosen VC format and specified per encoding in Chapter 3. This Rulebook defines one additional
-mandatory metadata attribute.*
+chosen VC format and specified per encoding in Chapter 3. This Rulebook defines two additional
+mandatory metadata attributes.*
 
 | **Data Identifier**          | **Semantic Reference**                                                     | **Definition**                                                                                                                                                                                                                                             | **Data type**                                                              | **Example value**                |
 |------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------|
 | `attestation_legal_category` | [attestationLegalCategory](https://w3id.org/ebwv#attestationLegalCategory) | Indication that the attestation is a non-qualified EAA (per ARB_12). Qualifies the attestation as a whole, not the member, and is therefore carried at credential level rather than in the credential subject. SHALL be `EAA`. See Sections 2.1 and 3.3.2. | [AttestationLegalCategory](https://w3id.org/ebwv#AttestationLegalCategory) | [EAA](https://w3id.org/ebwv#EAA) |
+| `termsOfUse`                 | [termsOfUse](https://www.w3.org/2018/credentials#termsOfUse)               | The dataspace governance rulebook the holder has conformed to. Carried at credential level, as W3C VCDM defines `termsOfUse` as a property of the credential rather than of its subject. Object, see 2.5.1. | [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook) | *see 2.5.1* |
+
+#### 2.5.1 `termsOfUse` object of type [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook)
+
+| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Optionality** | **Example value** |
+|---------------------|------------------------|----------------|---------------|-----------------|-------------------|
+| `url`               | N/A                    | Reference to the online dataspace governance rulebook for the given DSI or DS. | string (URI) | M | `https://agri-x.eu/rulebook` |
+| `version`           | N/A                    | Version of the online rulebook at the time of acceptance. | string | M | `1.2` |
+| `hash`              | N/A                    | SHA-256 hash of the rulebook, for quick comparison. | string (SHA-256 hash) | M | `9f86d081...` |
+| `acceptedAt`        | N/A                    | Datetime when the rulebook was accepted. May differ from issuance time in an outbound flow where a credential is issued to an existing member based on a previously completed onboarding flow. | datetime | O | `2026-06-01T10:00:00Z` |
 
 ### 2.6 Optional metadata
 
@@ -472,7 +476,7 @@ to the Chapter 2 data identifiers; the two SHALL be kept in step.
 | `memberOf`                                | `memberOf` | string (absolute IRI, see code list 2.8) | DSI or dataspace membership value. | M | MUST |
 | `holderIdentifier`                        | `holderIdentifier` | string | Identifier used within the DSI or dataspace to refer to **the holder**, where it differs from `member.legalIdentifier`. See IR-06, IR-07. | O | MUST |
 | `role`                                    | `role` | array of strings (absolute IRIs, see code list 2.8) | Non-empty array of role values. | M | MUST (per element) |
-| `termsOfUse`                              | `termsOfUse` | JSON object | Dataspace governance rulebook information. See Section 2.2.1. | M | MUST |
+| `termsOfUse`                              | `termsOfUse` | JSON object | Dataspace governance rulebook information. See Section 2.5.1. | M | MUST |
 | `termsOfUse.url`                          | `termsOfUse.url` | string (URI) | Reference to the online dataspace governance rulebook. | M | MUST |
 | `termsOfUse.version`                      | `termsOfUse.version` | string | Version of the online rulebook at the time of acceptance. | M | MUST |
 | `termsOfUse.hash`                         | `termsOfUse.hash` | string (SHA-256 hash) | SHA-256 hash of the rulebook, represented as 64 hexadecimal characters. | M | MUST |
@@ -748,7 +752,7 @@ which an expected attribute does not survive expansion:
 | `credentialSubject` | `Membership` | `member`, `memberOf`, `role`, `onboardedBy` |
 | `credentialSubject.member`, `onboardedBy.operator`, each `evidence` entry | `EconomicOperator` | `legalName`, `legalIdentifier`, `identifier` |
 | `credentialSubject.onboardedBy` | `Platform` | `platformId`, `operator` |
-| `credentialSubject.termsOfUse` | `GovernanceRulebook` | `url`, `version`, `hash`, `acceptedAt` |
+| `termsOfUse` (credential level) | `GovernanceRulebook` | `url`, `version`, `hash`, `acceptedAt` |
 
 Three consequences worth stating plainly:
 
