@@ -12,10 +12,16 @@
     "legalIdentifier": {
       "scheme": "Euid",
       "value": "BEEUID0123456789"
-    }
+    },
+    "identifier": [
+      {
+        "scheme": "VatId",
+        "value": "BE0123456789"
+      }
+    ]
   },
   "memberOf": "https://agri-x.eu",
-  "holderIdentifier": "BE0123456789",
+  "holderIdentifier": "DC-2026-004711",
   "role": [
     "https://w3id.org/ebwv#DataRightsHolder",
     "https://w3id.org/ebwv#DataProvider"

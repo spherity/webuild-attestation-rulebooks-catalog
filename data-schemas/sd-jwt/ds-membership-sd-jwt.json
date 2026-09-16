@@ -4,7 +4,7 @@
   "title": "WE BUILD - Membership Credential - SD-JWT VC payload",
   "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-ds-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
   "type": "object",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "additionalProperties": false,
   "$defs": {
     "identifier": {
@@ -92,12 +92,19 @@
           "description": "The stable, EU-level identifier. Scheme is Euid or PublicSectorBodyId (range of the legalIdentifier property). Used by member."
         },
         "identifier": {
-          "allOf": [
+          "description": "Further identifiers of the economic operator, in any scheme from code list 2.8. Repeatable: an operator may be known by several schemes at once. Used by onboardedBy.operator, and optionally by member to carry identifiers of the holder additional to legalIdentifier, which remains authoritative (IR-04).",
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/identifier"
+              }
+            },
             {
               "$ref": "#/$defs/identifier"
             }
-          ],
-          "description": "A further identifier of the economic operator, in any scheme from code list 2.8. Used by onboardedBy.operator."
+          ]
         }
       }
     }
@@ -187,9 +194,9 @@
     "holderIdentifier": {
       "type": "string",
       "minLength": 1,
-      "description": "Stable and unique identifier used within the DSI or dataspace to refer to THE HOLDER. Populated only where it differs from member.legalIdentifier. Subject to integrity rules IR-06 and IR-07.",
+      "description": "Stable and unique identifier used within the DSI or dataspace to refer to THE HOLDER. Populated only where it differs from member.legalIdentifier, and intended for a platform-local reference that has no published identifier scheme; where a published scheme applies, use member.identifier instead. Subject to integrity rules IR-06 and IR-07.",
       "examples": [
-        "BE0123456789"
+        "DC-2026-004711"
       ]
     },
     "role": {
