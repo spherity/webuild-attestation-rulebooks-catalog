@@ -4,7 +4,7 @@
   "title": "WE BUILD - Membership Credential - SD-JWT VC payload",
   "description": "Schema for the SD-JWT VC payload of a Membership Credential as defined in the rb-ds-membership Rulebook (Chapter 3.2). This models the JSON claims set prior to SD-JWT disclosure/packing, aligned with the catalog baseline of HAIP draft-03 and SD-JWT VC draft -09.",
   "type": "object",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "additionalProperties": false,
   "$defs": {
     "identifier": {
@@ -263,25 +263,9 @@
     },
     "onboardedBy": {
       "type": "object",
-      "description": "The platform through which the holder was onboarded: the platform itself and the economic operator hosting it. Describes the onboarding party only; how the holder was identified is recorded in evidence. See Rulebook Section 2.2.2.",
+      "description": "The onboarding through which the holder joined the DSI or dataspace: the platform, the economic operator hosting it, and optionally the holder as that platform knows it. See Rulebook Section 2.2.2.",
       "additionalProperties": true,
       "properties": {
-        "platformId": {
-          "type": "string",
-          "minLength": 1,
-          "description": "DID identifying the platform through which the holder was onboarded.",
-          "examples": [
-            "did:web:djustconnect.be"
-          ]
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Commercial name of the platform (DSI or onboarding partner).",
-          "examples": [
-            "DjustConnect"
-          ]
-        },
         "operator": {
           "allOf": [
             {
@@ -293,11 +277,39 @@
             "legalName",
             "identifier"
           ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "format": "uri",
+          "description": "The onboarding platform, identified by an absolute URI, normally a DID. The vocabulary defines no property for it, so it is the identity of this object.",
+          "examples": [
+            "did:web:djustconnect.be"
+          ]
+        },
+        "platform": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Commercial name of the platform (DSI or onboarding partner).",
+          "examples": [
+            "DjustConnect"
+          ]
+        },
+        "member": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/economicOperator"
+            }
+          ],
+          "description": "The holder as the onboarding platform knows it: the platform's own name and identifier for the same legal person the credential subject's member identifies. Not authoritative; see IR-06 and IR-07.",
+          "required": [
+            "identifier"
+          ]
         }
       },
       "required": [
-        "platformId",
-        "name",
+        "id",
+        "platform",
         "operator"
       ]
     },

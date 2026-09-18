@@ -238,8 +238,8 @@ dsm:MembershipShape
         sh:path ebwv:onboardedBy ;
         sh:name "onboardedBy" ;
         sh:minCount 1 ; sh:maxCount 1 ;
-        sh:node dsm:PlatformShape ;
-        sh:message "onboardedBy is mandatory and must be a valid Platform (Section 2.2.2)." ;
+        sh:node dsm:OnboardingDetailsShape ;
+        sh:message "onboardedBy is mandatory and must be a valid OnboardingDetails object (Section 2.2.2)." ;
     ] ;
 
 .
@@ -323,31 +323,36 @@ dsm:MemberShape
 # The onboarding platform - Section 2.2.2
 # -----------------------------------------------------------------------------
 
-dsm:PlatformShape
+dsm:OnboardingDetailsShape
     a sh:NodeShape ;
-    rdfs:label "onboardedBy (the onboarding platform)" ;
+    rdfs:label "onboardedBy (the onboarding)" ;
+
+    # Section 2.2.2: the platform is identified by this object's own id, since
+    # the vocabulary defines no property for it. See the note on node-level
+    # messages above.
+    sh:nodeKind sh:IRI ;
 
     sh:property [
         sh:path rdf:type ;
-        sh:hasValue ebwv:Platform ;
-        sh:message "onboardedBy must be typed Platform; that declaration is what brings platformId and operator into scope (Section 3.3.2)." ;
+        sh:hasValue ebwv:OnboardingDetails ;
+        sh:message "onboardedBy must be typed OnboardingDetails; that declaration is what brings platform, operator and member into scope (Section 3.3.2)." ;
     ] ;
 
     sh:property [
-        sh:path ebwv:platformId ;
-        sh:name "onboardedBy.platformId" ;
-        sh:minCount 1 ; sh:maxCount 1 ;
-        sh:datatype xsd:anyURI ;
-        sh:message "onboardedBy.platformId is mandatory and is typed xsd:anyURI by the vocabulary (Section 2.2.2)." ;
-    ] ;
-
-    sh:property [
-        sh:path schema:name ;
-        sh:name "onboardedBy.name" ;
+        sh:path ebwv:platform ;
+        sh:name "onboardedBy.platform" ;
         sh:minCount 1 ; sh:maxCount 1 ;
         sh:datatype xsd:string ;
         sh:minLength 1 ;
-        sh:message "onboardedBy.name is mandatory: the commercial name of the platform (Section 2.2.2). Note the vocabulary maps name to schema:name." ;
+        sh:message "onboardedBy.platform is mandatory: the commercial name of the onboarding platform (Section 2.2.2)." ;
+    ] ;
+
+    sh:property [
+        sh:path ebwv:member ;
+        sh:name "onboardedBy.member" ;
+        sh:maxCount 1 ;
+        sh:node dsm:PlatformMemberShape ;
+        sh:message "onboardedBy.member, where present, must be a valid EconomicOperator describing the holder as the onboarding platform knows it (Section 2.2.2)." ;
     ] ;
 
     sh:property [
@@ -356,6 +361,36 @@ dsm:PlatformShape
         sh:minCount 1 ; sh:maxCount 1 ;
         sh:node dsm:OperatorShape ;
         sh:message "onboardedBy.operator is mandatory: the economic operator hosting the platform (Sections 2.2.2 and 2.2.3)." ;
+    ] .
+
+
+
+
+dsm:PlatformMemberShape
+    a sh:NodeShape ;
+    rdfs:label "onboardedBy.member (the holder, as the platform knows it)" ;
+
+    sh:property [
+        sh:path rdf:type ;
+        sh:hasValue ebwv:EconomicOperator ;
+        sh:message "onboardedBy.member must be typed EconomicOperator (Section 3.3.2)." ;
+    ] ;
+
+    sh:property [
+        sh:path ebwv:identifier ;
+        sh:name "onboardedBy.member.identifier" ;
+        sh:minCount 1 ;
+        sh:node dsm:IdentifierValueShape ;
+        sh:message "onboardedBy.member must carry at least one identifier: the platform's own reference for the holder (Section 2.2.2). It is not authoritative; see IR-06 and IR-07." ;
+    ] ;
+
+    sh:property [
+        sh:path ebwv:legalName ;
+        sh:name "onboardedBy.member.legalName" ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:message "onboardedBy.member.legalName, where present, must be a non-empty string." ;
     ] .
 
 
