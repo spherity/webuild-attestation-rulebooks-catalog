@@ -56,10 +56,11 @@ dataspace-specific connector technology.
   Tritom (Dataspace Europe), targeting the common agriculture dataspace "Agri-X".
 * **Source document:** *MVP Membership credential — attestation description*.
 
-The schema is designed to be re-usable and interoperable with other dataspaces. It is aligned with
-the membership credential used within Catena-X; attributes that must remain interoperable with such
-operational dataspaces are marked as dataspace-specific (DS-specific) terminology that SHALL NOT be
-renamed.
+The schema is designed to be re-usable and interoperable with other dataspaces. It is aligned with 
+the membership credential used within Catena-X; see "Mapping from the source attestation description" 
+on how the Catena-X mandatory information can be mapped onto this credential.
+Attributes that must remain interoperable with such operational dataspaces are marked as 
+dataspace-specific (DS-specific) terminology that SHALL NOT be renamed.
 
 ### 1.2 Document structure
 
