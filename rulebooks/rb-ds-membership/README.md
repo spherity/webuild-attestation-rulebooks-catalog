@@ -212,6 +212,24 @@ names for cross-dataspace interoperability (e.g. with Catena-X) and SHALL NOT be
 extensibility purposes the JSON Schema definition allows additional properties in the `onboardedBy`
 data type definition.
 
+**Mapping from the source attestation description.** Two attribute names in the source document,
+*MVP Membership credential — attestation description* v1.0, do not appear in this Rulebook. They
+carried a flat string where this Rulebook models the holder as an
+[EconomicOperator](https://w3id.org/ebwv#EconomicOperator) object, so the names could not survive
+the structure; the information they carried is unchanged and is mapped as follows.
+
+| Source attribute | Carried here by | Note |
+|---|---|---|
+| `holderIdentifier` | `member.legalIdentifier` (Section 2.2.3) | The stable, EU-level identifier of the holder — for the MVP the EUID from the EUBWOID, which is the value the source document specifies. |
+| `holderIdentifierType` | the datatype of that typed literal, e.g. `Euid` | The scheme is carried by the value itself rather than by a companion attribute, so the two cannot drift apart. See Section 2.8. |
+
+A consumer expecting the Catena-X field names therefore needs a rename in its mapping table and
+nothing more: no information is lost, and the authoritative identifier of the holder remains a
+single, clearly named property. An identifier that is *not* authoritative — a further scheme, or
+the reference used by the onboarding platform — is deliberately carried elsewhere, by
+`member.identifier` or by `onboardedBy.member.identifier` respectively, so that its status is
+evident from the property name rather than from prose. See IR-04, IR-06 and IR-07.
+
 *Subsections 2.2 - 2.7 define the attributes and metadata in an encoding-independent manner. Code
 lists are in Section 2.8 and integrity rules in Section 2.9. The structured object `onboardedBy` is
 defined as a sub-table in Section 2.2; `termsOfUse` is defined in Section 2.5 and `evidence` in
