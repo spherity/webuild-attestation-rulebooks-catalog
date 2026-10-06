@@ -78,13 +78,8 @@ The issuers of the certificate are:
 - **(b) Legal entities** — companies that own certificates that are still valid but need to present
   the data as an EAA during onboarding to their customers.
 
-The relying parties are:
-- **(1) Procurers** checking compliance and conducting supplier audits.
-- **(2) Authorities** (e.g., customs) that verify ESG attestations.
 
-This schema has been verified for use with the following certificate types, including but not
-limited to: **ISO 9001, IATF 16949, DIN EN ISO 45001, DIN EN ISO 14001, DIN EN ISO 50001,
-AEO**, and others. The ESG Certificate Attestation is based on the schema defined in this document.
+## 1 Introduction
 
 ### 1.1 Document scope and purpose
 
