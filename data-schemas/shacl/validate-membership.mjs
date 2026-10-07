@@ -44,6 +44,25 @@ const RDF_MEDIA_TYPES = {
   '.n3': 'text/n3',
 }
 
+/**
+ * The JSON-LD contexts a Membership Credential may use. The credential under
+ * validation is untrusted input, and the default loader would fetch whatever
+ * @context URL it names; restricting it keeps the validator from being pointed
+ * at arbitrary hosts and keeps the outcome independent of third-party content.
+ * Contexts are still fetched live, so vocabulary republications take effect.
+ */
+const ALLOWED_CONTEXTS = new Set([
+  'https://www.w3.org/ns/credentials/v2',
+  'https://w3id.org/ebwv/v0.1',
+])
+const defaultLoader = jsonld.documentLoaders.node()
+async function documentLoader(url) {
+  if (!ALLOWED_CONTEXTS.has(url)) {
+    throw new Error(`@context ${url} is not one of the contexts this Rulebook uses; refusing to fetch it`)
+  }
+  return defaultLoader(url)
+}
+
 /** Parse a credential file into an RDF dataset. */
 async function loadCredential(file) {
   const mediaType = RDF_MEDIA_TYPES[path.extname(file).toLowerCase()]
@@ -51,7 +70,7 @@ async function loadCredential(file) {
     return rdf.dataset().import(rdf.fromFile(file, { mediaType }))
   }
   const document = JSON.parse(await readFile(file, 'utf8'))
-  const nquads = await jsonld.toRDF(document, { format: 'application/n-quads' })
+  const nquads = await jsonld.toRDF(document, { format: 'application/n-quads', documentLoader })
   return parseNQuads(nquads)
 }
 
@@ -201,7 +220,8 @@ async function main(argv) {
       if (!await validateFile(file, validator, shapes, strict)) failed += 1
     } catch (error) {
       // malformed JSON, unreachable @context, unparseable RDF
-      console.error(`ERROR ${file}: ${error.name}: ${error.message}`)
+      const cause = error.details?.cause?.message
+      console.error(`ERROR ${file}: ${cause ?? `${error.name}: ${error.message}`}`)
       return 2
     }
   }
