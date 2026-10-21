@@ -6,9 +6,8 @@ Category: non-qualified EAA
 (SC2) MVP scenario "seamless onboarding" piloted by the Data Sharing Initiatives (DSI) DjustConnect
 (ILVO), DADS (ITC) and Tritom (Dataspace Europe), and the common agriculture dataspace "Agri-X".*
 
-* Author(s):
-    * Ingo Wolf, [Spherity GmbH](https://www.spherity.com)
-    * Martin Domajnko, [Lutra Labs d.o.o.](https://lutralabs.io)
+- Author(s): Ingo Wolf, [Spherity GmbH](https://www.spherity.com); Martin Domajnko, [Lutra Labs d.o.o.](https://lutralabs.io)
+- Previous authors: none
 
 | Version | Date | Description |
 | --- | --- | --- |
@@ -24,12 +23,11 @@ Category: non-qualified EAA
 | 10 | 2026-09-16 | BREAKING, follows the European Business Wallet Vocabulary context republished on 16 September 2026, which acted on the change requests recorded in entry 09. The `Platform` class is **withdrawn** and replaced by [OnboardingDetails](https://w3id.org/ebwv#OnboardingDetails), whose type-scoped context carries `platform`, `operator` and `member`. `platformId` is withdrawn with it: the platform is now identified by the `id` of the `onboardedBy` object itself, since the vocabulary defines no property for it, and its commercial name moves from `name` to `platform`. The `name` row is dropped rather than kept alongside `platform`, which would have given two spellings of one fact. `onboardedBy` gains the optional `member`, the holder as the onboarding platform knows it, which is where a platform-local identifier now belongs; the example carries `DC-2026-004711` there instead of on `member.identifier`. IR-06 and IR-07 widen to cover an identifier of the holder wherever it appears. `KmgMid` is published, so the DADS farm id can be a typed literal; code list 2.8 lists it and the untyped-string fallback is narrowed to genuinely platform-specific values. The vocabulary also removed `holderIdentifier`, confirming its withdrawal in entry 09. Three requests remain open: a generic `PlatformSpecific` scheme, an `OnboardingEvidence` class so evidence entries need not be typed `EconomicOperator`, and `Bpn`, which is withdrawn as out of scope for the MVP. |
 | 11 | 2026-10-05 | Restructured onto the generic WE BUILD attestation rulebook template (11 chapters). No normative content removed. The restructure started from the content of version 08; versions 09 and 10 were re-applied in version 12. |
 | 12 | 2026-10-07 | Re-applies versions 09 and 10, and the subsequent mapping note for `holderIdentifier`, onto the template structure of version 11: `termsOfUse` at credential level (Section 4.1.1); `onboardedBy` typed `OnboardingDetails`, identified by its own `id` and named by `platform`, with the optional `member` (Section 3.2.1); `holderIdentifier` withdrawn in favour of the repeatable `member.identifier`, with a mapping from the source attestation description (Section 3.1); IR-06 and IR-07 covering both places an identifier of the holder can appear; `KmgMid` in code list 4.4. Also corrects section cross-references left over from the pre-template numbering, removes a reference to a cardinality section that no longer exists, and aligns Section 9.1 with IR-05, which requires IRI rather than string comparison for `role` and `memberOf`. Section references in entries 01 to 10 refer to the numbering in force at the time. |
+| 13 | 2026-10-21 | Aligns the Rulebook with the generic WE BUILD attestation rulebook template. Fixed template text reproduced verbatim where it applies to a non-qualified EAA; schema-artefacts table added (Section 3.1); a selectively-disclosable column added to the attribute tables (Sections 3.2 to 3.4); template columns adopted for the code lists, integrity rules and conditional tables; protocol tables (Chapter 6), embedded disclosure policy table (Section 7.4), issuance policy and lifecycle content (Sections 7.2, 7.3), revocation grounds (Chapter 8) and a deployment profile (Chapter 10) added; terms table added (Section 1.4); reference list completed. Two template fixed texts are deliberately not reproduced, because they conflict with choices this Rulebook retains pending a decision of the rulebook quality assurance group: the `category` attribute of Section 4.1, and the Commission status lists of Chapter 8. No change to attributes, encodings, examples or schemas. |
 
 **Written against:** ARF version 3.0.0, WE BUILD template version 1.0 (generic)
 
-**Feedback:**
-* Main feedback channel: [GitHub issues](https://github.com/webuild-consortium/eudi-wallet-rulebooks-and-schemas/issues)
-* Alternative: contact Supply Chain 2 contact points in WE BUILD.
+**Feedback:** https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/issues. Alternatively, contact the Supply Chain 2 contact points in WE BUILD.
 
 ## Table of contents
 
@@ -112,27 +110,47 @@ renamed.
 
 ### 1.2 Document structure
 
-This Rulebook follows the generic WE BUILD attestation rulebook template. Chapter 2
-states how it complies with the ARF and the applicable Regulations. Chapters 3 and 4
-define the attributes and metadata in an encoding-independent manner. Chapter 5 states
-the formats in which this attestation is issued. Chapters 6 to 9 cover protocols,
-issuance, revocation and presentation. Chapter 10 sets out the trust framework, and
-chapter 11 lists references.
+Chapter 2 states how this Rulebook complies with the applicable regulatory and
+architectural requirements. Chapter 3 specifies the attestation attributes and
+chapter 4 the metadata, both in an encoding-independent manner, each referencing
+the machine-readable schema artefacts that define their encoding. Chapter 5 lists
+the attestation formats supported. Chapter 6 lists the issuance and presentation
+protocols supported. Chapter 7 specifies issuance, including binding and lifecycle
+management. Chapter 8 specifies revocation. Chapter 9 specifies presentation.
+Chapter 10 specifies the trust framework, including how trust anchors are
+obtained. Chapter 11 lists references.
+
+Chapters 5 and 6 identify formats and protocols only. The substantive rules for
+issuance and presentation are in chapters 7 and 9 respectively, and are not
+repeated in chapters 5 and 6.
 
 ### 1.3 Key words
 
-This document uses the capitalised key words 'SHALL', 'SHOULD' and 'MAY' as specified
-in [RFC 2119], to indicate requirements, recommendations and options.
-
-In addition, 'must' (non-capitalised) indicates an external constraint, a requirement
-not mandated by this document but by an external document. The word 'can' indicates a
-capability. Other words such as 'will', 'is' and 'are' are statements of fact.
+This document uses the capitalised key words 'SHALL', 'SHOULD' and 'MAY' as
+specified in [RFC 2119], to indicate requirements, recommendations and options.
+In addition, 'must' (non-capitalised) indicates an external constraint, that is, a
+requirement mandated by an external document rather than by this document. The
+word 'can' indicates a capability. Other words such as 'will', 'is' and 'are' are
+statements of fact.
 
 ### 1.4 Terminology
 
 This document uses the terminology specified in Annex 1 of the ARF.
 
+| Term | Definition | Source |
+| --- | --- | --- |
+| Data Sharing Initiative (DSI) | An operational data-sharing platform whose members exchange data under a common governance rulebook; in this Rulebook DjustConnect, DADS and Tritom. | WE BUILD SC2 use case |
+| Agri-X | The common agriculture dataspace, envisaged as a federation of DSIs. | WE BUILD SC2 use case |
+| Dataspace governance rulebook | The rules a member of a DSI or dataspace accepts on joining it, referenced by `termsOfUse`. | WE BUILD SC2 use case |
+| Onboarding Service Provider | A DSI or technology partner that onboards members into a DSI or into Agri-X and issues the Membership Credential. | WE BUILD SC2 use case; Catena-X |
+| EUBWOID | European Business Wallet Owner Identification Data, the attestation identifying the organisation that owns a European Business Wallet; its EUID is reused as `member.legalIdentifier`. | `rb-ebwoid` |
+
 ## 2 Compliance
+
+This chapter states how this Rulebook complies with the Architecture and Reference
+Framework and with the applicable Regulations. Sections 2.1 and 2.2 follow from the
+legal category of this attestation. Section 2.3 maps each applicable requirement to
+the section that satisfies it.
 
 ### 2.1 Compliance statement
 
@@ -140,28 +158,25 @@ This Rulebook complies with the applicable requirements of Topic 12, Attestation
 Rulebooks, in Annex 2 of the Architecture and Reference Framework, version 3.0.0. It
 uses the terminology of Annex 1 of the ARF.
 
-The Membership Credential is defined as a **non-qualified EAA** under the [European Digital Identity
-Regulation]:
-
-* It includes an attribute indicating it is an EAA (`attestation_legal_category` = `EAA`,
-  Sections 3.1 and 4.1), per ARB_12.
-* It carries attributes about the holder (`member.legalIdentifier`, `member.legalName`, `memberOf`,
-  `role`) per ARB_15 / ARB_17 (Annex V points b and c).
-* The W3C VCDM (JSON-LD) format is used, which is permitted only for non-qualified EAA (ARB_01a).
-* The trust-anchor location is provided via the issuer DID (Section 10), per ARB_21 / ARB_26.
-* Revocation is addressed in Section 8, per [Topic 7].
-
 ### 2.2 Regulatory basis
+
+The regulatory basis below is the one applicable to the legal category of this
+attestation.
+
+**Non-qualified EAA**
 
 This attestation is not a qualified electronic attestation of attributes. The data
 described in Annex V points b, c and e of Regulation (EU) 2024/1183 is addressed as
-required by EW-DM-12-018 and as recommended by EW-DM-12-020 and EW-DM-12-022. Where a
-recommendation is not followed, the reason is stated below.
+required by EW-DM-12-018 and as recommended by EW-DM-12-020 and EW-DM-12-022.
+Where a recommendation is not followed, the reason is stated below.
+
+Both recommendations are followed: point c through the `member` attributes (section 3.2)
+and point e through the validity metadata of each format (chapter 5).
 
 ### 2.3 Traceability
 
-Every applicable requirement mapped to the section that satisfies it. Requirements
-marked not applicable carry a stated reason.
+Every applicable requirement mapped to the section that satisfies it. Mark a
+requirement not applicable only with a stated reason. No blank rows at submission.
 
 | Requirement | Legacy ID | Applies | Satisfied in section | Note |
 | --- | --- | --- | --- | --- |
@@ -186,14 +201,16 @@ marked not applicable carry a stated reason.
 | EW-DM-12-030 | ARB_26 | yes | 10 | Trust anchor published through the issuer DID document |
 | EW-DM-12-031 | ARB_27 | no |  | The holder is a legal person identified through the EUBWOID; no PID verification, see section 9.1 |
 | EW-DM-12-032 | ARB_28 | no |  | `cryptographically_bound_to` is not used, see section 9.1 |
-| EW-DM-12-034 | ARB_30 | yes | 5.1, 5.3 | Selective disclosure per claim for SD-JWT VC; ZKP-based for W3C VCDM |
+| EW-DM-12-034 | ARB_30 | yes | 3.2, 3.3, 4.1, 4.2 | Selective disclosure stated per attribute; per claim for SD-JWT VC, ZKP-based for W3C VCDM |
 | EW-DM-12-035 | ARB_31 | no |  | No Claim Selective Disclosure Metadata document is used |
 | EW-DM-12-038 | ARB_34 | yes | 7.1 | Binding to the holder organisation's EU Business Wallet |
 
 ## 3 Attestation attributes
 
 Attributes are defined here in an encoding-independent manner (EW-DM-12-007). The
-encoding of each attribute is given in chapter 5.
+authoritative encoding lives in the machine-readable schema artefacts referenced in
+section 3.1, not in this document. Do not paste schema fragments into the prose,
+they will drift.
 
 ### 3.1 Introduction
 
@@ -205,15 +222,14 @@ credential level, outside the credential subject; in the W3C VCDM encoding the c
 [ElectronicAttestationOfAttributes](https://w3id.org/ebwv#ElectronicAttestationOfAttributes), which
 is what defines the attribute. See Section 5.3.1.
 
-The credential describes the member (the `CredentialSubject`) together with the dataspace
-roles the member has within the
-DSI or dataspace (`role`), and the platform through which the member was onboarded
+The credential describes the member (the `CredentialSubject`) together with the roles the
+member has within the DSI or dataspace (`role`), and the platform through which the member was onboarded
 (`onboardedBy`). Separately, at credential level, `evidence` records the identification means by
 which the holder's identity was proven during the initial onboarding process.
 
 **Logical model.** The Membership Credential is structured as follows:
 
-* The credential subject is identified by `id` (a UUID, may change) and `member`, an object of type
+* The credential subject is identified by `id` (a URI, may change) and `member`, an object of type
   [EconomicOperator](https://w3id.org/ebwv#EconomicOperator) carrying the stable identifier of the
   holder in `legalIdentifier`; for the MVP this re-uses the EUID from the EUBWOID of that economic
   operator.
@@ -269,22 +285,47 @@ the reference used by the onboarding platform — is deliberately carried elsewh
 `member.identifier` or by `onboardedBy.member.identifier` respectively, so that its status is
 evident from the property name rather than from prose. See IR-04, IR-06 and IR-07.
 
-*Subsections 2.2 - 2.7 define the attributes and metadata in an encoding-independent manner. Code
+*Sections 3.2 to 4.3 define the attributes and metadata in an encoding-independent manner. Code
 lists are in Section 4.4 and integrity rules in Section 4.5. The structured object `onboardedBy` is
 defined as a sub-table in Section 3.2; `termsOfUse` is defined in Section 4.1 and `evidence` in
 Section 4.2.*
 
+**Schema artefacts.**
+
+| Format | Identifier | Schema artefact | Version | Location |
+| --- | --- | --- | --- | --- |
+| SD-JWT VC | `vct` `eu.we-build.ds-membership.1` | JSON schema | 0.8.0 | [`data-schemas/sd-jwt/ds-membership-sd-jwt.json`](../../data-schemas/sd-jwt/ds-membership-sd-jwt.json) |
+| W3C VCDM | type `VerifiableCredential`, `ElectronicAttestationOfAttributes`; credential subject `Membership`; contexts `https://www.w3.org/ns/credentials/v2`, `https://w3id.org/ebwv/v0.1` | JSON-LD context of the European Business Wallet Vocabulary | v0.1 | <https://w3id.org/ebwv/v0.1> |
+
+The schema artefacts referenced above are normative for encoding. Where this document
+and a referenced artefact disagree, the artefact prevails for encoding questions and
+this document prevails for semantics, presence and disclosure rules. Each artefact
+SHALL be versioned and immutably addressable. Versioning of the artefacts SHALL align
+on major releases.
+
+Note on selective disclosure: for SD-JWT VC, whether a claim is selectively
+disclosable is stated in the tables below, not in the schema (EW-DM-12-034). No Claim
+Selective Disclosure Metadata document is used (EW-DM-12-035).
+
+Supporting, non-normative artefacts: sample payloads for both formats
+([`ds-membership-sd-jwt-sample.json`](../../data-schemas/sd-jwt/sample-data/ds-membership-sd-jwt-sample.json),
+[`ds-membership-jsonld-sample.json`](../../data-schemas/jsonld/sample-data/ds-membership-jsonld-sample.json)),
+and SHACL shapes for validating the W3C VCDM encoding
+([`data-schemas/shacl/`](../../data-schemas/shacl/), with `validate-membership.mjs`).
+
 ### 3.2 Mandatory attributes
+
+Attributes that SHALL be present in every attestation of this type.
 
 The attributes below belong to the object [Membership](https://w3id.org/ebwv#Membership).
 
-| **Data Identifier**          | **Semantic Reference**                                                     | **Definition**                                                                                                                                                                                                                                                                | **Data type**                                                              | **Example value**                     |
-|------------------------------|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|---------------------------------------|
-| `id` (*)                     | @id                                                                        | Identifier of the credential subject, as an absolute URI: either a DID or a UUID expressed as a `urn:uuid:` URN. May change, in contrast to `member.legalIdentifier` which is a persistent, stable identifier. Name kept for cross-dataspace interoperability. | URI (DID or `urn:uuid:` URN) | `did:web:example.org:holder` |
-| `member` (*)                 | [member](https://w3id.org/ebwv#member)                                     | The holder, as an economic operator carrying the stable identifier that uniquely identifies it. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. Object, see table below.                 | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator)                 | *see 3.2.2*                           |
-| `memberOf` (*)               | [memberOf](https://w3id.org/ebwv#memberOf)                                 | The DSI or dataspace the holder is a member of. Within a DSI/DS all issued membership credentials use the same value. The value is an absolute IRI registered in code list 4.4, matched by exact IRI comparison. Name kept for cross-dataspace interoperability.               | URL                                                                        | `https://agri-x.eu`                              |
-| `role`                       | [role](https://w3id.org/ebwv#role)                                         | The roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. Each value is an absolute IRI from code list 4.4.        | array of IRIs                                                              | `["https://w3id.org/ebwv#DataProvider"]` |
-| `onboardedBy`                | [onboardedBy](https://w3id.org/ebwv#onboardedBy)                           | The onboarding through which the holder joined the DSI or dataspace: the platform, the economic operator hosting it, and optionally the holder as that platform knows it. Object, see table below. | [OnboardingDetails](https://w3id.org/ebwv#OnboardingDetails)                | *see 3.2.1*                           |
+| Data identifier | Semantic reference | Definition | Data type | Selectively disclosable | Example value |
+| --- | --- | --- | --- | --- | --- |
+| `id` (*) | @id | Identifier of the credential subject, as an absolute URI: either a DID or a UUID expressed as a `urn:uuid:` URN. May change, in contrast to `member.legalIdentifier` which is a persistent, stable identifier. Name kept for cross-dataspace interoperability. | URI (DID or `urn:uuid:` URN) | yes | `did:web:example.org:holder` |
+| `member` (*) | [member](https://w3id.org/ebwv#member) | The holder, as an economic operator carrying the stable identifier that uniquely identifies it. For the MVP this re-uses the EUID (part of the EUBWOID); scope is legal persons only. Name kept for cross-dataspace interoperability. Object, see table below. | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator) | yes | *see 3.2.2* |
+| `memberOf` (*) | [memberOf](https://w3id.org/ebwv#memberOf) | The DSI or dataspace the holder is a member of. Within a DSI/DS all issued membership credentials use the same value. The value is an absolute IRI registered in code list 4.4, matched by exact IRI comparison. Name kept for cross-dataspace interoperability. | URL | yes | `https://agri-x.eu` |
+| `role` | [role](https://w3id.org/ebwv#role) | The roles the holder has within the DSI or dataspace. A member may have multiple roles; the set of roles shares the membership lifecycle. Each value is an absolute IRI from code list 4.4. | array of IRIs | yes, per element | `["https://w3id.org/ebwv#DataProvider"]` |
+| `onboardedBy` | [onboardedBy](https://w3id.org/ebwv#onboardedBy) | The onboarding through which the holder joined the DSI or dataspace: the platform, the economic operator hosting it, and optionally the holder as that platform knows it. Object, see table below. | [OnboardingDetails](https://w3id.org/ebwv#OnboardingDetails) | yes | *see 3.2.1* |
 
 #### 3.2.1 `onboardedBy` object of type [OnboardingDetails](https://w3id.org/ebwv#OnboardingDetails)
 
@@ -298,12 +339,12 @@ to **the holder**, as known within this platform, and is subject to IR-06 and IR
 `member.identifier` on the credential subject is. The identification means used to prove the
 holder's identity remains `evidence`, at credential level (Section 4.2).
 
-| **Data Identifier** | **Semantic Reference**                                                 | **Definition**                                                                                                                                                | **Data type**                                              | **Optionality** | **Example value**         |
-|---------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|-----------------|---------------------------|
-| `id`                | @id                                                                    | The platform through which the holder was onboarded, identified by an absolute URI, normally a DID. Carried as the identity of this object rather than as an attribute: the vocabulary defines no property for it. | URI (DID)                                                  | M               | `did:web:djustconnect.be` |
-| `platform`          | [platform](https://w3id.org/ebwv#platform)                             | Commercial name of the platform (DSI or onboarding partner).                                                                                                  | string                                                     | M               | `DjustConnect`            |
-| `operator`          | [operator](https://w3id.org/ebwv#operator)                             | The economic operator hosting and running the platform. Object, see 3.2.2.                                                                                    | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator) | M               | *see 3.2.2*               |
-| `member`            | [member](https://w3id.org/ebwv#member)                                 | The holder, as the onboarding platform knows it. Carries only what the platform adds to the credential subject's `member`, normally its own identifier for the same legal person. SHALL be omitted where the platform knows the holder by the identifier already in `member.legalIdentifier`, which is the ordinary case when a DSI issues to one of its own members. Object, see 3.2.2. See IR-06, IR-07. | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator) | O               | *see 3.2.2*               |
+| Data identifier | Semantic reference | Definition | Data type | Optionality | Selectively disclosable | Example value |
+| --- | --- | --- | --- | --- | --- | --- |
+| `id` | @id | The platform through which the holder was onboarded, identified by an absolute URI, normally a DID. Carried as the identity of this object rather than as an attribute: the vocabulary defines no property for it. | URI (DID) | M | yes | `did:web:djustconnect.be` |
+| `platform` | [platform](https://w3id.org/ebwv#platform) | Commercial name of the platform (DSI or onboarding partner). | string | M | yes | `DjustConnect` |
+| `operator` | [operator](https://w3id.org/ebwv#operator) | The economic operator hosting and running the platform. Object, see 3.2.2. | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator) | M | yes | *see 3.2.2* |
+| `member` | [member](https://w3id.org/ebwv#member) | The holder, as the onboarding platform knows it. Carries only what the platform adds to the credential subject's `member`, normally its own identifier for the same legal person. SHALL be omitted where the platform knows the holder by the identifier already in `member.legalIdentifier`, which is the ordinary case when a DSI issues to one of its own members. Object, see 3.2.2. See IR-06, IR-07. | [EconomicOperator](https://w3id.org/ebwv#EconomicOperator) | O | yes | *see 3.2.2* |
 
 #### 3.2.2 [EconomicOperator](https://w3id.org/ebwv#EconomicOperator) object
 
@@ -317,13 +358,15 @@ an unpublished scheme name is not an absolute IRI and **aborts JSON-LD expansion
 whole credential with it rather than degrading gracefully. Where no published scheme applies, carry
 the value as an untyped string (Section 4.4).
 
-| **Data Identifier** | **Semantic Reference**                                 | **Definition**                                                                                                                                                                                        | **Data type**    | **Optionality** | **Example value**                                    |
-|---------------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|-----------------|------------------------------------------------------|
-| `legalName`         | [legalName](https://w3id.org/ebwv#legalName)           | Official legal name of the economic operator. For `member`, see integrity rule IR-02.                                                                                                                 | string           | M               | `Farm Example BV`                                    |
-| `legalIdentifier`   | [legalIdentifier](https://w3id.org/ebwv#legalIdentifier) | The stable, EU-level identifier of the economic operator. Used by `member`: for the MVP the EUID taken from the holder's EUBWOID. Scheme SHALL be `Euid` or `PublicSectorBodyId` (range of the property). | typed literal    | M for `member`  | `{"@type":"Euid","@value":"BEEUID0123456789"}`       |
-| `identifier`        | [identifier](https://w3id.org/ebwv#identifier)         | Further identifiers of the economic operator, in any scheme from code list 4.4. Repeatable: an operator may be known by several schemes at once. Used by `onboardedBy.operator` to identify the organisation hosting the platform, and optionally by `member` to carry identifiers of the holder additional to `legalIdentifier`, which remains the authoritative one (IR-04). | typed literal, repeatable | M for `operator`, O for `member` | `{"@type":"VatId","@value":"BE0848278827"}`          |
+| Data identifier | Semantic reference | Definition | Data type | Optionality | Selectively disclosable | Example value |
+| --- | --- | --- | --- | --- | --- | --- |
+| `legalName` | [legalName](https://w3id.org/ebwv#legalName) | Official legal name of the economic operator. For `member`, see integrity rule IR-02. | string | M | yes | `Farm Example BV` |
+| `legalIdentifier` | [legalIdentifier](https://w3id.org/ebwv#legalIdentifier) | The stable, EU-level identifier of the economic operator. Used by `member`: for the MVP the EUID taken from the holder's EUBWOID. Scheme SHALL be `Euid` or `PublicSectorBodyId` (range of the property). | typed literal | M for `member` | yes | `{"@type":"Euid","@value":"BEEUID0123456789"}` |
+| `identifier` | [identifier](https://w3id.org/ebwv#identifier) | Further identifiers of the economic operator, in any scheme from code list 4.4. Repeatable: an operator may be known by several schemes at once. Used by `onboardedBy.operator` to identify the organisation hosting the platform, and optionally by `member` to carry identifiers of the holder additional to `legalIdentifier`, which remains the authoritative one (IR-04). | typed literal, repeatable | M for `operator`, O for `member` | yes, per element | `{"@type":"VatId","@value":"BE0848278827"}` |
 
 ### 3.3 Optional attributes
+
+Attributes the Provider MAY include at its discretion.
 
 *No optional attributes are defined on the credential subject. The holder's official name is
 carried by `member.legalName`, and any further identifier of the holder — including a platform-local
@@ -331,17 +374,25 @@ reference with no published scheme — by the repeatable `member.identifier` (bo
 identification means used to prove the holder's identity at onboarding is the credential-level
 `evidence` metadata (Section 4.2).*
 
-| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Example value** |
-|------------------------|--------------------------|--------------|--------------|--------------|
-| N/A | N/A | N/A | N/A | N/A |
+| Data identifier | Semantic reference | Definition | Data type | Selectively disclosable | Example value |
+| --- | --- | --- | --- | --- | --- |
+| N/A | N/A | N/A | N/A | N/A | N/A |
 
 ### 3.4 Conditional attributes
 
+Attributes required only when a stated condition holds. State the condition
+explicitly in the definition, not in a footnote.
+
 No conditional attributes are defined for this attestation type.
+
+| Data identifier | Semantic reference | Definition | Condition | Data type | Selectively disclosable | Example value |
+| --- | --- | --- | --- | --- | --- | --- |
+| N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 
 ## 4 Metadata
 
-Metadata describes the attestation rather than its subject.
+Metadata describes the attestation rather than its subject. Use the same schema
+artefacts referenced in section 3.1.
 
 ### 4.1 Mandatory metadata
 
@@ -349,8 +400,8 @@ Metadata describes the attestation rather than its subject.
 chosen VC format and specified per encoding in Chapter 5. This Rulebook defines two additional
 mandatory metadata attributes.*
 
-| **Data Identifier**          | **Semantic Reference**                                                     | **Definition**                                                                                                                                                                                                                                             | **Data type**                                                              | **Example value**                |
-|------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------|
+| Data identifier | Semantic reference | Definition | Data type | Example value |
+| --- | --- | --- | --- | --- |
 | `attestation_legal_category` | [attestationLegalCategory](https://w3id.org/ebwv#attestationLegalCategory) | Indication that the attestation is a non-qualified EAA (per ARB_12). Qualifies the attestation as a whole, not the member, and is therefore carried at credential level rather than in the credential subject. SHALL be `EAA`. See Sections 3.1 and 5.3.1. | [AttestationLegalCategory](https://w3id.org/ebwv#AttestationLegalCategory) | [EAA](https://w3id.org/ebwv#EAA) |
 | `termsOfUse`                 | [termsOfUse](https://www.w3.org/2018/credentials#termsOfUse)               | The dataspace governance rulebook the holder has conformed to. Carried at credential level, as W3C VCDM defines `termsOfUse` as a property of the credential rather than of its subject. Object, see 4.1.1. | [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook) | *see 4.1.1* |
 
@@ -359,12 +410,17 @@ Section 4.1 of the generic template replaces it with the `category` attribute of
 [ETSI TS 119 472-1]. EW-DM-12-029, legacy ARB_25, of ARF version 3.0.0 is a SHALL that
 still requires the legal category attribute, so the template and the ARF disagree. The
 attribute is left as written and the deviation is recorded for the rulebook quality
-assurance group.
+assurance group. For the same reason the fixed text of section 4.1 of the template, which
+introduces `category` and states that `attestation_legal_category` SHALL NOT be used, is not
+reproduced here.
+
+`attestation_legal_category` SHALL NOT be selectively disclosable. The members of `termsOfUse`
+SHALL be individually selectively disclosable.
 
 #### 4.1.1 `termsOfUse` object of type [GovernanceRulebook](https://w3id.org/ebwv#GovernanceRulebook)
 
-| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Optionality** | **Example value** |
-|---------------------|------------------------|----------------|---------------|-----------------|-------------------|
+| Data identifier | Semantic reference | Definition | Data type | Optionality | Example value |
+| --- | --- | --- | --- | --- | --- |
 | `url`               | N/A                    | Reference to the online dataspace governance rulebook for the given DSI or DS. | string (URI) | M | `https://agri-x.eu/rulebook` |
 | `version`           | N/A                    | Version of the online rulebook at the time of acceptance. | string | M | `1.2` |
 | `hash`              | N/A                    | SHA-256 hash of the rulebook, for quick comparison. | string (SHA-256 hash) | M | `9f86d081...` |
@@ -372,8 +428,13 @@ assurance group.
 
 ### 4.2 Optional metadata
 
-| **Data Identifier** | **Semantic Reference**                                            | **Definition**                                                                                                                                                                                          | **Data type**      | **Example value** |
-|---------------------|-------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|-------------------|
+Includes `cryptographically_bound_to` where section 7.1 records a cryptographic binding
+(EW-DM-12-032). Section 7.1 records none, so it is not included.
+
+Elements of `evidence` SHALL be individually selectively disclosable.
+
+| Data identifier | Semantic reference | Definition | Data type | Example value |
+| --- | --- | --- | --- | --- |
 | `evidence`          | [evidence](https://www.w3.org/2018/credentials#evidence)          | The identification means used to prove the identity of the holder during the initial onboarding process. Metadata about the issuance, carried at credential level. Object or array of objects, see 4.2.1. | array of objects   | *see 4.2.1*       |
 
 #### 4.2.1 `evidence` attribute
@@ -383,8 +444,8 @@ during the initial onboarding process — for example the VAT identifier checked
 onboarding flow. `evidence` is optional; where the onboarding platform holds such a record, the
 issuer SHOULD include it.
 
-| **Data Identifier** | **Semantic Reference**                         | **Definition**                                                                                                                                                                            | **Data type**  | **Optionality** | **Example value**                            |
-|---------------------|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|-----------------|----------------------------------------------|
+| Data identifier | Semantic reference | Definition | Data type | Optionality | Example value |
+| --- | --- | --- | --- | --- | --- |
 | `type`              | @type                                          | The evidence entry describes the holder as an economic operator identified by the means used at onboarding. SHALL be `EconomicOperator`; see Section 5.3.1 for why this declaration is required. | class name     | M in W3C VCDM; omitted in SD-JWT VC | `EconomicOperator`                          |
 | `identifier`        | [identifier](https://w3id.org/ebwv#identifier) | The identification means: the identifier by which the holder's identity was proven, as a typed literal whose datatype is the identifier scheme. Where no scheme from code list 4.4 applies, an untyped string. | typed literal  | M               | `{"@type":"VatId","@value":"BE0123456789"}` |
 
@@ -394,11 +455,15 @@ platform or of its operator; those belong in `onboardedBy` (Section 3.2.1). See 
 
 ### 4.3 Conditional metadata
 
-| **Data Identifier** | **Semantic Reference** | **Definition** | **Data type** | **Example value** |
-| --- | --- | --- | --- | --- |
-| N/A | N/A | N/A | N/A | N/A |
+| Data identifier | Semantic reference | Definition | Condition | Data type | Example value |
+| --- | --- | --- | --- | --- | --- |
+| N/A | N/A | N/A | N/A | N/A | N/A |
 
 ### 4.4 Code lists
+
+Controlled vocabularies, enumerations and value sets needed to interpret attributes
+consistently. Reference an external vocabulary wherever one exists rather than
+defining a local list.
 
 The following code lists apply to attributes defined in Section 3. Lists are kept fit-for-pilot:
 they cover the minimal set needed by the three participating DSIs and are not exhaustive.
@@ -416,12 +481,12 @@ SHALL NOT be used: it would be resolved against the document base, so the same c
 yield different IRIs depending on where it was retrieved from. A new DSI or dataspace SHALL
 register its IRI in this code list before issuing.
 
-| **Field name** | **Value** | **Meaning** | **Source / vocabulary** | 
-|----------------|--------------------|-------------|--------------------------|
-| `memberOf` | `https://agri-x.eu` | The common agriculture dataspace (federation level). | WE BUILD SC2 use case | 
-| `memberOf` | `https://dataspace.dih-agrifood.com/` | DSI operated by ITC. | WE BUILD SC2 use case | 
-| `memberOf` | `https://djustconnect.be` | DSI operated by ILVO. | WE BUILD SC2 use case | 
-| `memberOf` | `https://www.dataspace.fi/` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | 
+| Field | Allowed values or vocabulary | Meaning | Source | Extensible |
+| --- | --- | --- | --- | --- |
+| `memberOf` | `https://agri-x.eu` | The common agriculture dataspace (federation level). | WE BUILD SC2 use case | yes, by registration in this list |
+| `memberOf` | `https://dataspace.dih-agrifood.com/` | DSI operated by ITC. | WE BUILD SC2 use case | yes, by registration in this list |
+| `memberOf` | `https://djustconnect.be` | DSI operated by ILVO. | WE BUILD SC2 use case | yes, by registration in this list |
+| `memberOf` | `https://www.dataspace.fi/` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | yes, by registration in this list |
 
 **`role`** — roles a member can have. A member may have multiple roles in one credential. Based on
 the common roles agreed across the piloting DSIs, treating Agri-X as a federation of DSIs.
@@ -433,13 +498,13 @@ are the `DataSpaceRole` individuals published in that vocabulary, under the
 it would be resolved against the document base, so the same credential would yield different role
 IRIs depending on where it was retrieved from.
 
-| **Field name** | **Value (absolute IRI)** | **Meaning** | **Source / vocabulary** |
-|-----------|--------------------|-------------|--------------------------|
-| `role` | `https://w3id.org/ebwv#DataRightsHolder` | Owns the rights to the data (e.g. farmers) and can consent to data being shared from a data provider to a data consumer. | WE BUILD SC2 use case |
-| `role` | `https://w3id.org/ebwv#DataProvider` | Partner that enables sharing data, e.g. via an API. | WE BUILD SC2 use case |
-| `role` | `https://w3id.org/ebwv#DataConsumer` | Partner that wants to use data, e.g. by calling an API. | WE BUILD SC2 use case |
-| `role` | `https://w3id.org/ebwv#Operator` | Partner providing DSSC building-block services (identity management, consent management, logging, …). | WE BUILD SC2 use case (custom role part of DADS) |
-| `role` | `https://w3id.org/ebwv#OnboardingServiceProvider` | Partner that onboards members into Agri-X; may be a DSI or another technology partner. | WE BUILD SC2 use case (role part of Catena-X) |
+| Field | Allowed values or vocabulary | Meaning | Source | Extensible |
+| --- | --- | --- | --- | --- |
+| `role` | `https://w3id.org/ebwv#DataRightsHolder` | Owns the rights to the data (e.g. farmers) and can consent to data being shared from a data provider to a data consumer. | WE BUILD SC2 use case | yes, see below |
+| `role` | `https://w3id.org/ebwv#DataProvider` | Partner that enables sharing data, e.g. via an API. | WE BUILD SC2 use case | yes, see below |
+| `role` | `https://w3id.org/ebwv#DataConsumer` | Partner that wants to use data, e.g. by calling an API. | WE BUILD SC2 use case | yes, see below |
+| `role` | `https://w3id.org/ebwv#Operator` | Partner providing DSSC building-block services (identity management, consent management, logging, …). | WE BUILD SC2 use case (custom role part of DADS) | yes, see below |
+| `role` | `https://w3id.org/ebwv#OnboardingServiceProvider` | Partner that onboards members into Agri-X; may be a DSI or another technology partner. | WE BUILD SC2 use case (role part of Catena-X) | yes, see below |
 
 Because values are IRIs, a DSI MAY mint an additional role under a namespace it owns without any
 change to this Rulebook, to the JSON Schema, or to the vocabulary context, and a Relying Party MAY
@@ -453,13 +518,13 @@ individuals by the WE BUILD Semantics work group and registered here.
 European Business Wallet Vocabulary publishes these as named individuals used as datatypes, in the
 pattern `{"@type": "VatId", "@value": "…"}`.
 
-| **Field name** | **Scheme** | **Meaning** | **Source / vocabulary** | **Notes** |
-|-----------------------------------------|--------------------|-------------|--------------------------|---------------------------|
-| `@type` | `Euid` | The unique identifier attributed in accordance with Article 9 of EBW, taken from the holder's EUBWOID. The expected scheme of `member.legalIdentifier` in the MVP. | [European Business Wallet Vocabulary v0.1], `rb-ebwoid` | In range of `legalIdentifier` |
-| `@type` | `PublicSectorBodyId` | Identifier of a public sector body. | [European Business Wallet Vocabulary v0.1] | In range of `legalIdentifier` |
-| `@type` | `KmgMid` | Unique farm id used in Slovenia, issued by the Ministry of Agriculture. Used by the DADS platform to identify holders locally. | [European Business Wallet Vocabulary v0.1] | |
-| `@type` | `VatId` | VAT identifier. Used by DjustConnect and Tritom as an identification means during onboarding. | [European Business Wallet Vocabulary v0.1] | |
-| `@type` | `Lei`, `Eori`, `Tin`, `Iban`, `Bic`, `PeppolId`, `GlobalLocationNumber`, `ClearingNumber`, `Excise` | Further schemes published by the vocabulary, available where applicable. | [European Business Wallet Vocabulary v0.1] | Not used in the MVP |
+| Field | Allowed values or vocabulary | Meaning | Source | Extensible |
+| --- | --- | --- | --- | --- |
+| `@type` | `Euid` | The unique identifier attributed in accordance with Article 9 of EBW, taken from the holder's EUBWOID. The expected scheme of `member.legalIdentifier` in the MVP. In range of `legalIdentifier`. | [European Business Wallet Vocabulary v0.1], `rb-ebwoid` | yes, as the vocabulary publishes further schemes |
+| `@type` | `PublicSectorBodyId` | Identifier of a public sector body. In range of `legalIdentifier`. | [European Business Wallet Vocabulary v0.1] | yes, as the vocabulary publishes further schemes |
+| `@type` | `KmgMid` | Unique farm id used in Slovenia, issued by the Ministry of Agriculture. Used by the DADS platform to identify holders locally. | [European Business Wallet Vocabulary v0.1] | yes, as the vocabulary publishes further schemes |
+| `@type` | `VatId` | VAT identifier. Used by DjustConnect and Tritom as an identification means during onboarding. | [European Business Wallet Vocabulary v0.1] | yes, as the vocabulary publishes further schemes |
+| `@type` | `Lei`, `Eori`, `Tin`, `Iban`, `Bic`, `PeppolId`, `GlobalLocationNumber`, `ClearingNumber`, `Excise` | Further schemes published by the vocabulary, available where applicable. Not used in the MVP. | [European Business Wallet Vocabulary v0.1] | yes, as the vocabulary publishes further schemes |
 
 *A purely platform-specific identifier, one whose scheme is meaningful only inside the issuing
 platform, still has no individual in the vocabulary. Such a value SHALL be carried as an untyped
@@ -478,8 +543,11 @@ legal persons only. Values will be added once provided.
 
 ### 4.5 Integrity rules
 
-| **Rule ID** | **Rule statement**                                                                                                                  | **Why it exists** | **Where enforced** | **Verifier / issuer behavior on failure** |
-|-------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------|--------------------|-------------------------------------------|
+Consistency rules not captured by the schema alone: cross-field dependencies,
+temporal consistency, mutual exclusivity, conditional combinations.
+
+| Rule ID | Rule statement | Why it exists | Where enforced | Behaviour on failure |
+| --- | --- | --- | --- | --- |
 | `IR-01` | If `termsOfUse.acceptedAt` is present, its value SHALL be a datetime less than or equal to the issuance datetime of the credential. | Acceptance of the rulebook cannot logically occur after the credential was issued; supports outbound flows where acceptance happened during an earlier onboarding. | Issuer business rules, schema validation, and verifier business validation. | Issuer SHALL reject the value; verifier SHALL treat `termsOfUse` as invalid. |
 | `IR-02` | If the member is a Legal Person, `member.legalName` SHOULD carry the official name as registered.                                   | Improves readability and identification of legal-person holders. | Issuer business rules. | Issuer SHOULD populate `member.legalName`; verifier MAY warn if absent. |
 | `IR-03` | Every `evidence` entry SHALL record an identification means by which the identity of the holder — the legal person identified by `member` — was proven during the initial onboarding process. `evidence` SHALL NOT carry an identifier of the onboarding platform or of its operator. | Evidence is about proofing the holder. Recording the platform operator's own identifier there would misidentify the holder, which is the failure this separation exists to prevent. | Issuer business rules and verifier business validation. | Issuer SHALL NOT issue the credential; verifier SHALL treat the credential as inconsistent. |
@@ -490,11 +558,22 @@ legal persons only. Values will be added once provided.
 
 ## 5 Formats
 
+This chapter identifies the formats in which this attestation is issued. The
+encoding detail lives in the schema artefacts referenced in section 3.1, and the
+rules for using each format are in chapters 7 and 9.
+
 | Format | Supported | Identifier | Specification | Notes |
 | --- | --- | --- | --- | --- |
-| ISO/IEC 18013-5 mdoc | no |  | [ISO/IEC 18013-5] | Not defined; no proximity presentation requirement, see section 5.2 |
-| SD-JWT VC | yes | `vct` `eu.we-build.ds-membership.1` | [SD-JWT VC], [HAIP] | Additional flow that MAY be piloted, see section 5.1 |
-| W3C VCDM | yes | see section 5.3 | [W3C VCDM v2.0] | Primary format for the MVP, European Business Wallet Vocabulary context |
+| ISO/IEC 18013-5 mdoc | no |  | [ISO/IEC 18013-5] | Not defined; proximity presentation is not in scope (EW-DM-12-003), see section 5.2 |
+| SD-JWT VC | yes | `vct` `eu.we-build.ds-membership.1` | [SD-JWT VC], [HAIP] | SHALL follow the HAIP profile (EW-DM-12-002); additional flow that MAY be piloted, see section 5.1 |
+| W3C VCDM | yes | type `VerifiableCredential`, `ElectronicAttestationOfAttributes`; contexts `https://www.w3.org/ns/credentials/v2`, `https://w3id.org/ebwv/v0.1` | [W3C VCDM v2.0] | Permitted for non-qualified EAA only (EW-DM-12-001); primary format for the MVP, see section 5.3 |
+
+A PID SHALL be issued in both the ISO/IEC 18013-5 and SD-JWT VC formats. For other
+attestation types, at least one format SHALL be marked as supported. Identifiers
+SHALL be unique to this attestation type (EW-DM-12-006).
+
+A Provider SHALL offer the W3C VCDM format and MAY additionally offer the SD-JWT VC
+format.
 
 ### 5.1 SD-JWT VC-based encoding
 
@@ -880,16 +959,25 @@ support ZKP-based selective disclosure.]*
 
 ## 6 Protocols
 
+This chapter identifies the protocols used to issue and present this attestation.
+The substantive issuance rules are in chapter 7 and the presentation rules are in
+chapter 9.
+
 ### 6.1 Issuance
 
-This attestation is issued using OpenID for Verifiable Credential Issuance
-[OpenID4VCI], as profiled by [HAIP].
+| Protocol | Supported | Profile or version | Specification | Notes |
+| --- | --- | --- | --- | --- |
+| OpenID4VCI | yes | [HAIP] draft-03 | [OpenID4VCI], [HAIP], [ETSI TS 119 472-3], [CIR 2026/1731] | |
 
 ### 6.2 Presentation
 
-This attestation is presented using OpenID for Verifiable Presentations [OpenID4VP].
-Only remote presentation is in scope, consistent with chapter 5, which records the
-mdoc encoding as out of scope.
+| Protocol | Supported | Profile or version | Specification | Notes |
+| --- | --- | --- | --- | --- |
+| OpenID4VP, remote | yes | [HAIP] draft-03 | [OpenID4VP], [HAIP], [ETSI TS 119 472-2], [CIR 2026/1731] | |
+| ISO/IEC 18013-5, proximity | no | | [ISO/IEC 18013-5], [ETSI TS 119 472-2], [CIR 2026/1731] | Requires the mdoc format, which is not supported (chapter 5) |
+
+Protocols listed here are those referenced in Topic 6 of Annex 2 of the ARF. This
+Rulebook does not profile these protocols beyond what is stated in the table.
 
 ## 7 Issuance
 
@@ -902,51 +990,105 @@ mdoc encoding as out of scope.
 | Relying Party must also verify a PID | no | EW-DM-12-031 |
 | Binding subject | legal person |  |
 
-The holder is a legal person identified through the EUBWOID, so the MVP requires neither a PID
-check nor a `cryptographically_bound_to` attribute; the usage text carried into section 9.1 states this.
+The attestation is bound to an organisation (legal person) holding an EU Business Wallet, not to
+a natural person's device. The holder is identified through the EUBWOID and its EUID, not through a
+PID, so a Relying Party does not request and verify a PID (EW-DM-12-031), and the MVP requires no
+cryptographic binding: `cryptographically_bound_to` (EW-DM-12-032) is not included. If a future
+scenario requires binding to the EUBWOID, `cryptographically_bound_to` is to be added as optional
+metadata in section 4.2, with the corresponding attestation type or `vct` value.
 
 ### 7.2 Issuance Policy
 
-General obligations on Attestation Providers are out of scope of this Rulebook. They
-are specified in Topic 10 of Annex 2 of the ARF, in the applicable Implementing
-Regulations, and in [ETSI TS 119 471]. This Rulebook states only obligations specific
-to this attestation type.
+The Attestation Provider's generic trust services policy, and the EAA Policy for this attestation
+type, in accordance with [ETSI TS 119 471], are those of the issuing onboarding service provider.
+No consortium-wide policy is referenced in this version.
+
+**Attestation Provider obligations.**
+
+General obligations on Attestation Providers are out of scope of this Rulebook.
+They are specified in Topic 10 of Annex 2 of the ARF, in the applicable Implementing
+Regulations, and in [ETSI TS 119 471]. This Rulebook states only obligations
+specific to this attestation type.
+More specifically, the Attestation Provider's generic trust services policy can be provided in accordance with ETSI TS 119 471.
+Each EAA Policy (per attestation type) can specify:
+- identity proofing in accordance with ETSI TS 119 461;
+- attribute proofing in accordance with ETSI TS 119 461;
+- batch issuance, if used, and any limits on reuse;
+- authentic source of the attributes (if applicable according to ETSI TS 119 478), and how currency is assured;
+
+Obligations specific to this attestation type:
+
+- offer the W3C VCDM format, and optionally SD-JWT VC (chapter 5);
+- declare the types that JSON-LD expansion depends on (section 5.3.1);
+- apply the selective disclosure rules stated per attribute (sections 3.2, 3.3, 4.1, 4.2);
+- satisfy the integrity rules, in particular IR-01, IR-03 and IR-06 (section 4.5);
+- issue only for a `memberOf` value registered in code list 4.4 and for which the Provider is
+  authorised (section 4.4 and chapter 10);
+- publish revocation status (chapter 8).
 
 ### 7.3 Lifecycle management
 
-The issuer sets the validity period of the attestation and reissues it when the
-underlying facts change, revoking the superseded attestation as described in chapter 8.
+- **Validity period.** Set by the issuing onboarding service provider; this Rulebook fixes no
+  maximum.
+- **Reissuance and renewal.** Membership and its set of roles share one lifecycle. Adding,
+  changing or removing a role requires reissuance of the credential.
+- **Update or correction.** When the underlying facts change, the issuer reissues the credential
+  and revokes the superseded one, as described in chapter 8.
 
 ### 7.4 Embedded disclosure policy
 
-This attestation defines no embedded disclosure policy.
+| Field | Value |
+| --- | --- |
+| Policy present | no |
+| Common policy applied | none |
+| Encoding | pending upstream specification |
+
+Embedded disclosure policies are defined in CIR (EU) 2024/2979 and in Topic 43 of
+Annex 2 of the ARF. No standardised encoding exists in ISO/IEC 18013-5, SD-JWT VC,
+OpenID4VCI or OpenID4VP at the time of writing. This Rulebook declares which policy
+applies and does not specify a local encoding.
 
 ## 8 Revocation
 
-The Membership Credential is **revocable**. Membership and the associated set of
-roles share a single lifecycle: adding, changing, or removing a role requires re-issuance of the
-credential and revocation of the superseded one. The credential carries a `credentialStatus` entry
-(see the Section 5.3 example) used to publish status.
+This chapter states whether attestations of this type are revocable, and if so how
+revocation status is published and how a Relying Party checks it.
+
+Attestations of this type are **revocable**. The credential carries a status entry, a
+`credentialStatus` of type `BitstringStatusListEntry` in the W3C VCDM encoding (section 5.3) and a
+`status` claim in the SD-JWT VC encoding (section 5.1.3), through which status is published.
+
+**Deviation.** The template's fixed text for revocable attestations publishes status through the
+Attestation Status Lists or Attestation Revocation Lists of the Technical Specification issued by
+the Commission. The mechanisms above predate that alignment and are left as written; the deviation
+is recorded for the rulebook quality assurance group, and the fixed text is not reproduced here.
+
+- **Who may request revocation.** The issuing onboarding service provider revokes; this version
+  does not define a request procedure for other parties.
+- **Grounds.** In addition to any grounds imposed by regulation: the holder's membership of the
+  DSI or dataspace ends; or the credential is superseded by reissuance, because membership and its
+  set of roles share one lifecycle and a role change requires a new credential.
+- **Time from trigger to status update.** Not specified in this version.
 
 ## 9 Presentation
 
 ### 9.1 Presentation Policy
 
-To verify and validate a received presentation of an attestation of this type, the
-following steps SHALL be performed:
+To verify and validate a received presentation of an attestation of this type,
+the following steps SHALL be performed:
 
 1. verify the signature over the attestation using a trust anchor obtained as
    described in chapter 10;
 2. verify that the attestation is within its validity period;
 3. check revocation status as described in chapter 8, unless the attestation is
-   short-lived, or its remaining lifetime is below the revocation time threshold;
+   short-lived; or remaining lifetime of the attestation is below revocation time
+   threshold;
 4. verify device binding where section 7.1 records the attestation as device-bound;
 5. request only those attributes that are necessary for the stated purpose of the
-   transaction, and, where the trust model for this attestation requires Relying Party
-   registration, only those attributes it is registered and authorised to request.
+   transaction, and, where the trust model for this attestation requires Relying
+   Party registration, only those attributes it is registered and authorised to
+   request.
 
-Obligations specific to this attestation type, carried over from the previous version
-of this Rulebook:
+Obligations specific to this attestation type:
 
 The Membership Credential is used in the WE BUILD SC2 "seamless onboarding" scenario. Its use case
 in this pilot is:
@@ -955,7 +1097,7 @@ in this pilot is:
   organisation, accepts the applicable dataspace governance rulebook, and receives a Membership
   Credential reflecting their membership and roles. Information already presented during a previous
   onboarding flow is trusted and not requested again. Where the onboarding platform holds a
-  identification means used to prove the holder's identity, it is recorded in `evidence`, so that a
+  record of the identification means used to prove the holder's identity, it is recorded in `evidence`, so that a
   later Relying Party can reconcile the holder with its own legacy records.
 
 **Potential future use, out of scope for this pilot.** Verifying membership and roles during
@@ -966,10 +1108,6 @@ would most likely require the credential to be transformed into a connector-nati
 instance an EDC / dataspace protocol participant credential) first. Any statement about
 data-sharing use elsewhere in this document is to be read in that light.
 
-**PID verification.** The holder is a legal person identified via the EUBWOID/EUID, not via a PID.
-A Relying Party therefore does not need to request and verify a PID (ARB_27) for this attestation
-in the MVP scenario.
-
 **Relying Party obligations.** A Relying Party SHALL verify the issuer signature/proof, check
 credential validity (`validFrom`/`validUntil`) and revocation status (Section 8), and confirm the
 issuer is an authorised onboarding service provider for the relevant `memberOf` value (Section 10).
@@ -978,39 +1116,64 @@ Where rulebook conformance matters, the Relying Party MAY compare `termsOfUse.ha
 `evidence` to reconcile the holder with its own legacy records, subject to IR-04. It SHALL match
 `role` and `memberOf` by exact IRI comparison per IR-05.
 
-**Presentation requirements.** Presentation is online. The primary format is W3C VCDM (JSON-LD)
-presented via OpenID4VP; an SD-JWT VC flow may be piloted additionally. No proximity/offline
-presentation is required.
-
-**Device binding.**  The attestation is bound to an
-organisation (legal person) held in an EU Business Wallet rather than to a natural person's device;
-the MVP does not require cryptographic binding to a PID. The `cryptographically_bound_to` attribute
-(ARB_28) is therefore not included. If a future scenario requires binding to the EUBWOID, add
-`cryptographically_bound_to` as optional metadata in Section 4.2 with the corresponding attestation
-type / `vct` value.
-
-**Transactional data.** No transactional data (per [Topic 20]) is defined for this attestation; it
-is not used for strong user authentication of electronic payments.
-
 ### 9.2 Presentation modes
 
 Remote presentation is in scope. Proximity presentation is not in scope, consistent
-with chapter 5, which records the mdoc encoding as out of scope.
+with chapter 5, which records the mdoc encoding as out of scope. The primary format is W3C VCDM
+(JSON-LD), presented through OpenID4VP; an SD-JWT VC flow MAY be piloted additionally.
 
 ### 9.3 Transactional data
 
-This Rulebook defines no transactional data.
+No transactional data as defined in Topic 20 of Annex 2 of the ARF is associated
+with this attestation type.
 
 ## 10 Trust Framework
 
-The trust anchor is obtained as described in the branch below that corresponds to the
-legal category under which the attestation was issued.
+The trust anchor for this attestation is obtained as described in the branch below
+that corresponds to its legal category. The trust anchor location applies in either
+case.
 
-**This Rulebook (non-qualified EAA):** the trust anchor is the public key of the issuing onboarding
-service provider, resolvable from the issuer DID (`issuer` in the VCDM credential, e.g. a `did:web`
-document). A Relying Party obtains the trust anchor by resolving that DID and verifies the
-credential proof against it. Authorisation of an issuer to issue Membership Credentials for a given
-`memberOf` value is governed by the WE BUILD / dataspace trust framework (WP4).
+**Non-qualified EAA**
+
+The trust anchor is not obtained from a Trusted List of qualified trust service
+providers. It is obtained as follows. In the W3C VCDM encoding, the `issuer` is a DID, normally
+`did:web`, and the trust anchor is the public key in the DID document it resolves to. In the
+SD-JWT VC encoding, `iss` is the Provider's HTTPS URL and the key is obtained as specified by
+[SD-JWT VC]. Authorisation of the Provider to issue
+this attestation type is then verified by the WE BUILD and dataspace trust framework (WP4), for
+the specific `memberOf` value the credential carries.
+
+A Wallet Unit MAY verify Provider authorisation using the mechanism described in
+ISSU_34 of Topic 10 of Annex 2 of the ARF.
+
+**Trust anchor location**
+
+The attribute or metadata carrying the trust anchor location contains at least the
+URL at which a machine-readable version can be found or looked up. For a QEAA this
+location refers to the trust anchor (EW-DM-12-023). For a PuB-EAA it refers to the
+qualified certificate that signed the attestation (EW-DM-12-023). For a
+non-qualified EAA the location and its meaning are as described above
+(EW-DM-12-024, EW-DM-12-030).
+
+In this Rulebook that location is the issuer identifier, carried by the standard issuer metadata
+of each format (section 4.1): the issuer DID in the W3C VCDM encoding, the `iss` URL in the
+SD-JWT VC encoding.
+
+**Deployment profile**
+
+- **Distribution of Provider trust anchors.** Through the Provider's DID document (W3C VCDM) or
+  as specified by [SD-JWT VC] for the `iss` URL. No List of Trusted Entities or Trusted List is
+  involved in this version.
+- **Lookup.** A Relying Party or Wallet Unit resolves the issuer identifier; it keys on that
+  identifier only. No caching or update policy is defined in this version.
+- **Verifying authenticity.** A Relying Party verifies the proof against the issuer's key, then the validity period, then the revocation status (chapter 8), then that the
+  issuer is authorised for the `memberOf` value, and finally matches `memberOf` and `role` as set
+  out below.
+- **Authenticating the Relying Party.** The steps a Wallet Unit follows before presentation are not
+  specified by this Rulebook in this version.
+- **Consortium-specific dependencies.** The European Business Wallet Vocabulary JSON-LD context,
+  <https://w3id.org/ebwv/v0.1>, maintained by the WE BUILD Semantics work group.
+- **Worked example.** The illustrative credential in section 5.3.
 
 **memberOf vocabulary governance.** `memberOf` values are absolute IRIs registered in code list 4.4
 by the governance level of the owning DSI or dataspace, under that DSI's or dataspace's own domain.
@@ -1029,28 +1192,36 @@ Party policy change. A DSI MAY likewise mint role IRIs under a namespace it owns
 to this Rulebook or to the vocabulary context; such values SHALL be governed by that DSI's own
 trust framework, and a Relying Party SHALL ignore any role IRI it does not recognise (IR-05).
 
-**Trust anchor location**
-
-The attribute or metadata carrying the trust anchor location contains at least the URL
-at which a machine-readable version can be found or looked up.
-
 ## 11 References
 
-| **Item Reference** | **Standard name/details** |
+| Reference | Details |
 | --- | --- |
+| [ARF] | EUDI Wallet Architecture and Reference Framework, version 3.0.0 |
+| [CIR 2024/2977] | Commission Implementing Regulation (EU) 2024/2977, PID and EAA |
+| [CIR 2024/2979] | Commission Implementing Regulation (EU) 2024/2979, integrity and core functionality |
+| [CIR 2026/1731] | Commission Implementing Regulation (EU) 2026/1731, as regards applicable standards and specifications |
+| [ETSI TS 119 461] | Policy and security requirements for trust service components providing identity proofing of trust service subjects |
+| [ETSI TS 119 471] | Policy and security requirements for EAA service providers |
+| [ETSI TS 119 472-1] | Profiles for Electronic Attestations of Attributes; Part 1 - General requirements |
+| [ETSI TS 119 472-2] | Profiles for Electronic Attestations of Attributes; Part 2 - Profiles for EAA/PID Presentations to Relying Party |
+| [ETSI TS 119 472-3] | Profiles for Electronic Attestations of Attributes; Part 3 - Profiles for issuance of EAA or PID |
+| [ETSI TS 119 478] | Specification of interfaces related to Authentic Sources |
 | [European Business Wallet Vocabulary v0.1] | WE BUILD Semantics work group, European Business Wallet Vocabulary, version 0.1 |
-| [European Digital Identity Regulation] | [Regulation (EU) 2024/1183](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401183) of the European Parliament and of the Council of 11 April 2024 amending Regulation (EU) No 910/2014 as regards establishing the European Digital Identity Framework |
 | [HAIP] | Yasuda, K. *et al,* OpenID4VC High Assurance Interoperability Profile, OpenId Foundation, Version draft-03 |
 | [IANA-JWT-Claims] | IANA JSON Web Token Claims Registry. Available: <https://www.iana.org/assignments/jwt/jwt.xhtml> |
 | [ISO/IEC 18013-5] | ISO/IEC 18013-5, Personal identification --- ISO-compliant driving licence - Part 5: Mobile driving licence (mDL) application, First edition, 2021-09 |
 | [OIDC] | Sakimura, N. et al., "OpenID Connect Core 1.0", OpenID Foundation. Available: <https://openid.net/specs/openid-connect-core-1_0.html> |
+| [OpenID4VCI] | OpenID for Verifiable Credential Issuance |
+| [OpenID4VP] | OpenID for Verifiable Presentations |
+| [Regulation] | [Regulation (EU) 2024/1183](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401183) of the European Parliament and of the Council of 11 April 2024 amending Regulation (EU) No 910/2014 as regards establishing the European Digital Identity Framework |
+| [RFC 2119] | Key words for use in RFCs to Indicate Requirement Levels |
 | [RFC 3339] | RFC 3339  - Date and Time on the Internet: Timestamps, G. Klyne et al., July 2002 |
 | [RFC 8610] | RFC 8610  - Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures, H. Birkholz et al., June 2019 |
 | [RFC 8943] | RFC 8943  - Concise Binary Object Representation (CBOR) Tags for Date, M. Jones et al., November 2020 |
 | [RFC 8949] | RFC 8949 - Concise Binary Object Representation (CBOR), C. Bormann et al., December 2020 |
 | [SD-JWT VC] | SD-JWT-based Verifiable Credentials (SD-JWT VC). Available: <https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/>, version draft-ietf-oauth-sd-jwt-vc-09 |
-| [Topic 7] | ARF Annex 2 - Topic 7 - Attestation revocation and revocation checking Available: <https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/latest/annexes/annex-2/annex-2-high-level-requirements/#a237-topic-7-attestation-revocation-and-revocation-checking> |
 | [Topic 10] | ARF Annex 2 - Topic 10 - Issuing a PID or attestation to a Wallet Unit: <https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/latest/annexes/annex-2/annex-2-high-level-requirements/#a2310-topic-10-issuing-a-pid-or-attestation-to-a-wallet-unit> |
 | [Topic 12] | ARF Annex 2 - Topic 12 - Attestation Rulebooks, Available: <https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/latest/annexes/annex-2/annex-2-high-level-requirements/#a2312-topic-12-attestation-rulebooks> |
 | [Topic 20] | ARF Annex 2 - Strong User authentication for electronic payments, Available: <https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/latest/annexes/annex-2/annex-2-high-level-requirements/#a2320-topic-20-strong-user-authentication-for-electronic-payments> |
+| [Topic 7] | ARF Annex 2 - Topic 7 - Attestation revocation and revocation checking Available: <https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/latest/annexes/annex-2/annex-2-high-level-requirements/#a237-topic-7-attestation-revocation-and-revocation-checking> |
 | [W3C VCDM v2.0] | Sporny, M. *et al,* Verifiable Credentials Data Model v2.0, W3C Recommendation. |
