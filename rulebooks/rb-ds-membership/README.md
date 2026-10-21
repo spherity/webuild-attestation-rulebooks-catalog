@@ -834,8 +834,11 @@ IR-03 and IR-04.
   "validUntil": "2027-06-23T09:00:00Z",
   "attestationLegalCategory": "EAA",
   "credentialStatus": {
-    "id": "https://djustconnect.be/status/membership#42",
-    "type": "BitstringStatusListEntry"
+    "id": "https://djustconnect.be/status/membership/1#42",
+    "type": "BitstringStatusListEntry",
+    "statusPurpose": "revocation",
+    "statusListIndex": "42",
+    "statusListCredential": "https://djustconnect.be/status/membership/1"
   },
   "evidence": [
     {
