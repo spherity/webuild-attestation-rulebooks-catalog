@@ -309,9 +309,7 @@ Selective Disclosure Metadata document is used (EW-DM-12-035).
 
 Supporting, non-normative artefacts: sample payloads for both formats
 ([`ds-membership-sd-jwt-sample.json`](../../data-schemas/sd-jwt/sample-data/ds-membership-sd-jwt-sample.json),
-[`ds-membership-jsonld-sample.json`](../../data-schemas/jsonld/sample-data/ds-membership-jsonld-sample.json)),
-and SHACL shapes for validating the W3C VCDM encoding
-([`data-schemas/shacl/`](../../data-schemas/shacl/), with `validate-membership.mjs`).
+[`ds-membership-jsonld-sample.json`](../../data-schemas/jsonld/sample-data/ds-membership-jsonld-sample.json)).
 
 ### 3.2 Mandatory attributes
 
