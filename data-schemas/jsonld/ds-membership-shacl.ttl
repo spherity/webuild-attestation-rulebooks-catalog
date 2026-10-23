@@ -27,6 +27,11 @@
 #
 #   pyshacl -s ds-membership-shacl.ttl -df nt credential.nt
 #
+# Do not use `pyshacl -df json-ld`: rdflib's JSON-LD parser applies the
+# type-scoped context of only the first entry in a `type` array, so it drops
+# attestationLegalCategory from a conformant credential. Convert with jsonld.js
+# or pyld instead (Section 5.3.2).
+#
 # Covers what ds-membership-jsonld.json (JSON Schema) checks, plus the checks
 # only a validation of the expanded graph can make; see Section 5.3.2 of the
 # Rulebook.
