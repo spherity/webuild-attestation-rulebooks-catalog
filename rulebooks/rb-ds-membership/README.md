@@ -488,9 +488,9 @@ register its IRI in this code list before issuing.
 | Field | Allowed values or vocabulary | Meaning | Source | Extensible |
 | --- | --- | --- | --- | --- |
 | `memberOf` | `https://agri-x.eu` | The common agriculture dataspace (federation level). | WE BUILD SC2 use case | yes, by registration in this list |
-| `memberOf` | `https://dataspace.dih-agrifood.com/` | DSI operated by ITC. | WE BUILD SC2 use case | yes, by registration in this list |
+| `memberOf` | `https://dataspace.dih-agrifood.com` | DSI operated by ITC. | WE BUILD SC2 use case | yes, by registration in this list |
 | `memberOf` | `https://djustconnect.be` | DSI operated by ILVO. | WE BUILD SC2 use case | yes, by registration in this list |
-| `memberOf` | `https://www.dataspace.fi/` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | yes, by registration in this list |
+| `memberOf` | `https://www.dataspace.fi` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | yes, by registration in this list |
 
 **`role`** — roles a member can have. A member may have multiple roles in one credential. Based on
 the common roles agreed across the piloting DSIs, treating Agri-X as a federation of DSIs.
@@ -1037,14 +1037,24 @@ dsm:MembershipCredentialShape
     ] .
 ```
 
-To validate, convert the credential to RDF with a JSON-LD 1.1 processor, then run a SHACL engine
-over the result. Include the SPARQL companion where the engine supports SHACL-SPARQL; pySHACL takes
-a single shapes graph, so concatenate the two files:
+To validate, convert the credential to RDF with a conformant JSON-LD 1.1 processor, such as
+jsonld.js or pyld, then run a SHACL engine over the result. Include the SPARQL companion where the
+engine supports SHACL-SPARQL; pySHACL takes a single shapes graph, so concatenate the two files:
 
 ```bash
 cat ds-membership-shacl.ttl ds-membership-shacl-sparql.ttl > all-shapes.ttl
-pyshacl -s all-shapes.ttl -df nt credential.nt
+uv run --python 3.12 --with pyld --with requests python -c "import json,sys; from pyld import jsonld; \
+  print(jsonld.to_rdf(json.load(open(sys.argv[1])), {'format': 'application/n-quads'}), end='')" \
+  ./sample-data/ds-membership-jsonld-sample.json > sample-data/ds-membership-jsonld-sample.nt \ 
+pyshacl -s all-shapes.ttl -df nt sample-data/ds-membership-jsonld-sample.nt
 ```
+
+Do not let pySHACL parse the JSON-LD itself (`-df json-ld`). Its parser, rdflib (verified with
+version 7.6.0), applies the type-scoped context of only the first entry in a `type` array, whereas
+JSON-LD 1.1 applies all of them. For the credential-level `type`
+`["VerifiableCredential", "ElectronicAttestationOfAttributes"]`, rdflib therefore drops
+`attestationLegalCategory` and reports a conformant credential as violating Section 4.1. Swapping
+the two types only moves the loss to `validFrom` and the other VCDM terms.
 
 Both artefacts are aids for implementers. Where they differ from this Rulebook, the Rulebook
 prevails.
