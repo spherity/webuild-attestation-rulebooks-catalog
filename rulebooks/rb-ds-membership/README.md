@@ -970,11 +970,11 @@ A JSON-LD credential can be validated at two levels: the compacted JSON document
 transmitted, and the RDF graph it expands to. Only the second captures what the credential means.
 This Rulebook publishes a supporting, non-normative artefact for each level:
 
-* [`ds-membership-jsonld.json`](../../data-schemas/jsonld/ds-membership-jsonld.json), a JSON
+* [`ds-membership-jsonld.schema.json`](../../data-schemas/jsonld/ds-membership-jsonld.schema.json), a JSON
   Schema for the compacted form;
-* [`ds-membership-shacl.ttl`](../../data-schemas/jsonld/ds-membership-shacl.ttl), SHACL Core shapes
+* [`../../data-schemas/jsonld/ds-membership-shacl.ttl`](../../data-schemas/jsonld/ds-membership-shacl.ttl), SHACL Core shapes
   for the expanded graph, with the companion
-  [`ds-membership-shacl-sparql.ttl`](../../data-schemas/jsonld/ds-membership-shacl-sparql.ttl) for
+  [`../../data-schemas/jsonld/ds-membership-shacl-sparql.ttl`](../../data-schemas/jsonld/ds-membership-shacl-sparql.ttl) for
   the one rule that needs SHACL-SPARQL (IR-06).
 
 The illustrative example in Section 5.3 conforms to both.
