@@ -840,8 +840,11 @@ IR-03 and IR-04.
   "validUntil": "2027-06-23T09:00:00Z",
   "attestationLegalCategory": "EAA",
   "credentialStatus": {
-    "id": "https://djustconnect.be/status/membership#42",
-    "type": "BitstringStatusListEntry"
+    "id": "https://djustconnect.be/status/membership/1#42",
+    "type": "BitstringStatusListEntry",
+    "statusPurpose": "revocation",
+    "statusListIndex": "42",
+    "statusListCredential": "https://djustconnect.be/status/membership/1"
   },
   "evidence": [
     {
@@ -1231,7 +1234,7 @@ the following steps SHALL be performed:
 1.  **Cryptographic Integrity Verification (Tamper Proof):**
     The Verifier **MUST** verify that the received attestation data has not been altered or tampered with since its issuance. The wallet shall validate the digital signature over the attestation using a trusted public key (trust anchor) obtained according to the framework detailed in Chapter 10.
 2.  **Issuer Authentication and Trust Evaluation:**
-     The Verifier **MUST** verify the identity and regulatory standing of the Attestation Provider. The Verifier **MUST** verify that a trust anchor (Qualified Trust Service Provider (QTSP) for EAAs or the designated national Supervisory Body for other attestation), has confirmed that the attestation issuer owned the public key corresponding to the private key used to sign the verified attestation at the time of issuance.
+     The Verifier **MUST** verify the Attestation Provider's identity, ownership of the signing key at issuance, and authorisation to issue this attestation for the stated `memberOf` value using the trust mechanism described in Chapter 10.
 3.  **Temporal Validity Verification:**
      The Verifier **MUST** verify that the attestation is within its stated validity window. An attestation that has not yet taken effect or has already expired **SHALL NOT** be accepted, regardless of any other successful checks.
 4.  **Revocation Status Verification:**
