@@ -20,7 +20,6 @@
 #
 # rdf-validate-shacl does not implement SHACL-SPARQL and raises an error on
 # sh:sparql, which is why this rule is kept out of the main shapes graph.
-# validate-membership.mjs enforces the same rule natively instead.
 # =============================================================================
 
 dsm:MembershipSparqlShape

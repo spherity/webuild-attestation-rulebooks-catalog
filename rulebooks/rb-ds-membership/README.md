@@ -24,6 +24,8 @@ Category: non-qualified EAA
 | 11 | 2026-10-05 | Restructured onto the generic WE BUILD attestation rulebook template (11 chapters). No normative content removed. The restructure started from the content of version 08; versions 09 and 10 were re-applied in version 12. |
 | 12 | 2026-10-07 | Re-applies versions 09 and 10, and the subsequent mapping note for `holderIdentifier`, onto the template structure of version 11: `termsOfUse` at credential level (Section 4.1.1); `onboardedBy` typed `OnboardingDetails`, identified by its own `id` and named by `platform`, with the optional `member` (Section 3.2.1); `holderIdentifier` withdrawn in favour of the repeatable `member.identifier`, with a mapping from the source attestation description (Section 3.1); IR-06 and IR-07 covering both places an identifier of the holder can appear; `KmgMid` in code list 4.4. Also corrects section cross-references left over from the pre-template numbering, removes a reference to a cardinality section that no longer exists, and aligns Section 9.1 with IR-05, which requires IRI rather than string comparison for `role` and `memberOf`. Section references in entries 01 to 10 refer to the numbering in force at the time. |
 | 13 | 2026-10-21 | Aligns the Rulebook with the generic WE BUILD attestation rulebook template. Fixed template text reproduced verbatim where it applies to a non-qualified EAA; schema-artefacts table added (Section 3.1); a selectively-disclosable column added to the attribute tables (Sections 3.2 to 3.4); template columns adopted for the code lists, integrity rules and conditional tables; protocol tables (Chapter 6), embedded disclosure policy table (Section 7.4), issuance policy and lifecycle content (Sections 7.2, 7.3), revocation grounds (Chapter 8) and a deployment profile (Chapter 10) added; terms table added (Section 1.4); reference list completed. Two template fixed texts are deliberately not reproduced, because they conflict with choices this Rulebook retains pending a decision of the rulebook quality assurance group: the `category` attribute of Section 4.1, and the Commission status lists of Chapter 8. No change to attributes, encodings, examples or schemas. |
+| 14 | 2026-10-21 | Aligns the Rulebook with revision #195 of the generic WE BUILD attestation rulebook template. Section 7.1 renamed Holder Key Binding at Issuance (Wallet Binding); Section 7.2 replaced by the new Issuance Policy text, with the parameters for this attestation type: authorised authentic sources, a maximum validity period of 12 months, and batch issuance not permitted; Chapter 8 states that revocation takes effect immediately on the issuer's trigger event; Chapter 9 restructured into Request, Presentation and Verification, with the EBW Relying Party role of Section 9.2 as the applicable one; Chapter 10 split into Sections 10.1 and 10.2. The legal category remains non-qualified EAA. Recorded deviation, pending a decision of the rulebook quality assurance group: attestation chaining through the Provider's EBWOID (Sections 7.2 and 10.2.1) is not yet adopted. |
+| 15 | 2026-10-21 | Adds Section 5.3.2, Semantic verification: the limits of JSON Schema for a JSON-LD credential, the advantages of validating the expanded graph with SHACL, and an example SHACL constraint. Republishes the SHACL shapes next to the JSON Schema in `data-schemas/jsonld/`, renumbered to the template section structure and extended to the status entry and identifier schemes the JSON Schema checks. Section 3.1 lists both as supporting artefacts. No change to attributes, encodings or examples. |
 
 **Written against:** ARF version 3.0.0, WE BUILD template version 1.0 (generic)
 
@@ -59,16 +61,19 @@ Category: non-qualified EAA
    * [6.1 Issuance](#61-issuance)
    * [6.2 Presentation](#62-presentation)
 - [7 Issuance](#7-issuance)
-   * [7.1 Binding](#71-binding)
+   * [7.1 Holder Key Binding at Issuance (Wallet Binding)](#71-holder-key-binding-at-issuance-wallet-binding)
    * [7.2 Issuance Policy](#72-issuance-policy)
    * [7.3 Lifecycle management](#73-lifecycle-management)
    * [7.4 Embedded disclosure policy](#74-embedded-disclosure-policy)
 - [8 Revocation](#8-revocation)
-- [9 Presentation](#9-presentation)
-   * [9.1 Presentation Policy](#91-presentation-policy)
-   * [9.2 Presentation modes](#92-presentation-modes)
-   * [9.3 Transactional data](#93-transactional-data)
+- [9 Request, Presentation and Verification](#9-request-presentation-and-verification)
+   * [9.1 Relying Party Role (RP Instance - EUDI Wallet)](#91-relying-party-role-rp-instance---eudi-wallet)
+   * [9.2 EBW Relying Party Role (EBW Wallet - EBW Wallet)](#92-ebw-relying-party-role-ebw-wallet---ebw-wallet)
+   * [9.3 Presentation modes](#93-presentation-modes)
+   * [9.4 Transactional data](#94-transactional-data)
 - [10 Trust Framework](#10-trust-framework)
+   * [10.1 Relying Party Role (RP Instance - EUDI Wallet)](#101-relying-party-role-rp-instance---eudi-wallet)
+   * [10.2 EBW Relying Party Role (EBW Wallet - EBW Wallet)](#102-ebw-relying-party-role-ebw-wallet---ebw-wallet)
 - [11 References](#11-references)
 
 
@@ -199,8 +204,8 @@ requirement not applicable only with a stated reason. No blank rows at submissio
 | EW-DM-12-023 / EW-DM-12-024 | ARB_20 / ARB_21 | yes | 10 | Trust anchor resolved from the issuer DID |
 | EW-DM-12-029 | ARB_25 | yes | 4.1 | Legal category attribute; see the note in section 4.1 |
 | EW-DM-12-030 | ARB_26 | yes | 10 | Trust anchor published through the issuer DID document |
-| EW-DM-12-031 | ARB_27 | no |  | The holder is a legal person identified through the EUBWOID; no PID verification, see section 9.1 |
-| EW-DM-12-032 | ARB_28 | no |  | `cryptographically_bound_to` is not used, see section 9.1 |
+| EW-DM-12-031 | ARB_27 | no |  | The holder is a legal person identified through the EUBWOID; no PID verification, see section 7.1 |
+| EW-DM-12-032 | ARB_28 | no |  | `cryptographically_bound_to` is not used, see section 7.1 |
 | EW-DM-12-034 | ARB_30 | yes | 3.2, 3.3, 4.1, 4.2 | Selective disclosure stated per attribute; per claim for SD-JWT VC, ZKP-based for W3C VCDM |
 | EW-DM-12-035 | ARB_31 | no |  | No Claim Selective Disclosure Metadata document is used |
 | EW-DM-12-038 | ARB_34 | yes | 7.1 | Binding to the holder organisation's EU Business Wallet |
@@ -310,8 +315,7 @@ Selective Disclosure Metadata document is used (EW-DM-12-035).
 Supporting, non-normative artefacts: sample payloads for both formats
 ([`ds-membership-sd-jwt-sample.json`](../../data-schemas/sd-jwt/sample-data/ds-membership-sd-jwt-sample.json),
 [`ds-membership-jsonld-sample.json`](../../data-schemas/jsonld/sample-data/ds-membership-jsonld-sample.json)),
-and SHACL shapes for validating the W3C VCDM encoding
-([`data-schemas/shacl/`](../../data-schemas/shacl/), with `validate-membership.mjs`).
+and, for the W3C VCDM encoding, a JSON Schema and SHACL shapes described in Section 5.3.2.
 
 ### 3.2 Mandatory attributes
 
@@ -484,9 +488,9 @@ register its IRI in this code list before issuing.
 | Field | Allowed values or vocabulary | Meaning | Source | Extensible |
 | --- | --- | --- | --- | --- |
 | `memberOf` | `https://agri-x.eu` | The common agriculture dataspace (federation level). | WE BUILD SC2 use case | yes, by registration in this list |
-| `memberOf` | `https://dataspace.dih-agrifood.com/` | DSI operated by ITC. | WE BUILD SC2 use case | yes, by registration in this list |
+| `memberOf` | `https://dataspace.dih-agrifood.com` | DSI operated by ITC. | WE BUILD SC2 use case | yes, by registration in this list |
 | `memberOf` | `https://djustconnect.be` | DSI operated by ILVO. | WE BUILD SC2 use case | yes, by registration in this list |
-| `memberOf` | `https://www.dataspace.fi/` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | yes, by registration in this list |
+| `memberOf` | `https://www.dataspace.fi` | DSI operated by DataSpace Europe Oy. | WE BUILD SC2 use case | yes, by registration in this list |
 
 **`role`** — roles a member can have. A member may have multiple roles in one credential. Based on
 the common roles agreed across the piloting DSIs, treating Agri-X as a federation of DSIs.
@@ -836,8 +840,11 @@ IR-03 and IR-04.
   "validUntil": "2027-06-23T09:00:00Z",
   "attestationLegalCategory": "EAA",
   "credentialStatus": {
-    "id": "https://djustconnect.be/status/membership#42",
-    "type": "BitstringStatusListEntry"
+    "id": "https://djustconnect.be/status/membership/1#42",
+    "type": "BitstringStatusListEntry",
+    "statusPurpose": "revocation",
+    "statusListIndex": "42",
+    "statusListCredential": "https://djustconnect.be/status/membership/1"
   },
   "evidence": [
     {
@@ -957,6 +964,101 @@ corresponding term.
 [PROOF TYPE TO BE FIXED once the WE BUILD profile selects it; e.g. a Data Integrity ECDSA proof to
 support ZKP-based selective disclosure.]*
 
+#### 5.3.2 Semantic verification
+
+A JSON-LD credential can be validated at two levels: the compacted JSON document as it is
+transmitted, and the RDF graph it expands to. Only the second captures what the credential means.
+This Rulebook publishes a supporting, non-normative artefact for each level:
+
+* [`ds-membership-jsonld.json`](../../data-schemas/jsonld/ds-membership-jsonld.json), a JSON
+  Schema for the compacted form;
+* [`ds-membership-shacl.ttl`](../../data-schemas/jsonld/ds-membership-shacl.ttl), SHACL Core shapes
+  for the expanded graph, with the companion
+  [`ds-membership-shacl-sparql.ttl`](../../data-schemas/jsonld/ds-membership-shacl-sparql.ttl) for
+  the one rule that needs SHACL-SPARQL (IR-06).
+
+The illustrative example in Section 5.3 conforms to both.
+
+**Limits of JSON Schema.** JSON Schema checks the shape of a JSON document; it does no JSON-LD
+processing. In particular:
+
+* it cannot detect a term that is **silently dropped on expansion** (Section 5.3.1). A credential
+  whose `credentialSubject` lacks the `Membership` type still has every expected key in its JSON,
+  and passes, although `member`, `memberOf`, `role` and `onboardedBy` carry no meaning;
+* it checks one serialisation of the data, not the data. The same credential can be compacted in
+  more than one way — a single role as a scalar or an array, `@type` or its alias `type`, an
+  identifier scheme as a short name or a full IRI — and every variant has to be enumerated in the
+  schema;
+* it cannot compare values held in different properties, so it cannot check IR-01
+  (`termsOfUse.acceptedAt` not after `validFrom`), that `validUntil` is later than `validFrom`, or
+  IR-06 (`member.identifier` not repeating `member.legalIdentifier`);
+* it has a single severity: a value missing from an open code list either fails the credential or is
+  not checked at all.
+
+**Advantages of SHACL.** SHACL validates the graph produced by JSON-LD expansion, so it checks
+what a Relying Party actually receives once the contexts are applied:
+
+* a dropped term is detected as a missing value, because SHACL sees only what survived expansion;
+* the result does not depend on how the credential was compacted, and the same shapes apply to any
+  RDF serialisation of the credential;
+* constraints are stated over vocabulary IRIs (`ebwv:role`, `ebwv:EAA`) and RDF datatypes
+  (`ebwv:VatId`), the terms the Rulebook defines in Chapters 3 and 4;
+* SHACL Core compares properties (`sh:lessThan`, `sh:lessThanOrEquals`), including along a path
+  through nested objects, and SHACL-SPARQL covers rules beyond that;
+* `sh:Warning` expresses advisory checks, used here for IR-05: a `role` or `memberOf` value that is
+  not registered in code list 4.4 is reported, not rejected.
+
+**Example.** The following excerpt of the credential shape checks the mandatory legal category of
+Section 4.1 and the integrity rule IR-01. The first holds only if `attestationLegalCategory`
+survived expansion. Where `ElectronicAttestationOfAttributes` is missing from the credential-level
+`type`, the attribute is dropped; JSON Schema still sees the key, whereas the shapes reject the
+credential, because the shape for the credential subject checks the type of the enclosing
+credential. The second constraint compares a value inside `termsOfUse` with one on the credential,
+which JSON Schema cannot express.
+
+```turtle
+dsm:MembershipCredentialShape
+    a sh:NodeShape ;
+    sh:targetClass ebwv:ElectronicAttestationOfAttributes ;
+
+    # Section 4.1 - mandatory metadata
+    sh:property [
+        sh:path ebwv:attestationLegalCategory ;
+        sh:minCount 1 ; sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:hasValue ebwv:EAA ;
+    ] ;
+
+    # IR-01, as a SHACL Core comparison over a sequence path
+    sh:property [
+        sh:path ( cred:termsOfUse ebwv:acceptedAt ) ;
+        sh:lessThanOrEquals cred:validFrom ;
+        sh:message "IR-01: termsOfUse.acceptedAt must be less than or equal to the issuance datetime (validFrom)." ;
+    ] .
+```
+
+To validate, convert the credential to RDF with a conformant JSON-LD 1.1 processor, such as
+jsonld.js or pyld, then run a SHACL engine over the result. Include the SPARQL companion where the
+engine supports SHACL-SPARQL; pySHACL takes a single shapes graph, so concatenate the two files:
+
+```bash
+cat ds-membership-shacl.ttl ds-membership-shacl-sparql.ttl > all-shapes.ttl
+uv run --python 3.12 --with pyld --with requests python -c "import json,sys; from pyld import jsonld; \
+  print(jsonld.to_rdf(json.load(open(sys.argv[1])), {'format': 'application/n-quads'}), end='')" \
+  ./sample-data/ds-membership-jsonld-sample.json > sample-data/ds-membership-jsonld-sample.nt \ 
+pyshacl -s all-shapes.ttl -df nt sample-data/ds-membership-jsonld-sample.nt
+```
+
+Do not let pySHACL parse the JSON-LD itself (`-df json-ld`). Its parser, rdflib (verified with
+version 7.6.0), applies the type-scoped context of only the first entry in a `type` array, whereas
+JSON-LD 1.1 applies all of them. For the credential-level `type`
+`["VerifiableCredential", "ElectronicAttestationOfAttributes"]`, rdflib therefore drops
+`attestationLegalCategory` and reports a conformant credential as violating Section 4.1. Swapping
+the two types only moves the loss to `validFrom` and the other VCDM terms.
+
+Both artefacts are aids for implementers. Where they differ from this Rulebook, the Rulebook
+prevails.
+
 ## 6 Protocols
 
 This chapter identifies the protocols used to issue and present this attestation.
@@ -981,7 +1083,11 @@ Rulebook does not profile these protocols beyond what is stated in the table.
 
 ## 7 Issuance
 
-### 7.1 Binding
+### 7.1 Holder Key Binding at Issuance (Wallet Binding)
+
+This is a fundamental security requirement that prevents credential theft and ensures an attestation is bound to a specific wallet.
+*   **What it is:** Where the attestation is device-bound (see table below), the Holder's wallet **MUST** perform a "proof-of-possession" challenge to prove it controls a specific private key. The Attestation Provider then embeds the corresponding public key into the attestation payload before signing it.
+*   **Why it matters:** This process creates a permanent, cryptographic link between the attestation and the Holder's wallet. During presentation (as described in Chapter 9), a Relying Party can then challenge the presenting wallet to prove it still controls that same private key. This verification step makes stolen or copied attestation files useless to a thief, as they will not have the required private key.
 
 | Field | Value | Source |
 | --- | --- | --- |
@@ -999,24 +1105,66 @@ metadata in section 4.2, with the corresponding attestation type or `vct` value.
 
 ### 7.2 Issuance Policy
 
-The Attestation Provider's generic trust services policy, and the EAA Policy for this attestation
-type, in accordance with [ETSI TS 119 471], are those of the issuing onboarding service provider.
-No consortium-wide policy is referenced in this version.
+An Issuance Policy defines the minimum rules, policies, and procedures that any compliant Attestation Provider **SHALL** follow when issuing attestations of this type.
 
-**Attestation Provider obligations.**
+For transparency and to allow Relying Parties to programmatically assess their trust in the attestation, each Attestation Provider **SHALL** publish their terms and conditions, a generic Trust Services Policy, and an EAA Policy (per attestation type) in accordance with **[ETSI TS 119 471]**. These policies must be accepted by the Holder upon receipt of the attestation.
 
-General obligations on Attestation Providers are out of scope of this Rulebook.
-They are specified in Topic 10 of Annex 2 of the ARF, in the applicable Implementing
-Regulations, and in [ETSI TS 119 471]. This Rulebook states only obligations
-specific to this attestation type.
-More specifically, the Attestation Provider's generic trust services policy can be provided in accordance with ETSI TS 119 471.
-Each EAA Policy (per attestation type) can specify:
-- identity proofing in accordance with ETSI TS 119 461;
-- attribute proofing in accordance with ETSI TS 119 461;
-- batch issuance, if used, and any limits on reuse;
-- authentic source of the attributes (if applicable according to ETSI TS 119 478), and how currency is assured;
+This section references key concepts from **[ETSI TS 119 471]** and **[ETSI TS 119 461]**. The most critical issuance concepts for a rulebook author to understand and specify are explained below:
 
-Obligations specific to this attestation type:
+**1. Core Issuer Obligations**
+
+Any entity acting as an authorized Attestation Provider under this rulebook **SHALL** comply with the following general obligations:
+
+  **Issuance Basis and Timestamping:** The Provider **SHALL** issue the attestation based on information and supporting documentation that is valid and accurate at the exact moment of issuance. A timestamp of issuance (iat in SD-JWT VC) **MUST** be included in each attestation. This enables a Relying Party to not only verify the attestation's temporal validity but also to correctly validate the Attestation Provider's trust status as it was at the moment of issuance (e.g., by checking against a historical Trust List).
+
+*   **Data Currency and Revocation:** The Provider is responsible for the ongoing accuracy of the attested information. The Provider **MUST** immediately revoke the attestation if any change occurs that affects the validity or accuracy of the underlying data.
+
+**2. Identity and Attribute Proofing (as per ETSI TS 119 461)**
+
+This refers to the rigor with which the Attestation Provider verifies the information before issuing the attestation. The level of trust a Relying Party can place in an attestation depends directly on the quality of this proofing process.
+
+*   **Identity Proofing:** This is the process of verifying the identity of the subject. For example, for registered legal entities in a national register, this **MUST** involve verifying its active registration in the respective register.
+*   **Attribute Proofing:** This is the process of verifying the specific claims (attributes) being attested. The Provider **MUST** verify the attributes against a designated authentic data source (as defined by the author below).
+
+**3. Architectural Pattern for EAA Provider Trust**
+
+To enable the EAA Provider to implement the basic verification steps described in Chapter 9, the following general issuer obligations apply to all EAA Providers:
+* EAA Provider SHALL make the key it signs with verifiable through the trust framework of chapter 10.
+* Issuer obligation differ for the different trust mechanisms
+
+**Attestation Chaining (Issuer Component with Access Certificate)**
+1.  **Provider Identity Credential:** The EAA Provider **MUST** possess an **Access Certificate** issued by a Qualified Trust Service Provider (QTSP). This certicate already contain a `signing_key` parameter holding the public key the Provider uses to sign the issued EAAs.
+2.  **Trust Chaining Mechanism:** The EAA Provider **MUST** include their access certificate in the header of every EAA they issue. This allows a Relying Party to verify the EAA signature using the public key from the embedded access certificate and then verify the access certificate itself against the eIDAS Trusted List.
+
+**Attestation Chaining (EBW with EBWOID)**
+1.  **Provider Identity Credential:** The EAA Provider **MUST** possess their own European Business Wallet Owner Identity (EBWOID), issued by a Qualified Trust Service Provider (QTSP). To be authorized to sign and issue other EAAs, this EBWOID **MUST** contain a `signing_key` parameter holding the public key the Provider uses to sign the issued EAAs.
+2.  **Trust Chaining Mechanism:** The EAA Provider **MUST** include their own EBWOID (or a reference/chain to it) in the header of every EAA they issue. This allows a Relying Party to verify the EAA signature using the public key from the embedded EBWOID, and then verify the EBWOID itself against the eIDAS Trusted List.
+
+**QSEAL**
+[to be described]
+
+**to be defined according to ADR#336**
+[to be described]
+
+**4. Batch Issuance (Protocol Optimization)**
+
+This is a technical efficiency and privacy feature defined in the underlying OpenID4VCI protocols.
+
+*   **What it is:** A technical capability allowing a Wallet to request, and an Attestation Provider to issue, multiple credentials simultaneously in a single API interaction, rather than requiring separate network connections for each credential.
+*   **Application to this Rulebook:** For unique, long-lived business attestations, batch issuance is typically **Optional** or **Not Applicable**, as these credentials do not require multi-copy anonymity and are issued on a one-off basis.
+
+Parameters for this attestation type:
+
+* **Authorized Authentic Sources.** `member.legalName` and `member.legalIdentifier` MUST be taken
+  from the EUBWOID the holder presents at onboarding (section 1.1). `memberOf`, `role` and
+  `onboardedBy` MUST be taken from the issuing DSI's or dataspace's own membership records.
+  `termsOfUse` MUST record the governance rulebook the holder accepted during onboarding, and
+  `evidence`, where present, the identification means actually checked.
+* **Attestation Lifecycle.** The maximum validity period is 12 months from `validFrom` (`iat` in
+  the SD-JWT VC encoding). Where the membership continues, the issuer renews it by issuing a new
+  credential before the current one expires; see section 7.3.
+* **Batch Issuance Designation.** Batch issuance is not permitted for this attestation type.
+* **Attestation-Specific Obligations.**
 
 - offer the W3C VCDM format, and optionally SD-JWT VC (chapter 5);
 - declare the types that JSON-LD expansion depends on (section 5.3.1);
@@ -1026,12 +1174,19 @@ Obligations specific to this attestation type:
   authorised (section 4.4 and chapter 10);
 - publish revocation status (chapter 8).
 
+**Deviation.** The architectural patterns for EAA Provider trust above, attestation chaining
+through an access certificate or through the Provider's EBWOID, are not yet adopted by this
+Rulebook. Issuer keys are currently resolved as described in section 10.1. The choice between the
+patterns, and how the chosen trust link is carried in each format, is open and recorded for the
+rulebook quality assurance group.
+
 ### 7.3 Lifecycle management
 
-- **Validity period.** Set by the issuing onboarding service provider; this Rulebook fixes no
-  maximum.
+- **Validity period.** At most 12 months from `validFrom`, set by the issuing onboarding service
+  provider (section 7.2).
 - **Reissuance and renewal.** Membership and its set of roles share one lifecycle. Adding,
-  changing or removing a role requires reissuance of the credential.
+  changing or removing a role requires reissuance of the credential, and a continuing membership is
+  renewed by issuing a new credential before the current one expires.
 - **Update or correction.** When the underlying facts change, the issuer reissues the credential
   and revokes the superseded one, as described in chapter 8.
 
@@ -1065,28 +1220,96 @@ is recorded for the rulebook quality assurance group, and the fixed text is not 
 - **Who may request revocation.** The issuing onboarding service provider revokes; this version
   does not define a request procedure for other parties.
 - **Grounds.** In addition to any grounds imposed by regulation: the holder's membership of the
-  DSI or dataspace ends; or the credential is superseded by reissuance, because membership and its
-  set of roles share one lifecycle and a role change requires a new credential.
-- **Time from trigger to status update.** Not specified in this version.
+  DSI or dataspace ends; any change affecting the validity or accuracy of the attested data; or the
+  credential is superseded by reissuance, because membership and its set of roles share one
+  lifecycle and a role change requires a new credential.
+- **Time from trigger to status update.** Immediate: the issuer SHALL update the status list as
+  soon as the trigger event occurs (section 7.2, Data Currency and Revocation).
 
-## 9 Presentation
-
-### 9.1 Presentation Policy
+## 9 Request, Presentation and Verification
 
 To verify and validate a received presentation of an attestation of this type,
 the following steps SHALL be performed:
 
-1. verify the signature over the attestation using a trust anchor obtained as
-   described in chapter 10;
-2. verify that the attestation is within its validity period;
-3. check revocation status as described in chapter 8, unless the attestation is
-   short-lived; or remaining lifetime of the attestation is below revocation time
-   threshold;
-4. verify device binding where section 7.1 records the attestation as device-bound;
-5. request only those attributes that are necessary for the stated purpose of the
-   transaction, and, where the trust model for this attestation requires Relying
-   Party registration, only those attributes it is registered and authorised to
-   request.
+1.  **Cryptographic Integrity Verification (Tamper Proof):**
+    The Verifier **MUST** verify that the received attestation data has not been altered or tampered with since its issuance. The wallet shall validate the digital signature over the attestation using a trusted public key (trust anchor) obtained according to the framework detailed in Chapter 10.
+2.  **Issuer Authentication and Trust Evaluation:**
+     The Verifier **MUST** verify the Attestation Provider's identity, ownership of the signing key at issuance, and authorisation to issue this attestation for the stated `memberOf` value using the trust mechanism described in Chapter 10.
+3.  **Temporal Validity Verification:**
+     The Verifier **MUST** verify that the attestation is within its stated validity window. An attestation that has not yet taken effect or has already expired **SHALL NOT** be accepted, regardless of any other successful checks.
+4.  **Revocation Status Verification:**
+   The Verifier **MUST** verify the real-time revocation status of the received attestation as described in Chapter 8, unless:
+    *   The attestation is explicitly defined as short-lived; or
+    *   The remaining lifetime of the attestation is below the designated revocation time threshold.
+5.  **Holder Wallet and Device Binding Verification:**
+Where the attestation is device-bound according to section 7.1, the Verifier **MUST** verify the Holder's presentation signature and the presentation's binding to achieve two critical security checks:
+    *   Ensure that the presenter has not submitted a copied or replayed attestation
+    *   Validate that the presented attestation was issued to this exact presenting wallet instance.
+
+### 9.1 Relying Party Role (RP Instance - EUDI Wallet)
+
+The Membership Credential is held by organisations, legal persons, in a European Business Wallet.
+Presentation from an EUDI Wallet to a Relying Party Instance is not in scope; the applicable role
+is the EBW role of section 9.2.
+
+### 9.2 EBW Relying Party Role (EBW Wallet - EBW Wallet)
+
+Following the principle of mutual identification the verification in the **European Business Wallet (EBW)** ecosystem is designed as a mutual cryptographic process. Unlike traditional consumer wallet flows, EBW transactions must satisfy high-assurance, machine-to-machine (M2M) environments. Verification of EAAs is executed under two distinct conditions:
+
+1.  **Relying Party Role:** When an EBW Owner receives a presented attestation from a Holder and must verify its cryptographic claims before providing a service or executing a transaction.
+2.  **Holder Role:** When an EBW Holder receives an incoming Presentation Request and must verify the identity and system integrity of the requesting Relying Party before releasing confidential, non-public attestation data.
+
+The system performs these verification steps to achieve three core business and regulatory objectives:
+*   **Trust Augmentation:** Establishing the absolute cryptographic authenticity of exchanged data and validating the identity of the participating legal entities.
+*   **Liability Allocation:** Fulfilling statutory due diligence to minimize operational risk and programmatically shift liability to the responsible party (Issuer or Holder).
+*   **Data Protection:** Safeguarding highly confidential corporate data (e.g., ultimate beneficial ownership, control structures) stored in the EBW against unauthorized harvest or access.
+
+#### 9.2.1 Relying Party obligation during request
+1.  **Include own identification and authorization data in presentation requests:**
+When requesting non-public and therefore confidential data, the Relying Party **SHALL** include its own **EBWOID** and **BWUA** (using the `ebwoid` and `ebw_wallet_unit` format blocks in the `verifier_info` array of the Request Object) to allow the receiving Holder to:
+   *   Enforce automated consent and exchange policies based on the Verifier’s legal identity and verified platform integrity.
+   *   Ensure the request originates from a valid wallet instance rather than uncertified or spoofed software.
+   *   *Operational Constraint:* Requesters that do not present a valid EBWOID and BWUA **SHOULD NOT** receive confidential attestations.
+2.  **Request Wallet Unit Attestations (BWUA):**
+The Relying Party **SHOULD** include a request for the Holder’s Business Wallet Unit Attestation (BWUA)  to mitigate the risk of interacting with a revoked, compromised, or modified wallet instance.
+3.  **Adhere to Data Minimization (Purpose Limitation):**
+The Relying Party **SHALL** only request attributes that are strictly necessary to fulfill the stated business purpose of the transaction.
+4.  **Respect Trust Model Registration:**
+Where the trust model for a requested attestation requires Relying Party registration, the RP **SHALL** only request attributes it is explicitly registered and authorized to request.
+
+#### 9.2.2 Holder and Relying Party obligation during verification
+
+To protect the Holder and Relying Party from processing fraudulent, tampered, or stolen attestations, they  **MUST** programmatically execute the following five verification steps on all received attestations. Holder and Relying Party performing the verification steps are called Verifier within the rest of this chapter. The Verifier can perform the steps only if the EBW supports the verification steps, therefore the EBW Wallet Provider **MUST** support the following verification steps with their EBW:
+
+##### 9.2.2.1 Impact of Cryptographic Verification on Holder Liability
+The mandatory validation of incoming requests protects the Holder when operating in high-security, backend-to-backend environments:
+
+*   **Establishes Non-Repudiation (Defense Against Dispute):** By validating the signature of the Request Object against the public key attested inside the Relying Party's EBWOID, the Relying Party cannot later deny having initiated the transaction or requested the data. This protects the Holder from legal claims that they disclosed confidential business secrets without a valid, authorized request.
+*   **Protects Against Impersonation (Defense Against Data Breaches):** It cryptographically proves the request did not originate from a malicious actor who simply spoofed the Relying Party's public `client_id` or metadata. Because the transaction requires a signature generated by the private key securely held within the Relying Party's hardware wallet, the Holder is guaranteed they are communicating with the actual legal entity identified in the EBWOID.
+*   **Fulfills Statutory Due Diligence (Safe Harbor under GDPR):** Under data protection regulations, a corporate Holder has a legal duty to protect its confidential operational data. Executing these mandatory checks before releasing any data payload safe-harbors the Holder from charges of negligence or unauthorized data disclosure.
+
+##### 9.2.2.2 Impact of Cryptographic Verification on Relying Party Liability
+
+The execution of the mandatory cryptographic checks defined in this chapter directly determines the legal and liability posture of the Relying Party (RP). Under the European Business Wallet framework and eIDAS, performing these verifications shifts liability and protects the RP from negligence claims:
+
+| Verification Check | Cryptographic Fact | Impact on Relying Party Liability |
+| :--- | :--- | :--- |
+| **Integrity & Issuer Auth (Steps 1 & 2)** | Proves data has not been modified; validates the cryptographic identity of the issuer. | **Transfers Data-Accuracy Liability to Issuer.** The RP is legally protected against errors or falsehoods in the received data. Liability shifts to the Attestation Provider under eIDAS2 or their published terms. |
+| **Temporal & Revocation (Steps 3 & 4)** | Proves the credential was actively valid and unrevoked at the exact moment of the transaction. | **Protects Against Fraud Claims.** Safe-harbors the RP from claims arising from the use of credentials that were valid in the past but have since expired or been revoked. |
+| **Device Binding & Presentation Signature (Step 5)** | Proves the holder has possession of the private key associated with the credential and actively authorized this specific session. | **Protects Against Identity Theft & Establishes Safe Harbor.** Explained in detail below. |
+
+**Defense Against Identity Theft (Shifts Burden of Proof)**
+By verifying the device binding (e.g., via the Key Binding JWT, matching `nonce` and `aud`), the RP proves that the presenter has real-time, hardware-backed control over the private key associated with the credential.
+
+If a malicious actor steals a copy of another company's EBWOID file, they **cannot** generate a valid binding signature without access to that specific wallet's private key. By verifying this binding, the RP completely protects itself from claims of *"failing to prevent obvious credential-sharing or identity theft,"* shifting the burden of proof entirely to the claimant.
+
+**Safe Harbor for Data Access and Key Compromise**
+Under GDPR and eIDAS, if an RP discloses confidential data or executes a transaction based on a credential where device binding was fully and correctly verified, it is legally deemed to have fulfilled its due diligence. If it is later discovered that the Holder's private key was compromised at the time of the transaction, the liability shifts away from the RP to:
+*   The **Holder**, for failing to adequately secure and protect their private key/hardware device.
+*   The **Issuer**, if they were notified of the key compromise but failed to add the credential to their revocation list in a timely manner.
+
+**Eliminates Sole Negligence under eIDAS (Art 12a / 12b)**
+Under eIDAS Article 12a and 12b, a Relying Party has a duty of care to validate credentials. If an RP fails to verify the presentation signature and the corresponding trust chains, they are considered to have accepted an unauthenticated payload. In the event of a security breach or fraudulent transaction, the RP can be held **solely liable** due to technical negligence.
 
 Obligations specific to this attestation type:
 
@@ -1116,13 +1339,13 @@ Where rulebook conformance matters, the Relying Party MAY compare `termsOfUse.ha
 `evidence` to reconcile the holder with its own legacy records, subject to IR-04. It SHALL match
 `role` and `memberOf` by exact IRI comparison per IR-05.
 
-### 9.2 Presentation modes
+### 9.3 Presentation modes
 
 Remote presentation is in scope. Proximity presentation is not in scope, consistent
 with chapter 5, which records the mdoc encoding as out of scope. The primary format is W3C VCDM
 (JSON-LD), presented through OpenID4VP; an SD-JWT VC flow MAY be piloted additionally.
 
-### 9.3 Transactional data
+### 9.4 Transactional data
 
 No transactional data as defined in Topic 20 of Annex 2 of the ARF is associated
 with this attestation type.
@@ -1133,7 +1356,9 @@ The trust anchor for this attestation is obtained as described in the branch bel
 that corresponds to its legal category. The trust anchor location applies in either
 case.
 
-**Non-qualified EAA**
+**Non-qualified EAA (including S-EAA)**
+
+### 10.1 Relying Party Role (RP Instance - EUDI Wallet)
 
 The trust anchor is not obtained from a Trusted List of qualified trust service
 providers. It is obtained as follows. In the W3C VCDM encoding, the `issuer` is a DID, normally
@@ -1143,8 +1368,30 @@ SD-JWT VC encoding, `iss` is the Provider's HTTPS URL and the key is obtained as
 this attestation type is then verified by the WE BUILD and dataspace trust framework (WP4), for
 the specific `memberOf` value the credential carries.
 
+The trust anchor is not obtained from a Trusted List of qualified trust service
+providers. 
 A Wallet Unit MAY verify Provider authorisation using the mechanism described in
 ISSU_34 of Topic 10 of Annex 2 of the ARF.
+
+### 10.2 EBW Relying Party Role (EBW Wallet - EBW Wallet)
+
+#### 10.2.1 Attestation Chaining
+
+**Deviation.** The template's fixed text for this section requires the EAA Provider to embed its own
+EBWOID in the header of every issued EAA, and the Relying Party to take the EBWOID's `signing_key`
+as the trust anchor, delegated from the EU Trusted List of Lists through the QTSP that issued the
+EBWOID. This Rulebook has not yet adopted attestation chaining: the issuer key is resolved as in
+section 10.1, for the EBW role as well. Adoption, and how the EBWOID or a reference to it is carried
+in each format, is open and recorded for the rulebook quality assurance group; the fixed text is
+therefore not reproduced here.
+
+#### 10.2.2 QSEAL
+
+Not yet described by the template. Not used by this Rulebook.
+
+#### 10.2.3 To be defined according to ADR#336
+
+Not yet described by the template. Not used by this Rulebook.
 
 **Trust anchor location**
 
